@@ -1,6 +1,7 @@
 <?php
 //*imafox.de*//
-
+ini_set('memory_limit', -1);
+echo memory_get_usage()."<br>";
 require 'ImageResize.php';
 use \Eventviva\ImageResize;
 
@@ -16,6 +17,7 @@ if (isset($_GET['img'])) {
 	$base = explode("/", $sourcePath);
 	$basefolder_1200 = $base[0]."_1200";
 	$basefolder_720 = $base[0]."_720";
+	$basefolder_thumbs = $base[0]."_thumbs";
 	//echo "basefolder: ".$basefolder."<br>";
 	$baseFile = explode(".", $base[1]);
 	$fileName = $baseFile[0];
@@ -23,7 +25,7 @@ if (isset($_GET['img'])) {
 	echo "fileName: ".$fileName."<br>";
 	echo "fileExtension: ".$fileExtension."<br>";
 	
-	$sourceFile = $basefolder_1200.'/'.$fileName.'.'.$fileExtension;
+	$sourceFile = $basefolder_720.'/'.$fileName.'.'.$fileExtension;
 	echo "sourceFile: ".$sourceFile."<br>";
 	
 	if(!file_exists($sourceFile)){
@@ -31,7 +33,7 @@ if (isset($_GET['img'])) {
 		return false;
 	}	
 	
-	$baseFolder = 'blur/'.$basefolder_1200;
+	$baseFolder = 'blur/'.$basefolder_720;
 	echo "baseFolder: ".$baseFolder."<br>";
 	mkdir($baseFolder);
 	
@@ -56,18 +58,20 @@ if (isset($_GET['img'])) {
 	} else {
 		echo 'making it <br>';
 		// The file doesn't exist, so, make it
-		$im = imagecreatefromjpeg($sourcePath);
+		$im = imagecreatefromjpeg($sourceFile);
+		echo memory_get_usage()."<br>";
 		echo "im made <br>";
-		//$gaussian = array(array(1.0, 2.0, 1.0), array(2.0, 4.0, 2.0), array(1.0, 2.0, 1.0));
 		$gaussian = array(array(1.0, 2.0, 1.0), array(2.0, 4.0, 2.0), array(1.0, 2.0, 1.0));
 		
 		echo "im convolution <br>";
 
 		for ($i = 1; $i <= $depth; $i++) {
 			imagefilter($im, IMG_FILTER_GAUSSIAN_BLUR);
+			echo memory_get_usage()."<br>";
+			
 		}
 		echo "imagefilter <br>";
-		header('Content-Type: image/jpeg');
+		//header('Content-Type: image/jpeg');
 		$im_output = imagejpeg($im, $newImage, 70);
 		echo '<a href="'.$newImage.'">'.$newImage.'</a><br>';
 		
