@@ -9,7 +9,7 @@ $galleries;
 $existingGallery;
 $force = false;
 
-// http://www.cad-artist.de/gallery/gallery.php?scanFolder=objekte&force=true
+// http://www.url.com/gallery/gallery.php?scanFolder=objekte&force=true
 if (isset($_GET['force'])) {
 	global $force;
 	$force = $_GET['force'];
@@ -17,9 +17,8 @@ if (isset($_GET['force'])) {
 }
 
 // force rebuild folder
-// http://www.cad-artist.de/gallery/gallery.php?scanFolder=objekte
+// http://www.url.com/gallery/gallery.php?scanFolder=objekte
 if (isset($_GET['scanFolder'])) {
-
 	$scanFolder = $_GET['scanFolder'];
 	echo "scanFolder: ".$scanFolder."<br>";
 	$imagesInFolder = imagesFromFolder($scanFolder); 
@@ -88,6 +87,7 @@ function processImages($newImages, $folder) {
 		echo "folder: ".$folder."<br>";
 		$path = $folder . '/';
 		$targetpath_thumb = $folder . '_thumbs/';
+		$targetpath_480 = $folder . '_480/';
 		$targetpath_720 = $folder . '_720/';
 		$targetpath_1200 = $folder . '_1200/';
 	}
@@ -109,9 +109,11 @@ function processImages($newImages, $folder) {
 			$file = $imgObj['file'];
 			$gallery = $imgObj['path'];
 			$tpath_thumb = $gallery . '_thumbs';
+			$tpath_480 = $gallery . '_480';
 			$tpath_720 = $gallery . '_720';
 			$tpath_1200 = $gallery . '_1200';
 			$targetpath_thumb = $gallery . '_thumbs/';
+			$targetpath_480 = $gallery . '_480/';
 			$targetpath_720 = $gallery . '_720/';
 			$targetpath_1200 = $gallery . '_1200/';
 			$path = $gallery . '/';
@@ -126,6 +128,7 @@ function processImages($newImages, $folder) {
 
 		
 		mkdir($targetpath_thumb);
+		mkdir($targetpath_480);
 		mkdir($targetpath_720);
 		mkdir($targetpath_1200);	
 
@@ -141,11 +144,13 @@ function processImages($newImages, $folder) {
 			$image -> save($targetpath_1200 . $file);
 		}
 		if( !file_exists($targetpath_720.$file) || $force){
-				
 			$image -> resizeToBestFit(720, 600);
 			$image -> save($targetpath_720 . $file);
 		}
-		
+		if( !file_exists($targetpath_480.$file) || $force){
+			$image -> resizeToBestFit(480, 360);
+			$image -> save($targetpath_480 . $file);
+		}		
 		if( !file_exists($targetpath_thumb.$file) || $force){
 			$image -> resizeToBestFit(380, 300);
 			$image -> save($targetpath_thumb . $file);
@@ -161,6 +166,9 @@ function processImages($newImages, $folder) {
 		}
 		if( file_exists($targetpath_720.$file) ){
 			echo "image exists: ".$targetpath_720.$file."<br>";
+		}
+		if( file_exists($targetpath_480.$file) ){
+			echo "image exists: ".$targetpath_480.$file."<br>";
 		}
 		if( file_exists($targetpath_thumb.$file) ){
 			echo "image exists: ".$targetpath_thumb.$file."<br>";
@@ -204,6 +212,12 @@ function buildExistingGallery() {
 	// remove 'thumb' directories from list
 	$existingFolders = array_filter($existingFolders, function($value) {
 		if (strstr($value, 'thumb') !== false) {
+			return false;
+		}
+		return true;
+	});
+	$existingFolders = array_filter($existingFolders, function($value) {
+		if (strstr($value, '_480') !== false) {
 			return false;
 		}
 		return true;
