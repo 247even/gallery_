@@ -156,10 +156,6 @@ function processImages($newImages, $folder) {
 			$image -> save($targetpath_280 . $file);
 		}
 
-		// clear
-		$image = null;
-		unset($image);
-
 		// control:
 		if( file_exists($targetpath_1200.$file) ){
 			echo "image exists: ".$targetpath_1200.$file."<br>";
@@ -173,6 +169,11 @@ function processImages($newImages, $folder) {
 		if( file_exists($targetpath_280.$file) ){
 			echo "image exists: ".$targetpath_280.$file."<br>";
 		}
+		
+		
+		// clear
+		$image = null;
+		unset($image);
 		
 		// if $force = true, just process images
 		if ($force){
@@ -210,7 +211,7 @@ function buildExistingGallery() {
 	$existingFolders = array_diff($allFolders, $folderfilter);
 	// remove 'thumb' directories from list
 	$existingFolders = array_filter($existingFolders, function($value) {
-		if (strstr($value, 'thumb') !== false) {
+		if (strstr($value, '_280') !== false) {
 			return false;
 		}
 		return true;
