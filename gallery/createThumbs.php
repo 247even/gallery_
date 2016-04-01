@@ -1,10 +1,38 @@
 <?php
+ini_set('display_errors', 'On');
+
+// check libs
+if(extension_loaded('gd')) {
+    print_r(gd_info());
+}
+else {
+    echo 'GD is not available.<br>';
+}
+
+if(extension_loaded('imagick')) {
+    $imagick = new Imagick();
+    print_r($imagick->queryFormats());
+}
+else {
+    echo 'ImageMagick is not available.<br>';
+}
+
 require 'ImageResize.php';
 use \Eventviva\ImageResize;
+$force = false;
 
 
-function createThumbs($file, $folder, $sizes){
+function createThumbs($folder, $file, $sizes){
 	if($folder){
+		
+		if (strpos($folder, "/") !== false) {
+			// remove '/'
+			$file = str_replace('/', '', $file);
+		}
+		if (strpos($folder, ".") !== false) {
+			echo "invalid folder";
+		}
+
 		// check if sourcefolder exists
 		if (!file_exists($folder) && !is_dir($folder)) {
 		    echo "$folder not found.<br>";
@@ -17,18 +45,17 @@ function createThumbs($file, $folder, $sizes){
 	}
 	
 	if($file){
+		// check if file contains '/'
+		if (strpos($file, "/") !== false) {
+			if (strpos($file, "/") === 0) {
+				// remove '/'
+				$file = str_replace('/', '', $file);
+			}			
+		}
 		$sourceFile = $folder.'/'.$file;
 		// check if sourceFile exists
-		if (file_exists($sourceFile) ) {
-
-			$image = new ImageResize($imgpath);
-			if( !file_exists($targetpath_1200.$file) || $force ){
-				$image -> resizeToBestFit(1200, 940);
-				$image -> save($targetpath_1200 . $file);
-			}			
-			
-		} else {
-		    echo "$file not found.<br>";
+		if (!file_exists($sourceFile) ) {
+		    echo "$sourceFile not found.<br>";
 		}			
 	} else {
 		echo "missing file<br>";
@@ -52,21 +79,19 @@ function createThumbs($file, $folder, $sizes){
 		// use int, not strings
 		$size = intval($value);
 		if($size > 0){
-			
 			// check if targetfolder exists or create it
 			$targetFolder = $folder.'_'.strval($size);
 			if (!file_exists($targetFolder) && !is_dir($targetFolder)) {
-			    mkdir($targetFolder, 0777);
-			    echo "directory $folder created.<br>";
-			    exit;
+			    mkdir($targetFolder);
+			    echo "directory $targetFolder created.<br>";
 			} else {
-			    echo "directory $folder already exists.<br>";
+			    echo "directory $targetFolder already exists.<br>";
 			}
 
 			$image = new ImageResize($sourceFile);
 			if( !file_exists($targetFolder.'/'.$file) || $force ){
 				$image -> resizeToBestFit($size, $size);
-				$image -> save($targetFolder . $file);
+				$image -> save($targetFolder.'/'. $file);
 			}			
 		} else {
 			echo "invalid size <br>";
@@ -74,9 +99,9 @@ function createThumbs($file, $folder, $sizes){
 		
 		$tsi++;
 		if($tsi < $totalSizes){
-			echo $tsi.' of '.$totalSizes.' processed';
+			echo $tsi.' of '.$totalSizes.' processed<br>';
 		} else {
-			echo $tsi.' of '.$totalSizes.' processed - Finished!';
+			echo $tsi.' of '.$totalSizes.' processed - Finished!<br>';
 		}
 	}
 	
@@ -84,16 +109,12 @@ function createThumbs($file, $folder, $sizes){
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // http://www.url.com/gallery/createThumbs.php?file=test.jpg&folder=somedirectory&sizes=380,480,720&force=true
+// http://192.168.1.21/gallery_/gallery/createThumbs.php?file=bird-1249136_1920.jpg&folder=birds
 
 if (isset($_GET['force'])) {
 	global $gForce;
 	$gForce = $_GET['force'];
 	//echo "force = ".$force."<br>";
-}
-
-if (isset($_GET['file'])) {
-	$gFile = $_GET['file'];
-	echo "gFile = ".$gFile."<br>";
 }
 
 if (isset($_GET['folder'])) {
@@ -111,6 +132,10 @@ if (isset($_GET['sizes'])) {
 	echo "sizeValues = ".json_encode($sizeValues)."<br>";
 }
 
-createThumbs($gFile, $gFolder, $sizeValues)
+if (isset($_GET['file'])) {
+	$gFile = $_GET['file'];
+	echo "gFile = ".$gFile."<br>";
+	createThumbs($gFolder, $gFile, $sizeValues);
+}
 
 ?>
