@@ -9,7 +9,7 @@ $galleries;
 $existingGallery;
 $force = false;
 
-// http://www.url.com/gallery/gallery.php?scanFolder=objekte&force=true
+// http://www.url.com/gallery/index.php?scanFolder=objekte&force=true
 if (isset($_GET['force'])) {
 	global $force;
 	$force = $_GET['force'];
@@ -17,7 +17,7 @@ if (isset($_GET['force'])) {
 }
 
 // force rebuild folder
-// http://www.url.com/gallery/gallery.php?scanFolder=objekte
+// http://www.url.com/gallery/index.php?scanFolder=objekte
 if (isset($_GET['scanFolder'])) {
 	$scanFolder = $_GET['scanFolder'];
 	echo "scanFolder: ".$scanFolder."<br>";
@@ -209,19 +209,23 @@ function buildExistingGallery() {
 	// exclude and ignore folders:
 	$folderfilter[] = 'blur';
 	$existingFolders = array_diff($allFolders, $folderfilter);
-	// remove 'thumb' directories from list
+	// remove directories by phrase from list
 	$existingFolders = array_filter($existingFolders, function($value) {
 		if (strstr($value, 'thumb') !== false) {
 			return false;
 		}
-		return true;
-	});
-	$existingFolders = array_filter($existingFolders, function($value) {
 		if (strstr($value, '_480') !== false) {
+			return false;
+		}
+		if (strstr($value, '_720') !== false) {
+			return false;
+		}
+		if (strstr($value, '_1200') !== false) {
 			return false;
 		}
 		return true;
 	});
+/*	
 	$existingFolders = array_filter($existingFolders, function($value) {
 		if (strstr($value, '_720') !== false) {
 			return false;
@@ -234,6 +238,7 @@ function buildExistingGallery() {
 		}
 		return true;
 	});
+ */
 	$existingFolders = array_values($existingFolders);
 
 	foreach ($existingFolders as $key => $value) {
@@ -250,7 +255,7 @@ function buildExistingGallery() {
 		}
 		// add hash
 		$gmd5 = md5(json_encode($existingGallery["images"]));
-		echo "md5: ".$gmd5."<br>";
+		//echo "md5: ".$gmd5."<br>";
 		$existingGallery["md5"] = $gmd5;
 		
 		// add folder list
