@@ -20,6 +20,10 @@ use \Eventviva\ImageResize;
 $force = false;
 
 function resizeStore($folder, $file, $sizes) {
+	global $force;
+	
+	echo "resizeStore: ".json_encode($folder).'<br>'.json_encode($file).'<br>'.json_encode($sizes);
+	
 	if ($folder) {
 
 		if (strpos($folder, "/") !== false) {
@@ -83,9 +87,9 @@ function resizeStore($folder, $file, $sizes) {
 			} else {
 				echo "directory $targetFolder already exists.<br>";
 			}
-
-			$image = new ImageResize($sourceFile);
+			
 			if (!file_exists($targetFolder . '/' . $file) || $force) {
+				$image = new ImageResize($sourceFile);
 				$image -> resizeToBestFit($size, $size);
 				$image -> save($targetFolder . '/' . $file);
 			}

@@ -6,7 +6,8 @@ $existingFolders;
 //$allFolders;
 $galleries;
 $existingGallery;
-$sizes = "280,430,720,1200";
+//$sizes = "280,430,720,1200";
+$sizeValues = array(280, 430, 720, 1200);
 
 // http://www.url.com/gallery/gallery.php?scanFolder=objekte&force=true
 if (isset($_GET['force'])) {
@@ -40,7 +41,6 @@ function checkFolders($jsonFolders, $existingFolders) {
 	}
 
 	$newFolders = array_diff($existingFolders, $jsonFolders);
-
 	if (!empty($newFolders)) {
 		foreach ($newFolders as $key => $value) {
 			$targetpath = $value . '_280/';
@@ -77,7 +77,7 @@ function checkFolders($jsonFolders, $existingFolders) {
 
 function processImages($newImages, $folder) {
 	global $existingGallery;
-	global $sizes;
+	global $sizeValues;
 	//global $allFolders;
 
 	if (!$newImages) {
@@ -87,11 +87,14 @@ function processImages($newImages, $folder) {
 
 	if ($folder) {
 		echo "folder: " . $folder . "<br>";
+/*
 		$path = $folder . '/';
 		$targetpath_280 = $folder . '_280/';
 		$targetpath_480 = $folder . '_480/';
 		$targetpath_720 = $folder . '_720/';
 		$targetpath_1200 = $folder . '_1200/';
+ */
+
 	}
 
 	$a = 0;
@@ -103,10 +106,10 @@ function processImages($newImages, $folder) {
 
 		if (!$folder) {
 			echo "no folder!<br>";
-			global $existingGallery;
 			$imgObj = $existingGallery['images'][$value];
 			$file = $imgObj['file'];
 			$gallery = $imgObj['path'];
+			/*
 			$tpath_280 = $gallery . '_280';
 			$tpath_480 = $gallery . '_480';
 			$tpath_720 = $gallery . '_720';
@@ -116,75 +119,13 @@ function processImages($newImages, $folder) {
 			$targetpath_720 = $gallery . '_720/';
 			$targetpath_1200 = $gallery . '_1200/';
 			$path = $gallery . '/';
+			 */
 		} else {
 			$file = $value;
 		}
 
-		if ($targetpath_280 == "_280/") {
-			echo "Error!<br><br>";
-			return false;
-		}
-
 		// resizeStore($folder, $file, $sizes)
 		resizeStore($gallery, $file, $sizes);
-
-		/*
-		 mkdir($targetpath_280);
-		 mkdir($targetpath_480);
-		 mkdir($targetpath_720);
-		 mkdir($targetpath_1200);
-		 */
-		//echo "targetpath: " . $targetpath_280 . "<br>";
-		/*
-		 $imgpath = $path . $file;
-		 echo "imgpath: " . $imgpath . "<br>";
-		 */
-		// if $force = true, do it anymway
-		/*
-		 $image = new ImageResize($imgpath);
-		 if( !file_exists($targetpath_1200.$file) || $force ){
-		 $image -> resizeToBestFit(1200, 940);
-		 $image -> save($targetpath_1200 . $file);
-		 }
-		 if( !file_exists($targetpath_720.$file) || $force){
-		 $image -> resizeToBestFit(720, 600);
-		 $image -> save($targetpath_720 . $file);
-		 }
-		 if( !file_exists($targetpath_480.$file) || $force){
-		 $image -> resizeToBestFit(480, 360);
-		 $image -> save($targetpath_480 . $file);
-		 }
-		 if( !file_exists($targetpath_280.$file) || $force){
-		 $image -> resizeToBestFit(280, 220);
-		 $image -> save($targetpath_280 . $file);
-		 }
-
-		 // control:
-		 if( file_exists($targetpath_1200.$file) ){
-		 echo "image exists: ".$targetpath_1200.$file."<br>";
-		 }
-		 if( file_exists($targetpath_720.$file) ){
-		 echo "image exists: ".$targetpath_720.$file."<br>";
-		 }
-		 if( file_exists($targetpath_480.$file) ){
-		 echo "image exists: ".$targetpath_480.$file."<br>";
-		 }
-		 if( file_exists($targetpath_280.$file) ){
-		 echo "image exists: ".$targetpath_280.$file."<br>";
-		 }
-		 */
-		/*
-		 // clear
-		 $image = null;
-		 unset($image);
-
-		 // if $force = true, just process images
-		 if ($force){
-		 if ( $i > 10 ) {
-		 $i = 0;
-		 }
-		 }
-		 */
 	}
 
 	echo "images processed: " . $a . "<br>";
@@ -205,6 +146,7 @@ function saveJSON($jsf) {
 function buildExistingGallery() {
 
 	global $existingFolders;
+	global $sizeValues;
 	//	global $allFolders;
 
 	// find all galeries, aka folders:
@@ -213,37 +155,29 @@ function buildExistingGallery() {
 	// exclude and ignore folders:
 	$folderfilter[] = 'blur';
 	$existingFolders = array_diff($allFolders, $folderfilter);
-	// remove 'thumb' directories from list
-	$existingFolders = array_filter($existingFolders, function($value) {
-		if (strstr($value, '_280') !== false) {
-			return false;
-		}
-		return true;
-	});
-	$existingFolders = array_filter($existingFolders, function($value) {
-		if (strstr($value, '_480') !== false) {
-			return false;
-		}
-		return true;
-	});
-	$existingFolders = array_filter($existingFolders, function($value) {
-		if (strstr($value, '_720') !== false) {
-			return false;
-		}
-		return true;
-	});
-	$existingFolders = array_filter($existingFolders, function($value) {
-		if (strstr($value, '_1200') !== false) {
-			return false;
-		}
-		return true;
-	});
+	
+	// remove size directories from list
+	echo json_encode($sizeValues)."<br>";
+	foreach ($sizeValues as $size) {
+		echo "size: ".$size."<br>";
+		$existingFolders = array_filter($existingFolders, function($va) {
+			global $size;
+			if (strstr($va, '_'.$size) !== false) {
+				return false;
+			}
+			return true;
+		});
+	}
+	
 	$existingFolders = array_values($existingFolders);
+	echo "folders: ".json_encode($existingFolders)."<br>";
 
 	foreach ($existingFolders as $key => $value) {
+		//echo $key.' '.$value.'<br>';
 		$path = $value . '/';
 		// search all images in folder
 		foreach (glob("$path*.{jpg,jpeg,png,gif}", GLOB_BRACE) as $filename) {
+			resizeStore($value, basename($filename), $sizeValues);
 			$imageObject = array("file" => basename($filename), "path" => $value, "time" => filemtime($filename), "tags" => [$value]);
 			$existingImages[$value . basename($filename)] = $imageObject;
 		}
@@ -252,6 +186,8 @@ function buildExistingGallery() {
 		if ($existingImages) {
 			$existingGallery = array("images" => $existingImages);
 		}
+		//echo 'existingImages: '.json_encode($existingImages).'<br>';
+		
 		// add hash
 		$gmd5 = md5(json_encode($existingGallery["images"]));
 		echo "md5: " . $gmd5 . "<br>";
@@ -298,10 +234,6 @@ function start() {
 	//echo "existingGallery:<br>" . json_encode($existingGallery) . "<br><br>";
 	$existingMd5 = $existingGallery['md5'];
 
-	//$allFolders = $allFolders;
-	//	echo "allFolders:<br>" . json_encode($allFolders) . "<br><br>";
-
-	//$existingFolders = $existingFolders;
 	echo "existingFolders:<br>" . json_encode($existingFolders) . "<br><br>";
 
 	// look for gallery.json, else create new
@@ -369,8 +301,8 @@ function checkDiff($galleries, $existingGallery) {
 				if ($oldPath) {
 					if ($oldPath != $fpath) {
 						echo "<br>oldPath !== fpath<br>";
-						echo json_encode($$oldPath);
-						processImages($$oldPath, $oldPath);
+						echo json_encode($oldPath);
+						processImages($oldPath);
 						saveJSON(buildExistingGallery());
 						start();
 						return false;
