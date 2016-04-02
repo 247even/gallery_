@@ -1,6 +1,7 @@
 <?php
 require 'jsonutil.php';
 require 'resizeStore.php';
+require 'saveFileAs.php';
 
 $existingFolders;
 //$allFolders;
@@ -133,6 +134,7 @@ function processImages($newImages, $folder) {
 	return true;
 }
 
+/*
 function saveJSON($jsf) {
 	$ijson = json_encode($jsf);
 	echo "<br>saveJSON...<br>";
@@ -142,6 +144,7 @@ function saveJSON($jsf) {
 	fclose($fp);
 	echo ">>> JSON SAVED<br><br>";
 }
+*/
 
 function buildExistingGallery() {
 
@@ -242,7 +245,7 @@ function start() {
 		$galleries = json_decode($galleryJSON, true);
 		//echo "json galleries:<br>" . json_encode($galleries) . "<br><br>";
 	} else {
-		saveJSON(buildExistingGallery());
+		saveFileAs(buildExistingGallery(), "gallery.json");
 		start();
 		return false;
 	}
@@ -303,7 +306,7 @@ function checkDiff($galleries, $existingGallery) {
 						echo "<br>oldPath !== fpath<br>";
 						echo json_encode($oldPath);
 						processImages($oldPath);
-						saveJSON(buildExistingGallery());
+						saveFileAs(buildExistingGallery(), "gallery.json");
 						start();
 						return false;
 					}
@@ -340,7 +343,7 @@ function checkDiff($galleries, $existingGallery) {
 		}
 		echo "newImages: " . json_encode($newImages) . "<br><br>";
 		processImages($newImages);
-		saveJSON(buildExistingGallery());
+		saveJSON(buildExistingGallery(), "gallery.json");
 	}
 }
 
