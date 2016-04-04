@@ -1,4 +1,27 @@
 <?php
+ini_set('display_errors', 'On');
+
+echo "Start<br><br>";
+echo 'Name des Benutzers: ' . get_current_user();
+echo "<br>";
+$processUser = posix_getpwuid(posix_geteuid());
+echo $processUser['name'];
+echo "<br>";
+echo 'getmyuid: ' . getmyuid();
+echo "<br>";
+echo "whoami: ". `whoami`;
+echo "<br>";
+print shell_exec( 'whoami' );
+echo "<br>";
+echo exec('whoami');
+echo "<br>";
+file_put_contents("testFile", "test");
+$user = fileowner("testFile");
+echo "User: ".$user."<br>";
+unlink("testFile");
+echo "<br>";
+echo "<br>";
+
 require 'jsonutil.php';
 require 'resizeStore.php';
 require 'saveFileAs.php';
@@ -200,6 +223,12 @@ function buildExistingGallery() {
 		if ($existingFolders) {
 			$existingGallery["folders"] = $existingFolders;
 		}
+
+		// add sizes list
+		if ($sizeValues) {
+			$existingGallery["sizes"] = $sizeValues;
+		}
+
 	}
 
 	return $existingGallery;

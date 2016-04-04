@@ -10,6 +10,7 @@
 		<link rel="shortcut icon" href="" type="image/x-icon">
 		<meta name="description" content="">
 		<title>gallery_</title>
+
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.min.js"></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:700,400&amp;subset=latin">
@@ -22,6 +23,7 @@
 		<link rel="stylesheet" href="css/additional.css">
 		<link rel="stylesheet" href="css/animate.min.css">
 		<link rel="stylesheet" href="css/imafox.css">
+
 	</head>
 	<body>
 		<div id="main">
@@ -34,7 +36,7 @@
 
 							</div>
 						</div>
-						<div class="clearfix footer-spacer"></div>
+						<div class="clearfix footer-spacer"> </div>
 					</div>
 
 					<!-- Lightbox -->
@@ -48,8 +50,8 @@
 									<div class="gallery-carousel carousel-inner">
 
 									</div>
-									<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> <span class="sr-only">Previous</span> </a>
-									<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> <span class="sr-only">Next</span> </a>
+									<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"> </span> <span class="sr-only">Previous</span> </a>
+									<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"> </span> <span class="sr-only">Next</span> </a>
 
 									<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
 									<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
@@ -76,29 +78,36 @@
 					</div>
 				</footer>
 
-			</div>
-			<!-- page -->
+			</div><!-- page -->
+		</div><!-- main -->
 
+		<div id="prototypes" style="display:none">
+			<div id="thumb-prototype">
+				<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 gallery-item squareit img-hidden" data-time="time" data-path="filePath" data-tags="tagsString">
+					<div class="thumb-div cover-image b-lazy" data-src="thumbSrc">
+						<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal"> <img alt="" class="lazy" data-original="thumbFilePath" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"> <span class="icon glyphicon glyphicon-zoom-in"> </span> </a>
+					</div>
+				</div>
+			</div>
 		</div>
-		<!-- main -->
 
 		<!-- Latest compiled and minified bootstrap JavaScript -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		<script src="js/bootstrap-select.min.js"></script>
 		<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
-		<!--<script src="https://cdn.jsdelivr.net/velocity/1.2.3/velocity.ui.min.js"></script>-->
 		<script src="js/relative-fade.min.js"></script>
 		<script src="js/bluur.js"></script>
 		<script src="js/imgloaded.js"></script>
 		<script src="js/PxLoader.js"></script>
 		<script src="js/pxloader-images.min.js"></script>
-		<script src="js/px.js"></script>
-		<script src="js/lazyload.js"></script>
+		<script src="js/blazy.min.js"></script>
 		<script src="js/animatecss.min.js" async></script>
 		<script src="js/SmoothScroll.js"></script>
 		<script src="js/bootstrap-carousel-swipe.js"></script>
 		<script src="js/sortit.js"></script>
+		<script src="js/image-crop.js"></script>
 		<script src="js/gallery.js"></script>
+		<script src="js/px.js"></script>
 		<script src="js/func.js"></script>
 		<script src="js/init.js"></script>
 		<script src="js/main.js"></script>

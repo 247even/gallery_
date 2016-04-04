@@ -81,31 +81,31 @@ function init() {
 
 		$('html').addClass($.isMobile() ? 'mobile' : 'desktop');
 
-		// .mbr-navbar--sticky
+		// .navbar--sticky
 		$(window).scroll(function() {
-			$('.mbr-navbar--sticky').each(function() {
+			$('.navbar--sticky').each(function() {
 				var method = $(window).scrollTop() > 10 ? 'addClass' : 'removeClass';
-				$(this)[method]('mbr-navbar--stuck')
-				.not('.mbr-navbar--open')[method]('mbr-navbar--short');
+				$(this)[method]('navbar--stuck')
+				.not('.navbar--open')[method]('navbar--short');
 			});
 		});
 
-		// .mbr-hamburger
+		// .hamburger
 		$(document).on('add.cards change.cards', function(event) {
-			$(event.target).outerFind('.mbr-hamburger:not(.mbr-added)').each(function() {
-				$(this).addClass('mbr-added').click(function() {
-					$(this).toggleClass('mbr-hamburger--open').parents('.mbr-navbar').toggleClass('mbr-navbar--open').removeClass('mbr-navbar--short');
-				}).parents('.mbr-navbar').find('a:not(.mbr-hamburger)').click(function() {
-					$('.mbr-hamburger--open').click();
+			$(event.target).outerFind('.hamburger:not(.added)').each(function() {
+				$(this).addClass('added').click(function() {
+					$(this).toggleClass('hamburger--open').parents('.navbar').toggleClass('navbar--open').removeClass('navbar--short');
+				}).parents('.navbar').find('a:not(.hamburger)').click(function() {
+					$('.hamburger--open').click();
 				});
 			});
 		});
 		$(window).smartresize(function() {
 			if ($(window).width() > 991)
-				$('.mbr-navbar--auto-collapse .mbr-hamburger--open').click();
+				$('.navbar--auto-collapse .hamburger--open').click();
 		}).keydown(function(event) {
 			if (27 == event.which)// ESC
-				$('.mbr-hamburger--open').click();
+				$('.hamburger--open').click();
 		});
 
 		if ($.isMobile() && navigator.userAgent.match(/Chrome/i)) {// simple fix for Chrome's scrolling
@@ -116,30 +116,30 @@ function init() {
 					var windowHeight = $(window).height();
 					if ($.inArray(windowHeight, deviceSize) < 0)
 						windowHeight = deviceSize[$(window).width() > windowHeight ? 1 : 0];
-					$('.mbr-section--full-height').css('height', windowHeight + 'px');
+					$('.section--full-height').css('height', windowHeight + 'px');
 				});
 			})($(window).width(), $(window).height());
-		} else if (!isSupportViewportUnits) {// fallback for .mbr-section--full-height
+		} else if (!isSupportViewportUnits) {// fallback for .section--full-height
 			$(window).smartresize(function() {
-				$('.mbr-section--full-height').css('height', $(window).height() + 'px');
+				$('.section--full-height').css('height', $(window).height() + 'px');
 			});
 			$(document).on('add.cards', function(event) {
-				if ($('html').hasClass('mbr-site-loaded') && $(event.target).outerFind('.mbr-section--full-height').length)
+				if ($('html').hasClass('site-loaded') && $(event.target).outerFind('.section--full-height').length)
 					$(window).resize();
 			});
 		}
 
-		// .mbr-section--16by9 (16 by 9 blocks autoheight)
+		// .section--16by9 (16 by 9 blocks autoheight)
 		function calculate16by9() {
 			$(this).css('height', $(this).parent().width() * 9 / 16);
 		}
 
 
 		$(window).smartresize(function() {
-			$('.mbr-section--16by9').each(calculate16by9);
+			$('.section--16by9').each(calculate16by9);
 		});
 		$(document).on('add.cards change.cards', function(event) {
-			var enabled = $(event.target).outerFind('.mbr-section--16by9');
+			var enabled = $(event.target).outerFind('.section--16by9');
 			if (enabled.length) {
 				enabled.attr('data-16by9', 'true').each(calculate16by9);
 			} else {
@@ -147,7 +147,7 @@ function init() {
 			}
 		});
 
-		// .mbr-fixed-top
+		// .fixed-top
 		var fixedTopTimeout, scrollTimeout, prevScrollTop = 0, fixedTop = null, isDesktop = !$.isMobile();
 		$(window).scroll(function() {
 			if (scrollTimeout)
@@ -183,7 +183,7 @@ function init() {
 					fixedTop.fixed = false;
 					$(fixedTop.elm).removeClass('is-fixed');
 				}
-				$('.mbr-fixed-top:first').each(function() {
+				$('.fixed-top:first').each(function() {
 					fixedTop = {
 						breakPoint : $(this).offset().top + $(this).height() * 3,
 						fixed : false,
@@ -196,12 +196,12 @@ function init() {
 
 		// embedded videos
 		$(window).smartresize(function() {
-			$('.mbr-embedded-video').each(function() {
+			$('.embedded-video').each(function() {
 				$(this).height($(this).width() * parseInt($(this).attr('height') || 315) / parseInt($(this).attr('width') || 560));
 			});
 		});
 		$(document).on('add.cards', function(event) {
-			if ($('html').hasClass('mbr-site-loaded') && $(event.target).outerFind('iframe').length)
+			if ($('html').hasClass('site-loaded') && $(event.target).outerFind('iframe').length)
 				$(window).resize();
 		});
 
@@ -213,7 +213,7 @@ function init() {
 						var previewURL = 'http' + ('https:' == location.protocol ? 's' : '') + ':';
 						previewURL += '//img.youtube.com/vi/' + result[1] + '/maxresdefault.jpg';
 
-						var $img = $('<div class="mbr-background-video-preview">').hide().css({
+						var $img = $('<div class="background-video-preview">').hide().css({
 							backgroundSize : 'cover',
 							backgroundPosition : 'center'
 						})
@@ -238,7 +238,7 @@ function init() {
 
 						if ($.fn.YTPlayer && !$.isMobile()) {
 							var params = eval('(' + ($(this).data('bg-video-params') || '{}') + ')');
-							$('.container:eq(0)', this).before('<div class="mbr-background-video"></div>').prev().YTPlayer($.extend({
+							$('.container:eq(0)', this).before('<div class="background-video"></div>').prev().YTPlayer($.extend({
 								videoURL : result[1],
 								containment : 'self',
 								showControls : false,
@@ -253,7 +253,7 @@ function init() {
 
 		// init
 		$('body > *:not(style, script)').trigger('add.cards');
-		$('html').addClass('mbr-site-loaded');
+		$('html').addClass('site-loaded');
 		$(window).resize().scroll();
 
 		// smooth scroll
@@ -267,7 +267,7 @@ function init() {
 							$( useBody ? 'body' : target.hash).each(function() {
 								e.preventDefault();
 								// in css sticky navbar has height 64px
-								var stickyMenuHeight = $('.mbr-navbar--sticky').length ? 64 : 0;
+								var stickyMenuHeight = $('.navbar--sticky').length ? 64 : 0;
 								var goTo = target.hash == '#bottom' ? ($(this).height() - $(window).height()) : ($(this).offset().top - stickyMenuHeight);
 								$('html, body').stop().animate({
 									scrollTop : goTo

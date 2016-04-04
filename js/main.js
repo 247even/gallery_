@@ -1,43 +1,5 @@
 function pageFunction(t) {
 
-	if (t == "page1") {
-
-		history.pushState( { 
-			target: "page1" 
-		}, null, "/start");
-		
-		$('.control-wrapper').each(function() {
-			$(this).center().fadeIn();
-		});
-		
-		// init carousel
-		setTimeout(function(){ $('#slider-1').carousel(); }, 2000);
-		return false;
-	}
-
-	if (t == "page2") {
-
-		history.pushState( { 
-			target: "page2" 
-		}, null, "/leistungen");
-
-		$('.navbar').removeClass('navbar--transparent');
-		
-		// https://github.com/verlok/lazyload
-		var leistungenLoad = new LazyLoad({
-		    threshold: 400,
-		    container: document.getElementById('leistungen-wrapper'),
-		    elements_selector: ".lazy",
-		    throttle: 60,
-		    data_src: "original",
-		    data_srcset: "srcset",
-		    show_while_loading: false,
-		    callback_set: function() { /* ... */ }
-		});	
-		
-		return false;
-	}
-
 	if (t == "page3") {
 
 		history.pushState( { 
@@ -55,13 +17,14 @@ function pageFunction(t) {
 		
 		// logo on top position
 	    $('#lb-arbeiten').on('show.bs.modal', function () {
-			$('#logobox2').clonePosition('#logobox');
+			//$('#logobox2').clonePosition('#logobox');
 		}).on('shown.bs.modal', function () {
 			
 		}).on('hidden.bs.modal', function () {
 	
 		});
 		
+/*		
 		// https://github.com/verlok/lazyload
 		var portfolioLoad = new LazyLoad({
 		    threshold: 600,
@@ -72,9 +35,19 @@ function pageFunction(t) {
 		    data_src: "original",
 		    data_srcset: "srcset",
 		    show_while_loading: false,
-		    callback_set: function() { /* ... */ }
+		    callback_set: function(e) {
+		    	console.log('e');
+		    }
 		});		
 		return false;
+*/
+
+		var bLazy = new Blazy({
+			container: '#arbeiten', // Default is window
+	        success: function(element){
+				console.log('bLazy finish');
+	        }
+	   });
 	}
 
 	if (t == "page4") {
@@ -129,7 +102,7 @@ function navigation() {
 		e.preventDefault();
 		$('#slider-1').carousel('pause');
 		target = "page3";
-		$('#logobox2').clonePosition('#logobox');
+		//$('#logobox2').clonePosition('#logobox');
 		pageTransition(target);
 	});
 
@@ -216,7 +189,7 @@ $(function() {
 	
 	$(window).resize(function () {
 	    waitForFinalEvent(function(){
-			$('#logobox2').clonePosition('#logobox');
+			//$('#logobox2').clonePosition('#logobox');
 	    }, 500, "clonePosition");
 	});
 
@@ -224,6 +197,8 @@ $(function() {
 		$('.control-wrapper').each(function() {
 			$(this).center();
 		});
+		
+		$(".squareit").squareit();
 	}));
 	
 	$(window).on('mousemove', debounce(

@@ -1,26 +1,21 @@
 <?php
 ini_set('display_errors', 'On');
 
-// check libs
-if (extension_loaded('gd')) {
-	//print_r(gd_info());
-} else {
-	echo 'GD is not available.<br>';
-}
-
-if (extension_loaded('imagick')) {
-	$imagick = new Imagick();
-	print_r($imagick -> queryFormats());
-} else {
-	echo 'ImageMagick is not available.<br>';
-}
+// check if gd is available
+if (!extension_loaded('gd')) {
+	echo 'GD is required, but not available.<br>';
+	exit();
+};
 
 require 'ImageResize.php';
 use \Eventviva\ImageResize;
+
 $force = false;
+$cropThumbnails = false;
 
 function resizeStore($folder, $file, $sizes) {
 	global $force;
+	global $cropThumbnails;
 	
 	echo "resizeStore: ".json_encode($folder).'<br>'.json_encode($file).'<br>'.json_encode($sizes);
 	
@@ -90,7 +85,16 @@ function resizeStore($folder, $file, $sizes) {
 			
 			if (!file_exists($targetFolder . '/' . $file) || $force) {
 				$image = new ImageResize($sourceFile);
-				$image -> resizeToBestFit($size, $size);
+				if($cropThumbnails){
+					if($size < 450){
+						// crop thumbnails
+						$image -> crop($size, $size);
+					} else {
+						$image -> resizeToBestFit($size, $size);	
+					}					
+				} else {
+					$image -> resizeToBestFit($size, $size);
+				}
 				$image -> save($targetFolder . '/' . $file);
 			}
 		} else {
