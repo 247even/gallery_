@@ -64,7 +64,7 @@ function buildGallery(data, filter) {
 				+ '<span class=\"icon glyphicon glyphicon-zoom-in\"></span></a></div>';
 		*/
 		
-		$("#thumb-prototype .gallery-item").attr('data-time', time).attr('data-path', filePath).attr('data-tags', tagsString);
+		$("#thumb-prototype .gallery-item").attr('data-id', key).attr('data-time', time).attr('data-path', filePath).attr('data-tags', tagsString);
 		$("#thumb-prototype .thumb-div").attr('data-src', thumbFilePath);
 		$("#thumb-prototype a").attr('data-slide-to', i);
 		$("#thumb-prototype img").attr('data-original', thumbFilePath);
@@ -348,7 +348,7 @@ function initGallery(){
 		});
 		*/	
 		
-		$(".squareit").squareit();
+		$(".proportion").proportion();
 		
 		//bLazy
 		var bLazy = new Blazy({
@@ -356,7 +356,12 @@ function initGallery(){
 	        success: function(element){
 				console.log('bLazy finish');
 	        }
-	   });		
+	   });
+
+	// load admin-functions, if available
+	if(adminInit){
+		adminInit();
+	}		
 	
 	/*
 	$('.img-active').each(function(i){
@@ -371,7 +376,7 @@ function initGallery(){
 };
 
 (function($) {
-	$.fn.squareit = function(a,b) {
+	$.fn.proportion = function(a,b) {
 		var a = !a ? 1 : a;
 		var b = !b ? 1 : b;
 		console.log(a+' '+b);

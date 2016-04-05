@@ -251,7 +251,7 @@ a:hover, a:focus {
 	width: 70px;
 }
 
-
+/*
 #page3 .modal-dialog, 
 #page3 .modal-content, 
 #page3 .modal-body, 
@@ -270,6 +270,7 @@ a:hover, a:focus {
 	height: 100%;
 	overflow: hidden;
 }
+*/
 
 .bg-cover {
 	background-size: cover !important;

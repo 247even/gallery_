@@ -12,7 +12,9 @@
 		<title>gallery_</title>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<script src="js/selectize.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.min.js"></script>
+		
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:700,400&amp;subset=latin">
 		<link href='https://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -21,63 +23,82 @@
 		<link rel="stylesheet" href="css/gallery.css">
 		<link rel="stylesheet" href="css/slider.css">
 		<link rel="stylesheet" href="css/additional.css">
+		<link rel="stylesheet" href="css/selectize.bootstrap3.css" />
 		<link rel="stylesheet" href="css/animate.min.css">
 		<link rel="stylesheet" href="css/imafox.css">
 
 	</head>
 	<body>
 		<div id="main">
+
 			<div id="page3" class="page no-scroll">
-				<section class="gallery section section--no-padding after-navbar scroll-wrapper" id="arbeiten">
-					<!-- Gallery -->
-					<div class=" gallery-layout-default">
-						<div>
-							<div class="row gallery-row no-gutter">
+				<div class="container gallery-container">
+					<div class="row">
+						<div class="col col-lg-6 col-md-6">
+							<section class="gallery section section--no-padding after-navbar scroll-wrapper" id="arbeiten">
+								<!-- Gallery -->
+								<div class=" gallery-layout-default">
+									<div>
+										<div class="row gallery-row no-gutter">
 
-							</div>
-						</div>
-						<div class="clearfix footer-spacer"> </div>
-					</div>
-
-					<!-- Lightbox -->
-					<div data-app-prevent-settings="" class="slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false" id="lb-arbeiten">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-body">
-									<ol class="gallery-carousel carousel-indicators hidden">
-
-									</ol>
-									<div class="gallery-carousel carousel-inner">
-
+										</div>
 									</div>
-									<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"> </span> <span class="sr-only">Previous</span> </a>
-									<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"> </span> <span class="sr-only">Next</span> </a>
-
-									<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
-									<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
-
-									<span class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>
+									<div class="clearfix footer-spacer"></div>
 								</div>
-							</div>
-						</div>
-					</div>
-				</section>
 
-				<!-- Nav -->
-				<footer class="gallery-footer">
-					<div class="section navbar navbar-fixed-bottom">
-						<div class="navbar__container">
-							<div class="navbar__column navbar__menu">
+								<!-- Lightbox -->
+								<div data-app-prevent-settings="" class="slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false" id="lb-arbeiten">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-body">
+												<ol class="gallery-carousel carousel-indicators hidden">
 
-								<select id="filter-select" class="selectpicker dropup">
-									<option value="all" data-filter="all">alle</option>
+												</ol>
+												<div class="gallery-carousel carousel-inner">
 
-								</select>
-							</div>
-						</div>
-					</div>
-				</footer>
+												</div>
+												<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"> </span> <span class="sr-only">Previous</span> </a>
+												<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"> </span> <span class="sr-only">Next</span> </a>
 
+												<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
+												<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
+
+												<span class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</section>
+
+							<!-- Nav -->
+							<footer class="gallery-footer">
+								<div class="section navbar navbar-fixed-bottom">
+									<div class="navbar__container">
+										<div class="navbar__column navbar__menu">
+
+											<select id="filter-select" class="selectpicker dropup">
+												<option value="all" data-filter="all">alle</option>
+
+											</select>
+										</div>
+									</div>
+								</div>
+							</footer>
+						</div><!-- col -->
+						<div class="col col-lg-6 col-md-6 admin-panel">
+									<section class="">
+										<h1>admin</h1>
+										<form>
+											<textarea class="form-control" rows="3"></textarea>
+				<div class="control-group">
+					<label for="input-tags">Tags:</label>
+					<input type="text" id="input-tags" class="demo-default selectized" value="">
+				</div>
+										</form>
+									</section><!-- admin-panel -->
+						</div><!-- admin col -->
+					</div><!-- row -->
+				</div><!-- container -->
 			</div><!-- page -->
 		</div><!-- main -->
 
@@ -104,9 +125,10 @@
 		<script src="js/animatecss.min.js" async></script>
 		<script src="js/SmoothScroll.js"></script>
 		<script src="js/bootstrap-carousel-swipe.js"></script>
-		<script src="js/selectize.min.js"></script>
+		
 		<script src="js/image-crop.js"></script>
 		<script src="js/gallery.js"></script>
+		<script src="js/gallery-admin.js"></script>
 		<script src="js/px.js"></script>
 		<script src="js/func.js"></script>
 		<script src="js/init.js"></script>

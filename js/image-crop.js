@@ -1,11 +1,13 @@
+/*
 (function($) {
-	$.fn.imageCrop = function(vh) {
+	$.fn.squareit = function(vh) {
 		this.css("height", this.width());
 		//imgSize = {	width: $(this 'img').width(), height: $(this 'img').height() };
 		console.log($('img').attr);
 		return this;
 	}
 })(jQuery);
+*/
 
 /*
 (function($) {

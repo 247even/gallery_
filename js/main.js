@@ -198,7 +198,7 @@ $(function() {
 			$(this).center();
 		});
 		
-		$(".squareit").squareit();
+		$(".proportion").proportion();
 	}));
 	
 	$(window).on('mousemove', debounce(
