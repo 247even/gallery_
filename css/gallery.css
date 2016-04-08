@@ -273,6 +273,12 @@
 	color: #eee;
 }
 
+
+.admin-panel .navbar:before, 
+.admin-panel .navbar__container {
+    height: auto; !important
+}
+
 .selected-image {
 	border: 2px solid red;
 }

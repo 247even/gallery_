@@ -87,15 +87,30 @@
 						</div><!-- col -->
 						<div class="col col-lg-6 col-md-6 admin-panel">
 							<div>
-								<h1>admin</h1>
-								
+
+								<nav class="navbar navbar-default">
+									<div class="container-fluid">
+										<div class="navbar-header">
+											<a class="navbar-brand">admin</a>
+										</div>
+										<div class="collapse navbar-collapse">
+											<p class="navbar-text navbar-right">
+												<a href="#" class="navbar-link"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a>
+											</p>
+										</div>
+									</div>
+								</nav>
+
 								<!-- Nav tabs -->
-								<ul class="nav nav-tabs" role="tablist">									
+								<ul class="nav nav-tabs" role="tablist">
 									<li role="presentation" class="active">
 										<a href="#basics-panel" aria-controls="basics-panel" role="tab" data-toggle="tab">Basics</a>
 									</li>
 									<li role="presentation">
-										<a href="#tags-panel" aria-controls="tabs-panel" role="tab" data-toggle="tab">Tags</a>
+										<a href="#tags-panel" aria-controls="tags-panel" role="tab" data-toggle="tab">Tags</a>
+									</li>
+									<li role="presentation">
+										<a href="#effect-panel" aria-controls="effect-panel" role="tab" data-toggle="tab">Effect</a>
 									</li>
 									<li role="presentation">
 										<a href="#slider-panel" aria-controls="slider-panel" role="tab" data-toggle="tab">Slider</a>
@@ -107,20 +122,23 @@
 								<div class="tab-content">
 									<div role="tabpanel" class="tab-pane  active" id="basics-panel">
 										basics
-<form id="loginForm" class="form-signin">
-        <h2 class="form-signin-heading">Please sign in</h2>
-        <label for="inputUsername" class="sr-only">Username</label>
-        <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
-        <div id="loginCheckbox" class="checkbox">
-          <label>
-            <input id="inputRememberme" name="rememberme" type="checkbox" checked>Remember me
-          </label>
-        </div>
-        <button id="loginSubmit" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-      </form>
-									</div> <!-- basics panel -->
+										<form id="loginForm" class="form-signin">
+											<h2 class="form-signin-heading">Please sign in</h2>
+											<label for="inputUsername" class="sr-only">Username</label>
+											<input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
+											<label for="inputPassword" class="sr-only">Password</label>
+											<input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+											<div id="loginCheckbox" class="checkbox">
+												<label>
+													<input id="inputRememberme" name="rememberme" type="checkbox" checked>
+													Remember me </label>
+											</div>
+											<button id="loginSubmit" class="btn btn-lg btn-primary btn-block" type="submit">
+												Sign in
+											</button>
+										</form>
+									</div>
+									<!-- basics panel -->
 									<div role="tabpanel" class="tab-pane" id="tags-panel">
 										<section class="">
 
@@ -129,13 +147,19 @@
 													<label for="input-tags">Tags:</label>
 													<input type="text" id="input-tags" class="demo-default selectized" value="">
 												</div>
-												<button type="submit" class="btn btn-default">save</button>
+												<button type="submit" class="btn btn-default">
+													save
+												</button>
 											</form>
 										</section><!-- admin-panel -->
 									</div><!-- tabs panel -->
+									<div role="tabpanel" class="tab-pane" id="effect-panel">
+										effect
+									</div>
 									<div role="tabpanel" class="tab-pane" id="slider-panel">
 										slider
-									</div> <!-- slider -->
+									</div>
+									<!-- slider -->
 
 								</div><!-- tab-content -->
 
