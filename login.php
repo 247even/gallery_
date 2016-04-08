@@ -1,34 +1,33 @@
 <?php
 
+$user = 'user';
+$pass = 'pass';
+$login_md5 = md5($user . $pass);
 $loggedin = false;
 
-function checkCookie() {
+function checkCookie($login_md5) {
 	if (isset($_COOKIE['login'])) {
 
 		$cookie_md5 = $_COOKIE['login'];
 
 		if ($cookie_md5 == $login_md5) {
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
-
+		
 	} else {
 		return false;
 	}
 }
 
-function checkPostdata() {
-
-	$user = 'user';
-	$pass = 'pass';
-	$login_md5 = md5($user . $pass);
+function checkPostdata($user,$pass,$login_md5) {
 
 	if (isset($_POST['username']) && isset($_POST['password'])) {
 
 		$post_user = $_POST['username'];
 		$post_pass = $_POST['password'];
-		$post_md5 = $_POST['md5'];
+		//$post_md5 = $_POST['md5'];
 		
 		//echo "post_user: " . $post_user . " post_pass: " . $post_pass . "<br>";	
 		/*if($post_md5 == $login_md5){
@@ -38,7 +37,7 @@ function checkPostdata() {
 		if (($post_user == $user) && ($post_pass == $pass)) {
 				
 			//echo "user & pass correct";
-			$post_md5 = md5($post_user . $post_pass);
+			//$post_md5 = md5($post_user . $post_pass);
 
 			if (isset($_POST['rememberme'])) {
 				/* Set cookie to last 1 year */
@@ -63,9 +62,9 @@ function checkPostdata() {
 	}
 };
 
-$loggedin = checkCookie();
+$loggedin = checkCookie($login_md5);
 if(!$loggedin){
-	$loggedin = checkPostdata();
+	$loggedin = checkPostdata($user,$pass,$login_md5);
 }
 echo $loggedin;
 return false;
