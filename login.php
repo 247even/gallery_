@@ -1,5 +1,7 @@
 <?php
 
+$loggedin = false;
+
 function checkCookie() {
 	if (isset($_COOKIE['login'])) {
 
@@ -26,13 +28,16 @@ function checkPostdata() {
 
 		$post_user = $_POST['username'];
 		$post_pass = $_POST['password'];
+		$post_md5 = $_POST['md5'];
 		
-		echo "post_user: " . $post_user . " post_pass: " . $post_pass . "<br>";	
-
+		//echo "post_user: " . $post_user . " post_pass: " . $post_pass . "<br>";	
+		/*if($post_md5 == $login_md5){
+			return true;
+		}*/
+		
 		if (($post_user == $user) && ($post_pass == $pass)) {
 				
-			echo "user & pass correct";
-
+			//echo "user & pass correct";
 			$post_md5 = md5($post_user . $post_pass);
 
 			if (isset($_POST['rememberme'])) {
@@ -44,7 +49,7 @@ function checkPostdata() {
 			}
 			header("Cache-Control: no-cache");
 			setcookie('login', $login_md5, $expire);
-			echo "loggedin";
+			//echo "loggedin";
 			return true;
 
 		} else {
@@ -58,9 +63,19 @@ function checkPostdata() {
 	}
 };
 
-if(!checkCookie()){
-	checkPostdata();
-} else {
-	echo "loggedin";
+$loggedin = checkCookie();
+if(!$loggedin){
+	$loggedin = checkPostdata();
 }
+echo $loggedin;
+return false;
 ?>
+
+<!--
+<script>
+	var loggedin = <?php echo $loggedin; ?>;
+	console.log('loggedin: '+loggedin);
+</script>
+
+
+-->

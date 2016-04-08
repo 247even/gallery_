@@ -91,10 +91,10 @@
 								
 								<!-- Nav tabs -->
 								<ul class="nav nav-tabs" role="tablist">									
-									<li role="presentation">
+									<li role="presentation" class="active">
 										<a href="#basics-panel" aria-controls="basics-panel" role="tab" data-toggle="tab">Basics</a>
 									</li>
-									<li role="presentation" class="active">
+									<li role="presentation">
 										<a href="#tags-panel" aria-controls="tabs-panel" role="tab" data-toggle="tab">Tags</a>
 									</li>
 									<li role="presentation">
@@ -107,11 +107,24 @@
 								<div class="tab-content">
 									<div role="tabpanel" class="tab-pane  active" id="basics-panel">
 										basics
+<form id="loginForm" class="form-signin">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="inputUsername" class="sr-only">Username</label>
+        <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+        <div id="loginCheckbox" class="checkbox">
+          <label>
+            <input id="inputRememberme" name="rememberme" type="checkbox" checked>Remember me
+          </label>
+        </div>
+        <button id="loginSubmit" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
 									</div> <!-- basics panel -->
 									<div role="tabpanel" class="tab-pane" id="tags-panel">
 										<section class="">
 
-											<form>
+											<form id="tags-form">
 												<div class="control-group">
 													<label for="input-tags">Tags:</label>
 													<input type="text" id="input-tags" class="demo-default selectized" value="">
@@ -157,7 +170,7 @@
 		<script src="js/animatecss.min.js" async></script>
 		<script src="js/SmoothScroll.js"></script>
 		<script src="js/bootstrap-carousel-swipe.js"></script>
-
+		<script src="js/login.js"></script>
 		<script src="js/image-crop.js"></script>
 		<script src="js/gallery.js"></script>
 		<script src="js/gallery-admin.js"></script>

@@ -1,3 +1,5 @@
+var loggedin;
+
 $(function() {
 	/*
 	$.ajax({
@@ -9,6 +11,23 @@ $(function() {
 	}
 	});
 	*/
+	
+	function checkLoggedin(){
+		if(!loggedin){
+			$.ajax({
+				type : "POST",
+				url : "login.php",
+				success : function(data) {
+					loggedin = data;
+					if(loggedin){
+						// tba
+					}
+				}
+			})			
+		}
+	};
+
+	console.log(checkLoggedin());
 
 		$("#inputRememberme").click(function(e){
     e.stopImmediatePropagation();
@@ -35,7 +54,7 @@ $(function() {
 			url : "login.php",
 			data : postdata,
 			success : function(data) {
-				console.log(data);
+				console.log("data: "+data);
 			}
 		})
 	})
