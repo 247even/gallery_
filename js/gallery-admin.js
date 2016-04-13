@@ -212,7 +212,16 @@ function adminInit() {
 			$('.sortable').sortable('reload');
 			
 			return false;
-		});		
+		});
+		
+		$("#sliderSubmit").on("click", function(e){
+			e.preventDefault();
+			var data_ids = [];
+			$.each($("#sliderSortable .gallery-item"), function(){
+				data_ids.push($(this).attr("data-id"));
+			})
+			console.log(data_ids);
+		});
 			
 	})	
 	
