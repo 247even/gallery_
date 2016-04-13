@@ -282,3 +282,7 @@
 .selected-image {
 	border: 2px solid red;
 }
+
+#blurImageFrame img {
+	width: 100%;
+}

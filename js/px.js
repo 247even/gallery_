@@ -36,6 +36,7 @@ imagesLoader.addCompletionListener(function(e) {
 var blurredImageLoaded = null;
 
 function introBlur(image) {
+	
 	var exists = false;
 	var imgSrc = image;
 	console.log(imgSrc);
