@@ -190,8 +190,30 @@ function adminInit() {
 	
 	/* Slides */ 
 	
-	$('a[aria-controls="slides-panel"]').on('shown.bs.tab', function(e) {
+	$('a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e) {
+
+		$('.sortable').sortable({
+		// options
+		});	
 		
+		$(".gallery-item").off("click");
+		$(".gallery-item").on("click", function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			$(this).toggleClass("selected-image");
+			
+			if($(this).hasClass("selected-image")){
+				$(this).clone().addClass("sortable-item").appendTo("#sliderSortable");
+			} else {
+				var data_id = $(this).attr("data-id");
+				$("#sliderSortable div[data-id='"+data_id+"']").remove();
+			}
+			$('.sortable').sortable('reload');
+			
+			return false;
+		});		
+			
 	})	
 	
 };
