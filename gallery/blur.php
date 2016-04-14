@@ -63,15 +63,21 @@ if (isset($_GET['img'])) {
 	//echo 'making it <br>';
 	// The file doesn't exist, so, make it
 	$im = imagecreatefromjpeg($sourceFile);
-
+	
 	//$gaussian = array(array(1.0, 2.0, 1.0), array(2.0, 4.0, 2.0), array(1.0, 2.0, 1.0));
-
-	imagefilter($im, IMG_FILTER_SMOOTH, -6);
+	$gaussian = array(array(0.11111, 0.11111, 0.11111), array(0.11111, 0.11111, 0.11111), array(0.11111, 0.11111, 0.11111));
 
 	for ($i = 1; $i <= $depth; $i++) {
+		imagefilter($im, IMG_FILTER_SMOOTH, -6);
+		imageconvolution($im, $gaussian, 16, 0);
+	}
+/*
+	for ($i = 1; $i <= $depth; $i++) {
+
 		imagefilter($im, IMG_FILTER_GAUSSIAN_BLUR);
 		//echo memory_get_usage()."<br>";
 	}
+ */
 
 	//header('Content-Type: image/jpeg');
 	$im_output = imagejpeg($im, $newImage, 70);
