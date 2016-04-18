@@ -21,7 +21,6 @@ function adminInit() {
 
 			if ($(selectedImages).length == 1) {
 				
-				//selectedTags = groupTags = interTags = [firstTag];
 				selectedTags = groupTags = interTags = firstTag;
 
 			} else if ($(selectedImages).length > 1) {
@@ -39,60 +38,28 @@ function adminInit() {
 					// all unique selected tags:
 					selectedTags = _.union(selectedTags,attrTags);
 					groupTags = _.intersection(groupTags, attrTags);
-					//interTags = _.intersection(attrTags, groupTags);
-/*
-					$.each(attrTags, function(ke, va) {
-						if (selectedTags.indexOf(va) == -1) {
-							selectedTags.push(va);
-						}
-					})
-					*/
-					//groupTags = _.intersection(selectedTags, groupTags);
-					
-					
 
 				});
-
-				//interSelTags = _.intersection(selectedTags);
-				//console.log("selectedTags: " + JSON.stringify(selectedTags));
-				//console.log("interSelTags: " + interSelTags);
 
 			} else {
 				console.log("nothing selected");
 				selectedTags = [];
-				groupedTags = [];
+				groupTags = [];
 			}
 
 			console.log("selectedtags: " + selectedTags);
 			console.log("grouptags: " + groupTags);
-			//console.log("interTags: " + interTags);
 
-			//$("#input-tags").attr("value", groupTags.join());
 			$("#input-tags").attr("value", groupTags);
 			
 			var selectizeTags = $("#input-tags")[0].selectize;
 			selectizeTags.clear();
 			$.each(groupTags, function(i, v) {
-				//console.log(v);
 				selectizeTags.createItem(v);
 			})
 			selectizeTags.refreshItems()
 			
 			return groupTags;
-
-/*
-			$('#input-tags').selectize({
-				plugins : ['remove_button'],
-				delimiter : ',',
-				create : function(input) {
-					return {
-						value : input,
-						text : input
-					}
-				}
-			});
-*/
-			//console.log(tags);
 		}
 
 		
@@ -124,10 +91,6 @@ function adminInit() {
 
 			$(this).toggleClass("selected-image");
 
-			//var selectedImages = [];
-			//selectedTags.push($(this).attr('data-tags'));
-			//selectedImages.push($(this).attr('data-id'));
-
 			selectTags();
 
 			return false;
@@ -142,8 +105,7 @@ function adminInit() {
 			$.each($(".gallery-row .gallery-item"), function() {
 				selected_ids.push($(this).attr("data-id"));
 			});
-			
-			//var tagsJSON = {selected_ids selectTags()};
+
 			console.log(tagsJSON);
 			return false;
 			
