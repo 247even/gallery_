@@ -1,5 +1,6 @@
 function adminInit() {
 	console.log("adminInit");
+	var selectedImages = ".gallery-row .selected-image";
 
 	/* Tags */
 
@@ -7,73 +8,77 @@ function adminInit() {
 
 		function selectTags() {
 			
-			var selImages = ".gallery-row .selected-image";
-			var firstTag = $(selImages+":first").attr('data-tags');
+			var firstTag = $(selectedImages+":first").attr('data-tags');
 			if(firstTag){
-				firstTag.split(',');
+				// firstTag.split(',');
+				firstTag = _.split(firstTag, ',');
 			}
 			var groupTags = $("#input-tags").attr("value").split(',');
 			var interTags;
 			var firstTags;
 			var selectedTags = [];
-			var selTags = [];
 			var i = 0;
 
-			if ($(selImages).length == 1) {
+			if ($(selectedImages).length == 1) {
 				
-				selectedTags = groupTags = interTags = [firstTag];
+				//selectedTags = groupTags = interTags = [firstTag];
+				selectedTags = groupTags = interTags = firstTag;
 
-			} else if ($(selImages).length > 1) {
+			} else if ($(selectedImages).length > 1) {
 
 				if (!groupTags[0]) {
 					console.log('groupTags is empty, ' + i);
-					groupTags = [firstTag];
+					groupTags = firstTag;
 				}
 
-				$(selImages).each(function() {
+				$(selectedImages).each(function() {
 					i++;
 					attrTags = $(this).attr('data-tags');
 					attrTags = attrTags.split(',');
-					if (selTags.indexOf(attrTags) == -1) {
-						selTags.push(attrTags);
-					}
-					//selTags.push(attrTags);
 
+					// all unique selected tags:
+					selectedTags = _.union(selectedTags,attrTags);
+					groupTags = _.intersection(groupTags, attrTags);
+					//interTags = _.intersection(attrTags, groupTags);
+/*
 					$.each(attrTags, function(ke, va) {
 						if (selectedTags.indexOf(va) == -1) {
 							selectedTags.push(va);
 						}
 					})
-					interTags = _.intersection(attrTags, groupTags);
-					groupTags = _.intersection(selectedTags, groupTags);
+					*/
+					//groupTags = _.intersection(selectedTags, groupTags);
+					
+					
 
 				});
 
-				interSelTags = _.intersection(JSON.stringify(selTags));
-				console.log("selTags: " + JSON.stringify(selTags));
-				console.log("interSelTags: " + interSelTags);
+				//interSelTags = _.intersection(selectedTags);
+				//console.log("selectedTags: " + JSON.stringify(selectedTags));
+				//console.log("interSelTags: " + interSelTags);
 
 			} else {
 				console.log("nothing selected");
 				selectedTags = [];
-				selTags = [];
 				groupedTags = [];
 			}
 
 			console.log("selectedtags: " + selectedTags);
 			console.log("grouptags: " + groupTags);
-			console.log("interTags: " + interTags);
+			//console.log("interTags: " + interTags);
 
-			$("#input-tags").attr("value", groupTags.join());
+			//$("#input-tags").attr("value", groupTags.join());
+			$("#input-tags").attr("value", groupTags);
+			
 			var selectizeTags = $("#input-tags")[0].selectize;
 			selectizeTags.clear();
-			$.each(interTags, function(i, v) {
+			$.each(groupTags, function(i, v) {
 				//console.log(v);
 				selectizeTags.createItem(v);
 			})
 			selectizeTags.refreshItems()
 			
-			return interTags;
+			return groupTags;
 
 /*
 			$('#input-tags').selectize({
@@ -95,10 +100,20 @@ function adminInit() {
 			plugins : ['remove_button'],
 			delimiter : ',',
 			create : function(input) {
+				console.log("create: "+input);
+				input = input.split(',');
+				$(selectedImages).each(function(){
+					var dataTags = $(this).attr('data-tags');
+					dataTags = dataTags.split(',');
+					unionTags = _.union(dataTags, input);
+					if (unionTags != dataTags) {
+						$(this).attr('data-tags',unionTags).addClass('edited');
+					}					
+				});
 				return {
-					value : input,
-					text : input
-				}
+					"text" : input,
+					"value" : input
+				};
 			}
 		});
 		
