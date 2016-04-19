@@ -101,25 +101,24 @@ function adminInit() {
 		$("#tagsSubmit").click(function(e) {
 			e.preventDefault();
 
-			var selected_ids = [];
-			$.each($(".gallery-row .gallery-item"), function() {
-				selected_ids.push($(this).attr("data-id"));
+			$.each($(".gallery-row .edited"), function() {
+				var this_id = $(this).attr("data-id");
+				var this_tags = $(this).attr("data-tags");
+				galleryJSON.images[this_id].tags = [this_tags]; 
 			});
 
-			console.log(tagsJSON);
+			//console.log(tagsJSON);
 			return false;
 			
-			var postdata = $("#blur-form").serialize();
+			var postdata = $("#tags-form").serialize();
 			console.log(postdata);
 			$.ajax({
 				type : "GET",
-				url : "gallery/blur.php",
+				url : "gallery/save.php",
 				data : postdata,
 				success : function(data) {
 					console.log(data);
-					if (data == "done") {
-						loadBlur();
-					}
+
 				}
 			})
 		});		
@@ -128,22 +127,46 @@ function adminInit() {
 	/* Effect */
 
 	$('a[aria-controls="effect-panel"]').on('shown.bs.tab', function(e) {
+		
+		var vague = $('#blurImageFrame img').Vague({
+				    intensity:      3,      // Blur Intensity
+				    forceSVGUrl:    false,   // Force absolute path to the SVG filter,
+				    // default animation options
+				    /*
+				    animationOptions: {
+				      duration: 1000,
+				      easing: 'linear' // here you can use also custom jQuery easing functions
+				    }*/
+		});
+				
 
 		function loadBlur() {
 
 			var imgSrc = $(".selected-image").attr("data-path");
 			$("#blurPath").val(imgSrc);
 			var imgSrcSplit = imgSrc.split("/");
-			var imgSrc_720 = imgSrcSplit[0] + "/blur/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
+			var imgSrc_720 = imgSrcSplit[0] +"/"+ imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
+			var imgSrc_720_blur = imgSrcSplit[0] + "/blur/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
 
-			var blurImage = imgSrc_720 + '?ts=' + $.now();
+			var blurImage = imgSrc_720_blur + '?ts=' + $.now();
 			$("#blurImageFrame img").attr('src', blurImage).imagesLoaded().always(function(instance) {
 				//console.log('blur image request');
 			}).done(function(instance) {
 				//console.log("blur image loaded");
 			}).fail(function() {
-				//console.log('image failure');
-				$(this).html('<img src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\"/>	No blur image.');
+				console.log('image failure');
+				$("#blurImageFrame img").attr('src', imgSrc_720).imagesLoaded().always(
+					function(){
+						console.log("blur image not loaded");
+					}
+				).done(
+					function(){
+						console.log("vague blur");
+						vague.blur();
+					}
+				)
+					
+				//$(this).html('<img src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\"/>	No blur image.');
 			});
 		}
 
@@ -257,4 +280,12 @@ function adminInit() {
 		});
 
 	})
+	
+	/* Raw */
+	$('a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
+		$(".gallery-item").removeClass("selected-image");
+		
+		var JSONtext = JSON.stringify(galleryJSON, null, '\t');
+		$("#json-output").text(JSONtext);
+	});	
 };

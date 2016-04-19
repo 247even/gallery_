@@ -1,9 +1,11 @@
+var galleryJSON;
 function loadJSON() {
 	$.ajax({
 		dataType : "json",
 		url : "gallery/gallery.json",
 		success : function(data) {
-			buildGallery(data);
+			galleryJSON = data;
+			buildGallery(galleryJSON);
 		}
 	});
 };

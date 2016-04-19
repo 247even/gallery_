@@ -1,4 +1,4 @@
-.gallery-container, .gallery-container .row,
+.height100, .gallery-container,
 .gallery-container .col, .gallery-container .admin-panel
  {
  	height: 100%;
@@ -267,6 +267,32 @@
 }
 
 /* admin panel */
+
+.admin-header {
+	padding-top: 5px;
+	background-color: #000;
+}
+
+.admin-header .nav-tabs {
+	padding-left: 5px;
+	border-color: #292929;	
+}
+
+.admin-header .nav-tabs a {
+	color: #ccc;
+}
+
+.admin-header .nav-tabs>li.active>a{
+	color: #eee;
+	background-color: #292929;
+		border-color: #292929;
+}
+
+.admin-header .nav-tabs>li:hover>a{
+	color: #eee;
+	background-color: #292929;
+		border-color: #292929;
+}
 
 .admin-panel {
 	background-color: #292929;

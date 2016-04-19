@@ -34,7 +34,7 @@
 
 			<div id="page3" class="page no-scroll">
 				<div class="container gallery-container">
-					<div class="row">
+					<div class="row height100">
 						<div class="col col-lg-6 col-md-6">
 							<section class="gallery section section--no-padding after-navbar scroll-wrapper" id="arbeiten">
 								<!-- Gallery -->
@@ -87,21 +87,7 @@
 							</footer>
 						</div><!-- col -->
 						<div class="col col-lg-6 col-md-6 admin-panel">
-							<div>
-
-								<nav class="navbar navbar-default">
-									<div class="container-fluid">
-										<div class="navbar-header">
-											<a class="navbar-brand">admin</a>
-										</div>
-										<div class="collapse navbar-collapse">
-											<p class="navbar-text navbar-right">
-												<a href="#" class="navbar-link"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a>
-											</p>
-										</div>
-									</div>
-								</nav>
-
+							<div class="row admin-header">
 								<!-- Nav tabs -->
 								<ul class="nav nav-tabs" role="tablist">
 									<li role="presentation" class="active">
@@ -116,12 +102,15 @@
 									<li role="presentation">
 										<a href="#slider-panel" aria-controls="slider-panel" role="tab" data-toggle="tab">Slider</a>
 									</li>
-
+									<li role="presentation">
+										<a href="#raw-panel" aria-controls="raw-panel" role="tab" data-toggle="tab">Raw</a>
+									</li>
 								</ul>
-
+							</div>
+							
 								<!-- Tab panes -->
 								<div class="tab-content">
-									<div role="tabpanel" class="tab-pane  active" id="basics-panel">
+									<div id="basics-panel" role="tabpanel" class="tab-pane  active" >
 										basics
 										<form id="loginForm" class="form-signin">
 											<h2 class="form-signin-heading">Please sign in</h2>
@@ -140,7 +129,7 @@
 										</form>
 									</div>
 									<!-- basics panel -->
-									<div role="tabpanel" class="tab-pane" id="tags-panel">
+									<div id="tags-panel" role="tabpanel" class="tab-pane" >
 										<section class="">
 
 											<form id="tags-form">
@@ -154,7 +143,7 @@
 											</form>
 										</section><!-- admin-panel -->
 									</div><!-- tabs panel -->
-									<div role="tabpanel" class="tab-pane" id="effect-panel">
+									<div id="effect-panel" role="tabpanel" class="tab-pane" >
 										<form id="blur-form">
 											<input id="blurSlider" type="range" min="10" max="100" value="50" step="5" data-rangeslider>
 											<output id="blurSliderOutput">
@@ -172,7 +161,7 @@
 											No blur image.
 										</div>
 									</div>
-									<div role="tabpanel" class="tab-pane" id="slider-panel">
+									<div id="slider-panel" role="tabpanel" class="tab-pane">
 										slider
 										<div id="sliderSortable" class="js-grid sortable grid clearfix ml4 myn1" data-sortable-id="1" aria-dropeffect="move">
 				
@@ -182,12 +171,14 @@
 												Save
 											</button>
 										</form>
-									</div>
-									<!-- slider -->
-
+									</div> <!-- slider-panel -->
+									<div id="raw-panel" role="tabpanel" class="tab-pane">
+										Raw Output
+										<pre id="json-output">
+											
+										</pre>
+									</div> <!-- raw-panel -->
 								</div><!-- tab-content -->
-
-							</div>
 
 						</div><!-- admin col -->
 					</div><!-- row -->
@@ -202,8 +193,8 @@
 						<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal"> <img alt="" class="lazy" data-original="thumbFilePath" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"> <span class="icon glyphicon glyphicon-zoom-in"> </span> </a>
 					</div>
 				</div>
-			</div>
-		</div>
+			</div> <!-- thumb-prototype -->
+		</div> <!-- prototypes -->
 
 		<!-- Latest compiled and minified bootstrap JavaScript -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
