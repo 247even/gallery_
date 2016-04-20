@@ -5,7 +5,11 @@
 	min-height: 100%;
 }
 
-.gallery {
+.gallery-footer {
+	min-height: 65px;
+}
+
+.section {
 	/* footer height */
 	margin-bottom: -65px;
 }
@@ -269,6 +273,10 @@
 /* admin panel */
 
 .admin-header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
 	padding-top: 5px;
 	background-color: #000;
 }
@@ -311,4 +319,13 @@
 
 #blurImageFrame img {
 	width: 100%;
+}
+
+.tab-content {
+    margin: 0;
+    height: 100%;
+    padding-bottom: 50px	
+}
+.tab-content, .overflow-auto {
+	overflow: auto; !important
 }

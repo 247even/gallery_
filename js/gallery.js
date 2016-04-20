@@ -14,6 +14,7 @@ function buildGallery(data, filter) {
 	imagesJSON = data.images;
 	folders = data.folders;
 	sizes = data.sizes;
+	tags = data.tags;
 	
 	var initialThumbSize = _.min(sizes);
 	
@@ -92,12 +93,7 @@ function buildGallery(data, filter) {
 	console.log("buildLightbox");
 	//fitLightbox();
 
-	// build filter buttons
-	$.each(folders, function(key, val) {
-		$('#filter-select').append('<option value=\"' + val + '\" data-filter=\"' + val + '\">' + val + '</option>');
-		//$('.gallery-footer ul').append('<li class=\"navbar__item\"><a class=\"buttons__btn btn btn-sm btn-default ifx-button\" data-filter=\"' + val + '\">' + val + '</a></li>');
-	});
-	$('#filter-select').selectpicker('refresh');
+	buildGalleryNavigation(tags);
 	initGalleryNavigation();
 	console.log("initGalNav");
 	
@@ -164,19 +160,27 @@ function buildLightbox(init) {
 	$('#lb-arbeiten').carousel();
 };
 
-function initGalleryNavigation() {
+function buildGalleryNavigation(tags){
+	if(!tags){
+		var tags = galleryJSON.tags;
+	}
+	var utags = _.union(tags);
+	console.log(utags);
+	// build filter buttons
+	$('#filter-select').html('');
+	$.each(utags, function(key, val) {
+		$('#filter-select').append('<option value=\"' + val + '\" data-filter=\"' + val + '\">' + val + '</option>');
+		//$('.gallery-footer ul').append('<li class=\"navbar__item\"><a class=\"buttons__btn btn btn-sm btn-default ifx-button\" data-filter=\"' + val + '\">' + val + '</a></li>');
+	});
+	$('#filter-select').selectpicker('refresh');	
+};
+
+function initGalleryNavigation(){
 	
-	//$('[data-filter]').on('change', function() {
 	$('#filter-select').on('change', function() {
 		console.log("animrunning: "+animrunning);
 		$('#filter-select').selectpicker('refresh');
-		
-		/*
-		if($(this).hasClass('active')){
-			console.log()
-			return false;
-		}
-		*/
+
 		if(!animrunning){
 			$('.gallery-footer .btn').removeClass('active');
 			$(this).addClass('active');
