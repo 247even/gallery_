@@ -4,7 +4,7 @@
 			"file": "bird-1249136_1920.jpg",
 			"path": "birds",
 			"time": 1459435107,
-			"tags": ["birds"]
+			"tags": ["birds","huhn"]
 		},
 		"birdsbirds-1249120_1920.jpg": {
 			"file": "birds-1249120_1920.jpg",
@@ -87,6 +87,7 @@
 	},
 	"md5": "704ea2ff5cf8f6bd937daf9f2ed1c8bd",
 	"folders": ["birds", "ships", "trees"],
+	"tags": ["birds", "ships", "trees"],
 	"sizes": [280, 430, 720, 1200],
 	"sliders": {"slider1" : []}
 }

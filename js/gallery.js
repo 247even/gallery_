@@ -11,44 +11,24 @@ function loadJSON() {
 };
 
 function buildGallery(data, filter) {	
-	imagesJSON = data.images;
-	folders = data.folders;
-	sizes = data.sizes;
-	tags = data.tags;
-	
+	var imagesJSON = data.images;
+	var folders = data.folders;
+	var sizes = data.sizes;
+	var tags = data.tags;
 	var initialThumbSize = _.min(sizes);
 	
 	var i = 0;
-	//var folders = [];
 
 	// reset
 	$('.carousel-inner').html("");
 	$('.gallery-row').html("");
 	$('.carousel-indicators').html("");
 
-	// fetch first and start blurfunction
-	/*
-	imagesJSON = _.orderBy(imagesJSON, ['time', 'file'],['desc', 'asc']);
-	firstImage = _.head(imagesJSON);
-	firstImage = 'gallery/'+firstImage.path+'/'+firstImage.file;
-	introBlur(firstImage);
-	*/
-
 	$.each(imagesJSON, function(key, val) {
-		galname = val.tags[0];
-		folder = val.path;
-		/*
-		 deprecated?
-		if (folders.indexOf(folder) == -1) {
-			folders.push(folder);
-		};
-		*/
-		file = val.file;
-		filePath = 'gallery/' + folder + '/' + file;
-		thumbFilePath = 'gallery/' + folder + '_' + initialThumbSize +'/' + file;
-		time = val.time;
-		tags = val.tags;
-		tagsString = tags.toString().replace(',', ' ');
+		var folder = val.path;
+		var file = val.file;
+		var filePath = 'gallery/' + folder + '/' + file;
+		var thumbFilePath = 'gallery/' + folder + '_' + initialThumbSize +'/' + file;
 
 		// check if a filter was passed to this function
 		if (filter && filter != "all") {
@@ -58,44 +38,21 @@ function buildGallery(data, filter) {
 			};
 		}
 
-		// Build thumbnails gallery
-		/*
-		galitem = '<div class=\"col-lg-2 col-md-3 col-sm-4 col-xs-6 gallery-item img-hidden\" data-time=\"' + time
-				+ '\" data-path=\"' + filePath + '\" data-tags=\"'+ tagsString
-				+ '\"> <a href=\"#lb-arbeiten\" data-slide-to=\"' + i 
-				+ '\" data-toggle=\"modal\"> <img alt=\"\" class="lazy" data-original="' + thumbFilePath + '\" src=\"images/FFF-0.png\">'
-				+ '<span class=\"icon glyphicon glyphicon-zoom-in\"></span></a></div>';
-		*/
-		
-		$("#thumb-prototype .gallery-item").attr('data-id', key).attr('data-time', time).attr('data-path', filePath).attr('data-tags', tagsString);
+		$("#thumb-prototype .gallery-item").attr('data-id', key).attr('data-time', val.time).attr('data-path', filePath).attr('data-tags', val.tags);
 		$("#thumb-prototype .thumb-div").attr('data-src', thumbFilePath);
 		$("#thumb-prototype a").attr('data-slide-to', i);
 		$("#thumb-prototype img").attr('data-original', thumbFilePath);
 			
-		$("#thumb-prototype .gallery-item").clone().appendTo(".gallery-row");
-
-		// do the lightbox stuff
-		//buildLightbox(i, tagsString, filePath);				
+		$("#thumb-prototype .gallery-item").clone().appendTo(".gallery-row");			
 		
 		i++;
 	});
 
-	// sort it
-	//$("#arbeiten .gallery-item").sortit(["data-time"], true);
-	//console.log("sortit");
-
-	// choose first ten images for index-carousel
-	//buildIndexCarousel();
-	//console.log("buildIndexCarousel");
-
 	// do the lightbox stuff
 	buildLightbox(true);
-	console.log("buildLightbox");
-	//fitLightbox();
 
-	buildGalleryNavigation(tags);
+	buildGalleryNavigation();
 	initGalleryNavigation();
-	console.log("initGalNav");
 	
 	// fade em in...
 	galleryFilter("all");
@@ -129,13 +86,6 @@ function buildLightbox(init) {
 		// Build Carousel
 		cinner = '<div class=\"item\" style=\"background-image:url('+ filePath + ');\"><img alt=\"\" src=\"images/FFF-0.png\"></div>';
 		$('#arbeiten .carousel-inner').append(cinner);
-		
-		/*
-		//Build slide navigation
-		liitem = '<li data-app-prevent-settings=\"\" data-target=\"#lb-arbeiten\" data-slide-to=\"' + i + '\"></li>';
-		$('#arbeiten .carousel-indicators').append(liitem);
-		*/
-		
 	})
 	
 
@@ -164,13 +114,14 @@ function buildGalleryNavigation(tags){
 	if(!tags){
 		var tags = galleryJSON.tags;
 	}
+	// unique tags:
 	var utags = _.union(tags);
-	console.log(utags);
+
 	// build filter buttons
 	$('#filter-select').html('');
+	$('#filter-select').append('<option value="all" data-filter="all">----</option>');
 	$.each(utags, function(key, val) {
 		$('#filter-select').append('<option value=\"' + val + '\" data-filter=\"' + val + '\">' + val + '</option>');
-		//$('.gallery-footer ul').append('<li class=\"navbar__item\"><a class=\"buttons__btn btn btn-sm btn-default ifx-button\" data-filter=\"' + val + '\">' + val + '</a></li>');
 	});
 	$('#filter-select').selectpicker('refresh');	
 };
@@ -189,6 +140,7 @@ function initGalleryNavigation(){
 			$('#filter-select').selectpicker('refresh');		
 		}
 	});
+	
 };
 
 function buildIndexCarousel(image, i) {
@@ -236,9 +188,9 @@ function galleryFilter(fil) {
 	}
 	
 	if (fil == "all") {
-		inItems = $("#arbeiten .gallery-item").not('.img-active');
+		inItems = $(".gallery-row .gallery-item").not('.img-active');
 	} else {
-		$($("#arbeiten .gallery-item")).each(function(k) {
+		$($(".gallery-row .gallery-item")).each(function(k) {
 			var tags = $(this).attr("data-tags");
 			if (tags.includes(fil)) {
 				if (!$(this).hasClass('img-active')) {
@@ -256,7 +208,7 @@ function galleryFilter(fil) {
 		});
 	}
 	
-	var inViewportLength = $('#arbeiten .inViewport').length;
+	var inViewportLength = $('.gallery-row .inViewport').length;
 	if (inViewportLength < 30){inViewportLength = 30};
 	var inLength = inItems.length;
 	var outLength = outItems.length;
@@ -285,8 +237,6 @@ function galleryFilter(fil) {
 								}
 							});
 						});
-						//buildLightbox();
-						//$("img.lazy").trigger("lload");
 					}
 				}
 			});

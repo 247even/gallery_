@@ -59,9 +59,19 @@ function adminInit() {
 			})
 			selectizeTags.refreshItems()
 
-			return groupTags;
-		}
+			$(".selectize-input .item").on("click", function(){
+				var value = $(this).attr("data-value");
+				
+				$($(".gallery-row .gallery-item")).each(function(k) {
+					var tags = $(this).attr("data-tags");
+					if (tags.includes(value)) {
+						$(this).addClass('selected-image');
+					}
+				});				
+			});			
 
+			return groupTags;
+		};
 
 		$('#input-tags').selectize({
 			plugins : ['remove_button'],
