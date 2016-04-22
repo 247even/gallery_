@@ -1,14 +1,14 @@
 function adminInit() {
-	
 	console.log("adminInit");
-	var selectedImages = $(".gallery-row .selected-image");
-
 	/* Tags */
 
 	$('a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
-
+		var selectedImages;
+		
 		function selectTags() {
-
+			
+			selectedImages = $(".gallery-row .selected-image");
+			
 			var firstTag = selectedImages.first().attr('data-tags');
 			if (firstTag) {
 				// firstTag.split(',');
@@ -158,11 +158,13 @@ function adminInit() {
 
 		function loadBlur() {
 
-			var imgSrc = $(".selected-image").attr("data-path");
+			var imgSrc = $(".selected-image").attr("respi-path");
 			$("#blurPath").val(imgSrc);
 			var imgSrcSplit = imgSrc.split("/");
-			var imgSrc_720 = imgSrcSplit[0] + "/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
-			var imgSrc_720_blur = imgSrcSplit[0] + "/blur/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
+			var imgSrc_720 = $(".selected-image").attr("respi-path").replace("_respi", "_720");
+			var imgSrc_720_blur = imgSrc_720.replace("gallery", "gallery/blur");
+			//var imgSrc_720 = imgSrcSplit[0] + "/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
+			// var imgSrc_720_blur = imgSrcSplit[0] + "/blur/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
 
 			var blurImage = imgSrc_720_blur + '?ts=' + $.now();
 			$("#blurImageFrame img").attr('src', blurImage).imagesLoaded().always(function(instance) {
