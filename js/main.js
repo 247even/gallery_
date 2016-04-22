@@ -197,8 +197,6 @@ $(function() {
 		$('.control-wrapper').each(function() {
 			$(this).center();
 		});
-		
-		$(".proportion").proportion();
 	}));
 	
 	$(window).on('mousemove', debounce(

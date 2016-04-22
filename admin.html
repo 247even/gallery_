@@ -11,10 +11,6 @@
 		<meta name="description" content="">
 		<title>gallery_</title>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-		<script src="js/selectize.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.min.js"></script>
-
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:700,400&amp;subset=latin">
 		<link href='https://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -28,6 +24,11 @@
 		<link rel="stylesheet" href="css/animate.min.css">
 		<link rel="stylesheet" href="css/imafox.css">
 
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<script src="js/selectize.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.min.js"></script>
+		<script src="js/respi.js"></script>	
+
 	</head>
 	<body>
 		<div id="main">
@@ -36,11 +37,11 @@
 				<div class="container gallery-container">
 					<div class="row height100">
 						<div class="col col-lg-6 col-md-6">
-							<section class="gallery section section--no-padding after-navbar scroll-wrapper" id="arbeiten">
+							<section class="gallery section after-navbar scroll-wrapper" id="arbeiten">
 								<!-- Gallery -->
-								<div class=" gallery-layout-default">
+								<div>
 									<div>
-										<div class="row gallery-row no-gutter">
+										<div class="row gallery-row">
 
 										</div>
 									</div>
@@ -111,7 +112,7 @@
 							</div>
 							
 							
-							<section class="section section--no-padding after-navbar scroll-wrapper">							
+							<section class="section after-navbar scroll-wrapper">							
 								<!-- Tab panes -->
 								<div class="tab-content">
 									<div id="basics-panel" role="tabpanel" class="tab-pane  active" >
@@ -210,10 +211,11 @@
 
 		<div id="prototypes" style="display:none">
 			<div id="thumb-prototype">
-				<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 gallery-item proportion img-hidden" data-id="id" data-time="time" data-path="filePath" data-tags="tagsString">
-					<div class="thumb-div cover-image b-lazy" data-src="thumbSrc">
-						<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal"> <img alt="" class="lazy" data-original="thumbFilePath" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"> <span class="icon glyphicon glyphicon-zoom-in"> </span> </a>
-					</div>
+				<div class="col-xs-2 gallery-item cover-image b-lazy img-hidden" data-id="id" data-time="time" data-path="filePath" data-tags="tagsString">
+					<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal">
+						<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+						<span class="glyphicon glyphicon-zoom-in"> </span> 
+					</a>
 				</div>
 			</div> <!-- thumb-prototype -->
 		</div> <!-- prototypes -->

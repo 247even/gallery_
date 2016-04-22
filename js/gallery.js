@@ -18,6 +18,8 @@ function buildGallery(data, filter) {
 	var initialThumbSize = _.min(sizes);
 	
 	var i = 0;
+	
+	$('body').attr("respi-sizes", sizes);
 
 	// reset
 	$('.carousel-inner').html("");
@@ -27,7 +29,7 @@ function buildGallery(data, filter) {
 	$.each(imagesJSON, function(key, val) {
 		var folder = val.path;
 		var file = val.file;
-		var filePath = 'gallery/' + folder + '/' + file;
+		var respiPath = 'gallery/' + folder + '_respi/' + file;
 		var thumbFilePath = 'gallery/' + folder + '_' + initialThumbSize +'/' + file;
 
 		// check if a filter was passed to this function
@@ -38,11 +40,15 @@ function buildGallery(data, filter) {
 			};
 		}
 
-		$("#thumb-prototype .gallery-item").attr('data-id', key).attr('data-time', val.time).attr('data-path', filePath).attr('data-tags', val.tags);
-		$("#thumb-prototype .thumb-div").attr('data-src', thumbFilePath);
+		$("#thumb-prototype .gallery-item")
+			.attr('data-src', thumbFilePath)
+			.attr('data-id', key)
+			.attr('data-time', val.time)
+			.attr('respi-path', respiPath)
+			.attr('data-tags', val.tags);
+
 		$("#thumb-prototype a").attr('data-slide-to', i);
-		$("#thumb-prototype img").attr('data-original', thumbFilePath);
-			
+		//$("#thumb-prototype img").attr('data-original', thumbFilePath);
 		$("#thumb-prototype .gallery-item").clone().appendTo(".gallery-row");			
 		
 		i++;
@@ -57,6 +63,12 @@ function buildGallery(data, filter) {
 	// fade em in...
 	galleryFilter("all");
 	console.log("Filter");
+	
+	$(".gallery-item").respi(sizes);
+	console.log("respi:");
+	console.log($(".gallery-item").respi(sizes));
+	
+
 	//preloader();
 	//console.log("preloader");
 	
@@ -68,23 +80,21 @@ function buildLightbox(init) {
 	console.log("buildLightbox startet");
 
 	// reset
-	$('#arbeiten .carousel-inner').html("");
-	$('#arbeiten .carousel-indicators').html("");
+	$('.gallery .carousel-inner').html("");
+	$('.gallery .carousel-indicators').html("");
 
 	// init 'true' to fetch all images, else only active
 	if (init) {
-		items = $("#arbeiten .gallery-item");
+		items = $(".gallery .gallery-item");
 	} else {
-		items = $("#arbeiten .gallery-item").filter('.img-active');
+		items = $(".gallery .gallery-item").filter('.img-active');
 	}
 	
 
 	$.each(items, function(i) {
-		filePath = $(this).attr("data-path");
 		$(this).find("a").attr("data-slide-to",i);
-
 		// Build Carousel
-		cinner = '<div class=\"item\" style=\"background-image:url('+ filePath + ');\"><img alt=\"\" src=\"images/FFF-0.png\"></div>';
+		cinner = '<div class=\"item\" respi-path=\"'+ $(this).attr("respi-path") +'\" style=\"background-image:url('+ $(this).attr("data-path") + ');\"><img alt=\"\" src=\"images/FFF-0.png\"></div>';
 		$('#arbeiten .carousel-inner').append(cinner);
 	})
 	
@@ -100,6 +110,12 @@ function buildLightbox(init) {
  		// Now display this wherever you want
 		var text = currentIndex + ' / ' + total;
 		$('.indicator-text').html(text);
+	});
+	
+	$('#lb-arbeiten').on('shown.bs.modal', function (e) {
+		$(".gallery-carousel .item").respi();
+		console.log("respi item:");
+		console.log($(".gallery-carousel .item").respi());	
 	});
 
 	$('#arbeiten .carousel-indicators li').removeClass('active');
@@ -147,7 +163,7 @@ function buildIndexCarousel(image, i) {
 	$('#slider-1 .carousel-inner').html("");
 	$('#slider-1 .carousel-indicators').html("");
 
-	$("#arbeiten .gallery-item").each(function(k, v) {
+	$(".gallery .gallery-item").each(function(k, v) {
 		
 		if (k < 10) {
 			image = $(this).attr('data-path');
@@ -243,7 +259,7 @@ function galleryFilter(fil) {
 			fi++
 	})
 	
-	$( "#arbeiten" ).scrollTop( 0 );
+	$( ".gallery" ).scrollTop( 0 );
 	
 	$.each(inItems, function(k) {
 		//animrunning = true;
@@ -274,7 +290,7 @@ function galleryFilter(fil) {
 		portfolioLoad.update();
 	}
 	
-	$('#arbeiten').css('height','90%').css('height','100%');
+	$('.gallery').css('height','90%').css('height','100%');
 	
 	buildLightbox();
 	
@@ -282,6 +298,11 @@ function galleryFilter(fil) {
 
 function initGallery(){
 	console.log("initGallery");
+
+	$(window).on('load resize', (function() {
+		// sets the thumb proportion; no values = square
+		$(".gallery-item").proportion();
+	}));
 	
 		// background zoom function
 		$('.gallery .zoom').on('click', function(e){
@@ -303,16 +324,16 @@ function initGallery(){
 		    callback_set: function() { }
 		});
 		*/	
-		
-		$(".proportion").proportion();
+
 		
 		//bLazy
 		var bLazy = new Blazy({
-			container: '#arbeiten', // Default is window
+			container: '.gallery', // Default is window
 	        success: function(element){
 				console.log('bLazy finish');
 	        }
 	   });
+	   
 
 	// load admin-functions, if available
 	if(adminInit){
@@ -331,12 +352,3 @@ function initGallery(){
 		
 };
 
-(function($) {
-	$.fn.proportion = function(a,b) {
-		var a = !a ? 1 : a;
-		var b = !b ? 1 : b;
-		console.log(a+' '+b);
-		$(this).css('height', $(this).width() * b / a);
-		return this;
-	}
-})(jQuery);

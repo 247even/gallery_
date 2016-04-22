@@ -34,10 +34,20 @@ var waitForFinalEvent = (function() {
 	};
 })();
 
+// jquery proportion
+(function($) {
+	$.fn.proportion = function(a,b) {
+		var a = !a ? 1 : a;
+		var b = !b ? 1 : b;
+		$(this).css('height', $(this).outerWidth() * b / a);
+		return this;
+	}
+})(jQuery);
+
 (function($) {
 	$.fn.center = function(vh) {
-		this.css("position", "absolute");
-		this.css("top", ($(window).height() - this.height() ) / 2 + "px");
+		this.css("position", "absolute")
+			.css("top", ($(window).height() - this.height() ) / 2 + "px");
 		//this.css("left", ( $(window).width() - this.width() ) / 2 + "px");
 		return this;
 	}

@@ -1,6 +1,7 @@
 function adminInit() {
+	
 	console.log("adminInit");
-	var selectedImages = ".gallery-row .selected-image";
+	var selectedImages = $(".gallery-row .selected-image");
 
 	/* Tags */
 
@@ -8,7 +9,7 @@ function adminInit() {
 
 		function selectTags() {
 
-			var firstTag = $(selectedImages + ":first").attr('data-tags');
+			var firstTag = selectedImages.first().attr('data-tags');
 			if (firstTag) {
 				// firstTag.split(',');
 				firstTag = _.split(firstTag, ',');
@@ -19,18 +20,18 @@ function adminInit() {
 			var selectedTags = [];
 			var i = 0;
 
-			if ($(selectedImages).length == 1) {
+			if (selectedImages.length == 1) {
 
 				selectedTags = groupTags = interTags = firstTag;
 
-			} else if ($(selectedImages).length > 1) {
+			} else if (selectedImages.length > 1) {
 
 				if (!groupTags[0]) {
 					console.log('groupTags is empty, ' + i);
 					groupTags = firstTag;
 				}
 
-				$(selectedImages).each(function() {
+				selectedImages.each(function() {
 					i++;
 					attrTags = $(this).attr('data-tags');
 					attrTags = attrTags.split(',');
@@ -79,7 +80,7 @@ function adminInit() {
 			create : function(input) {
 				console.log("create: " + input);
 				input = input.split(',');
-				$(selectedImages).each(function() {
+				selectedImages.each(function() {
 					var dataTags = $(this).attr('data-tags');
 					dataTags = dataTags.split(',');
 					unionTags = _.union(dataTags, input);
