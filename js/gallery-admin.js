@@ -14,6 +14,13 @@ function adminInit() {
 			galleryFilter("all");
 			$(".gallery-item").respi(galleryJSON.sizes);
 		});
+
+		$("#thumbProportionSelect").on("change", function(){
+			var value = $(this).val();
+			galleryJSON.thumbProportion = value;
+			value = value.split(',');
+			$(".gallery-item").proportion(value[0],value[1]);
+		});		
 		
 		$("#inputSizes").attr('placeholder',galleryJSON.sizes)
 		.keydown(function (e) {
