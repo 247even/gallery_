@@ -10,23 +10,48 @@ function loadJSON() {
 	});
 };
 
-function buildGallery(data, filter) {	
+function buildGalleryItems(filter){
+
+/*
 	var imagesJSON = data.images;
 	var folders = data.folders;
 	var sizes = data.sizes;
 	var tags = data.tags;
-	var initialThumbSize = _.min(sizes);
-	
+*/
+	var initialThumbSize = _.min(galleryJSON.sizes);
 	var i = 0;
 	
-	$('body').attr("respi-sizes", sizes);
 
+	var thumbDisplaySizes = {
+		"xs" : "col-xs-1",
+		"sm" : "col-xs-2",
+		"md" : "col-xs-3",
+		"lg" : "col-xs-4",
+		"xl" : "col-xs-6",
+		"xxl" : "col-xs-12"
+	};	
+	
 	// reset
-	$('.carousel-inner').html("");
 	$('.gallery-row').html("");
-	$('.carousel-indicators').html("");
+	$('#thumb-prototype').remove();
+	
+	if($('#thumb-prototype')){
+		
+	}
+	
+	var gallery_item_div = '<div class="'+ thumbDisplaySizes[galleryJSON.thumbDisplay] +' gallery-item cover-image img-hidden">'
+						//+ '<div class="thumb-div cover-image b-lazy">'
+						+ '<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal">'
+						+ '<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">'
+						+ '<span class="glyphicon glyphicon-zoom-in"> </span>'
+						+ '</a>'
+						//+ '</div>'
+						+ '</div>';
+	
+	$('body').append('<div id="thumb-prototype" style="display:none"> </div>');
+	$('#thumb-prototype').append(gallery_item_div);
 
-	$.each(imagesJSON, function(key, val) {
+	$.each(galleryJSON.images, function(key, val) {
 		var folder = val.path;
 		var file = val.file;
 		var respiPath = 'gallery/' + folder + '_respi/' + file;
@@ -40,19 +65,36 @@ function buildGallery(data, filter) {
 			};
 		}
 
-		$("#thumb-prototype .gallery-item")
-			.attr('data-src', thumbFilePath)
-			.attr('data-id', key)
-			.attr('data-time', val.time)
-			.attr('respi-path', respiPath)
-			.attr('data-tags', val.tags);
-
+		$("#thumb-prototype .gallery-item").attr('data-id', key).attr('data-time', val.time).attr('respi-path', respiPath).attr('data-tags', val.tags);
+		//$("#thumb-prototype .thumb-div").attr('data-src', thumbFilePath);
 		$("#thumb-prototype a").attr('data-slide-to', i);
 		//$("#thumb-prototype img").attr('data-original', thumbFilePath);
+			
 		$("#thumb-prototype .gallery-item").clone().appendTo(".gallery-row");			
 		
 		i++;
-	});
+	});	
+	
+}
+
+function buildGallery(data, filter) {
+/*	
+	var imagesJSON = data.images;
+	var folders = data.folders;
+	var sizes = data.sizes;
+	var tags = data.tags;
+	var initialThumbSize = _.min(sizes);
+
+	
+	var i = 0;
+*/
+	$('body').attr("respi-sizes", galleryJSON.sizes);
+
+	// reset
+	$('.carousel-inner').html("");
+	$('.carousel-indicators').html("");
+	
+	buildGalleryItems();
 
 	// do the lightbox stuff
 	buildLightbox(true);
@@ -64,10 +106,7 @@ function buildGallery(data, filter) {
 	galleryFilter("all");
 	console.log("Filter");
 	
-	$(".gallery-item").respi(sizes);
-	console.log("respi:");
-	console.log($(".gallery-item").respi(sizes));
-	
+	$(".gallery-item").respi(galleryJSON.sizes);
 
 	//preloader();
 	//console.log("preloader");
@@ -78,6 +117,8 @@ function buildGallery(data, filter) {
 function buildLightbox(init) {
 	
 	console.log("buildLightbox startet");
+	
+	var items;
 
 	// reset
 	$('.gallery .carousel-inner').html("");
@@ -94,8 +135,8 @@ function buildLightbox(init) {
 	$.each(items, function(i) {
 		$(this).find("a").attr("data-slide-to",i);
 		// Build Carousel
-		cinner = '<div class=\"item\" respi-path=\"'+ $(this).attr("respi-path") +'\" style=\"background-image:url('+ $(this).attr("data-path") + ');\"><img alt=\"\" src=\"images/FFF-0.png\"></div>';
-		$('#arbeiten .carousel-inner').append(cinner);
+		var inner = '<div class=\"item\" respi-path="'+$(this).attr("respi-path")+'" style=\"background-image:url('+ $(this).attr("data-path") + ');\"><img alt=\"\" src=\"images/FFF-0.png\"></div>';
+		$('.gallery .carousel-inner').append(inner);
 	})
 	
 
@@ -104,7 +145,7 @@ function buildLightbox(init) {
 	$('.slidetext').html(currentIndex + '/'  + total);
 	
 	// This triggers after each slide change
-	$('#lb-arbeiten').on('slid.bs.carousel', function () {
+	$('.gallery .lightbox').on('slid.bs.carousel', function () {
 		currentIndex = $('.gallery-carousel div.active').index() + 1;
 		console.log("current: "+currentIndex);
  		// Now display this wherever you want
@@ -112,18 +153,16 @@ function buildLightbox(init) {
 		$('.indicator-text').html(text);
 	});
 	
-	$('#lb-arbeiten').on('shown.bs.modal', function (e) {
+	$('.gallery .lightbox').on('shown.bs.modal', function (e) {
 		$(".gallery-carousel .item").respi();
-		console.log("respi item:");
-		console.log($(".gallery-carousel .item").respi());	
-	});
+	});	
 
-	$('#arbeiten .carousel-indicators li').removeClass('active');
-	$('#arbeiten .carousel-indicators li:last').addClass('active');
-	$('#arbeiten .carousel-inner .item').removeClass('active');
-	$('#arbeiten .carousel-inner .item:last').addClass('active');
+	$('.gallery .carousel-indicators li').removeClass('active');
+	$('.gallery .carousel-indicators li:last').addClass('active');
+	$('.gallery .carousel-inner .item').removeClass('active');
+	$('.gallery .carousel-inner .item:last').addClass('active');
 	
-	$('#lb-arbeiten').carousel();
+	$('.gallery .lightbox').carousel();
 };
 
 function buildGalleryNavigation(tags){
@@ -249,7 +288,7 @@ function galleryFilter(fil) {
 										if (typeof portfolioLoad !== 'undefined') {
 											portfolioLoad.update();
 										}
-									$('#arbeiten').trigger('resize');
+									$('.gallery').trigger('resize');
 								}
 							});
 						});
@@ -298,11 +337,6 @@ function galleryFilter(fil) {
 
 function initGallery(){
 	console.log("initGallery");
-
-	$(window).on('load resize', (function() {
-		// sets the thumb proportion; no values = square
-		$(".gallery-item").proportion();
-	}));
 	
 		// background zoom function
 		$('.gallery .zoom').on('click', function(e){
@@ -324,7 +358,13 @@ function initGallery(){
 		    callback_set: function() { }
 		});
 		*/	
-
+		
+		$(window).on('load resize', debounce(
+			function(){
+				$(".gallery-item").proportion().respi(galleryJSON.sizes);
+				$(".gallery .gallery-carousel .item").respi(galleryJSON.sizes);
+			}, 500, false)
+		);
 		
 		//bLazy
 		var bLazy = new Blazy({
@@ -333,7 +373,6 @@ function initGallery(){
 				console.log('bLazy finish');
 	        }
 	   });
-	   
 
 	// load admin-functions, if available
 	if(adminInit){
@@ -352,3 +391,12 @@ function initGallery(){
 		
 };
 
+(function($) {
+	$.fn.proportion = function(a,b) {
+		var a = !a ? 1 : a;
+		var b = !b ? 1 : b;
+		console.log(a+' '+b);
+		$(this).css('height', $(this).width() * b / a);
+		return this;
+	}
+})(jQuery);

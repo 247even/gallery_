@@ -1,5 +1,58 @@
 function adminInit() {
 	console.log("adminInit");
+	
+	/* Basics */
+	
+	//$('#basicsForm').validator();
+
+	$('a[aria-controls="basics-panel"]').on('shown.bs.tab', function(e) {
+		
+		$("#thumbDisplaySelect").on("change", function(){
+			var value = $(this).val();
+			galleryJSON.thumbDisplay = value;
+			buildGalleryItems();
+			galleryFilter("all");
+			$(".gallery-item").respi(galleryJSON.sizes);
+		});
+		
+		$("#inputSizes").attr('placeholder',galleryJSON.sizes)
+		.keydown(function (e) {
+	        // Allow: backspace, delete, tab, escape, enter and .
+	        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
+	             // Allow: Ctrl+A
+	            (e.keyCode == 65 && e.ctrlKey === true) ||
+	             // Allow: Ctrl+C
+	            (e.keyCode == 67 && e.ctrlKey === true) ||
+	             // Allow: Ctrl+X
+	            (e.keyCode == 88 && e.ctrlKey === true) ||
+	             // Allow: home, end, left, right
+	            (e.keyCode >= 35 && e.keyCode <= 39)) {
+	                 // let it happen, don't do anything
+	                 return;
+	        }
+	        // Ensure that it is a number and stop the keypress
+	        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+	            e.preventDefault();
+	        }
+	    });
+		
+		$("#inputSizes").on("change input", function(){
+			var value = $(this).val().split(',');
+			value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
+			galleryJSON.sizes = value;
+			console.log(value);
+			
+		});	
+	
+		$("#coverCheckbox").click(function(e){
+		    e.stopImmediatePropagation();
+		    var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
+		    var checked = (element.checked) ? false : true;
+		    element.checked = (checked) ? false : checked.toString();
+		});	
+	
+	});
+	
 	/* Tags */
 
 	$('a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {

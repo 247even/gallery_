@@ -39,6 +39,8 @@
 .gallery .gallery-item {
     position: relative;
     padding: 0;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .gallery .gallery-item > a {
     position: relative;
