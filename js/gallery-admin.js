@@ -4,13 +4,20 @@ function adminInit() {
 	$('#configreset').click(function(){
         $('#basicsForm')[0].reset();
   });
+  
+  
 	
 	/* Basics */
 	
 	//$('#basicsForm').validator();
 
-	$('a[aria-controls="basics-panel"]').on('load shown.bs.tab', function(e) {
+	$('.admin-header a[aria-controls="basics-panel"]').on('shown.bs.tab', function(e) {
 		
+		console.log("basics");
+		
+		// pre-/re-set thumbSize
+		var thumbSize = !galleryJSON.thumbDisplay ? "md" : galleryJSON.thumbDisplay;
+		$("#thumbDisplaySelect").val( thumbSize );
 		
 		$("#thumbDisplaySelect").on("change", function(){
 			var value = $(this).val();
@@ -21,11 +28,12 @@ function adminInit() {
 			.addClass( thumbDisplaySizes[ value ] )
 			.proportion( proportion[0], proportion[1] );
 			galleryJSON.thumbDisplay = value;
-			
-			//buildGalleryItems();
-			//galleryFilter("all");
-			//$(".gallery-item").respi(galleryJSON.sizes);
 		});
+		
+		
+		// pre-/re-set Proportion
+		var thumbProp = !galleryJSON.proportion ? "1,1" : galleryJSON.proportion;
+		$("#thumProportionSelect").val( thumbProp );		
 
 		$("#thumbProportionSelect").on("change", function(){
 			var value = $(this).val();
@@ -33,14 +41,24 @@ function adminInit() {
 			value = value.split(',');
 			$(".gallery-item").proportion(value[0],value[1]);
 		});
-
+		
+		
+		// pre-/re-set thumbFit
+		var thumbFit = !galleryJSON.thumbFit ? "cover" : galleryJSON.thumbFit;
+		$("#thumbFitSelect").val( thumbFit );
+		
 		$("#thumbFitSelect").on("change", function(){
 			var value = $(this).val();
 			galleryJSON.thumbFit = value;
 			$(".gallery-item .thumb-div").removeClass('cover-image contain-image').addClass(value+'-image');
 		});		
-		
-		$("#thumbMarginInput").keydown(function(){
+
+
+		// pre-/re-set thumbFit
+		var thumbPadding = !galleryJSON.thumbPadding ? 0 : galleryJSON.thumbPadding;
+		$("#thumbPaddingInput").val( thumbPadding );	
+			
+		$("#thumbPaddingInput").keydown(function(){
 	        // Allow: backspace, delete, tab, escape, enter
 	        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
 	             // Allow: Ctrl+A
@@ -60,10 +78,11 @@ function adminInit() {
 	        }			
 		});
 		
-		$("#thumbMarginInput").on("change input", function(){
+		$("#thumbPaddingInput").on("change input", function(){
 			var value = $(this).val();
 			value = (!value || value < 1) ? 0 : value;
-			$(".gallery-item .thumb-div").css("margin",value+"px");
+			galleryJSON.thumbPadding = value;
+			$(".gallery-item").css("padding",value+"px");
 		});
 		
 		
@@ -107,7 +126,7 @@ function adminInit() {
 	
 	/* Tags */
 
-	$('a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
+	$('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
 		var selectedImages;
 		
 		function selectTags() {
@@ -254,7 +273,7 @@ function adminInit() {
 
 	/* Effect */
 
-	$('a[aria-controls="effect-panel"]').on('shown.bs.tab', function(e) {
+	$('.admin-header a[aria-controls="effect-panel"]').on('shown.bs.tab', function(e) {
 
 		var vague = $('#blurImageFrame img').Vague({
 			intensity : 3,
@@ -356,7 +375,7 @@ function adminInit() {
 
 	/* Sliders */
 
-	$('a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e) {
+	$('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e) {
 
 		$('.sortable').sortable({
 			// options
@@ -406,10 +425,12 @@ function adminInit() {
 
 	})
 	/* Raw */
-	$('a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
+	$('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 		$(".gallery-item").removeClass("selected-image");
 
 		var JSONtext = JSON.stringify(galleryJSON, null, '\t');
 		$("#json-output").text(JSONtext);
 	});
+	
+	$('.admin-header a[aria-controls="basics-panel"').trigger("click");
 };

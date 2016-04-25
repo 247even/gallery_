@@ -3,22 +3,18 @@
 		var res;
 		
 		function nearest(el,arr){
-
-			if(!arr){
-				arr = $('body').attr("respi-sizes").split(',');
-			}
 			
+			var arr = !arr ? $('body').attr("respi-sizes").split(',') : arr;
 			var width = el.width();
 			var height = el.height();
 			var frame = (height >= width) ? height : width;
-
 			var min = arr[0];
 			    
 			$.each(arr, function(k, value) {
 				var value = parseInt(value);
 				if (value <= frame) {
-					min = value;
-					res = min;
+					min = res = value;
+					//res = min;
 				} else {
 					res = (frame - min < value - frame) ? min : value;
 					return false;
@@ -28,8 +24,9 @@
 		}
 		
 		this.each(function() {
-			_respi = $(this).find("[respi-path]").attr("respi-path").replace("_respi", "_"+nearest($(this), arr));
-			$(this).find("[respi-path]").css('background-image', 'url(' + _respi + ')');
+			var _respi_el = !$(this).attr("respi-path") ? $(this).find("[respi-path]") : $(this);
+			var _respi = _respi_el.attr("respi-path").replace("_respi", "_"+nearest($(this), arr));
+			_respi_el.css('background-image', 'url(' + _respi + ')');
 		})
 
 		return res;
