@@ -20,16 +20,18 @@ function buildGalleryItems(filter){
 */
 	var initialThumbSize = _.min(galleryJSON.sizes);
 	var i = 0;
-	
 
-	var thumbDisplaySizes = {
+    thumbDisplaySizes = {
 		"xs" : "col-xs-1",
 		"sm" : "col-xs-2",
 		"md" : "col-xs-3",
 		"lg" : "col-xs-4",
 		"xl" : "col-xs-6",
 		"xxl" : "col-xs-12"
-	};	
+	};
+	
+	var thumbSize = (!galleryJSON.thumbDisplay) ? thumbDisplaySizes["md"] : thumbDisplaySizes[galleryJSON.thumbDisplay];
+
 	
 	// reset
 	$('.gallery-row').html("");
@@ -39,13 +41,13 @@ function buildGalleryItems(filter){
 		
 	}
 	
-	var gallery_item_div = '<div class="'+ thumbDisplaySizes[galleryJSON.thumbDisplay] +' gallery-item cover-image img-hidden">'
-						//+ '<div class="thumb-div cover-image b-lazy">'
+	var gallery_item_div = '<div class="'+ thumbSize +' gallery-item img-hidden">'
+						+ '<div class="thumb-div cover-image b-lazy">'
 						+ '<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal">'
 						+ '<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">'
 						+ '<span class="glyphicon glyphicon-zoom-in"> </span>'
 						+ '</a>'
-						//+ '</div>'
+						+ '</div>'
 						+ '</div>';
 	
 	$('body').append('<div id="thumb-prototype" style="display:none"> </div>');
@@ -65,8 +67,8 @@ function buildGalleryItems(filter){
 			};
 		}
 
-		$("#thumb-prototype .gallery-item").attr('data-id', key).attr('data-time', val.time).attr('respi-path', respiPath).attr('data-tags', val.tags);
-		//$("#thumb-prototype .thumb-div").attr('data-src', thumbFilePath);
+		$("#thumb-prototype .gallery-item").attr('data-id', key).attr('data-time', val.time).attr('data-tags', val.tags);
+		$("#thumb-prototype .thumb-div").attr('respi-path', respiPath);
 		$("#thumb-prototype a").attr('data-slide-to', i);
 		//$("#thumb-prototype img").attr('data-original', thumbFilePath);
 			
@@ -102,11 +104,11 @@ function buildGallery(data, filter) {
 	buildGalleryNavigation();
 	initGalleryNavigation();
 	
+	$(".gallery-item").respi(galleryJSON.sizes);	
+	
 	// fade em in...
 	galleryFilter("all");
 	console.log("Filter");
-	
-	$(".gallery-item").respi(galleryJSON.sizes);
 
 	//preloader();
 	//console.log("preloader");
@@ -361,7 +363,7 @@ function initGallery(){
 		
 		$(window).on('load resize', debounce(
 			function(){
-				$(".gallery-item").proportion().respi(galleryJSON.sizes);
+				$(".gallery-item").proportion(galleryJSON.proportion).respi(galleryJSON.sizes);
 				$(".gallery .gallery-carousel .item").respi(galleryJSON.sizes);
 			}, 500, false)
 		);

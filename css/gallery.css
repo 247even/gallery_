@@ -237,17 +237,17 @@
     margin-top: 30px;
 }
 
-.crop-image, .cover-image {
+.contain-image, .cover-image, .contain-image {
 	overflow: hidden;
 }
 
-.crop-image, .crop-image img, .cover-image, .cover-image img{
+.contain-image, .contain-image img, .cover-image, .cover-image img {
 	background-image: url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
-.crop-image, .crop-image img {
+.contain-image, .contain-image img {
 	background-size:contain;
 }
 

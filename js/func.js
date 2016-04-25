@@ -41,6 +41,7 @@ var waitForFinalEvent = (function() {
 		var a = !a ? 1 : a;
 		var b = !b ? 1 : b;
 		$(this).css('height', $(this).outerWidth() * b / a);
+		return this;
 	}
 })(jQuery);
 

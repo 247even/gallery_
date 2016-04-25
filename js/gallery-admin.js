@@ -1,18 +1,30 @@
 function adminInit() {
 	console.log("adminInit");
 	
+	$('#configreset').click(function(){
+        $('#basicsForm')[0].reset();
+  });
+	
 	/* Basics */
 	
 	//$('#basicsForm').validator();
 
-	$('a[aria-controls="basics-panel"]').on('shown.bs.tab', function(e) {
+	$('a[aria-controls="basics-panel"]').on('load shown.bs.tab', function(e) {
+		
 		
 		$("#thumbDisplaySelect").on("change", function(){
 			var value = $(this).val();
+			var proportion = galleryJSON.thumbProportion;
+			proportion = !proportion ? [1,1] : proportion.split(',');
+			
+			$('.gallery-item').removeClass( thumbDisplaySizes[ galleryJSON.thumbDisplay ] )
+			.addClass( thumbDisplaySizes[ value ] )
+			.proportion( proportion[0], proportion[1] );
 			galleryJSON.thumbDisplay = value;
-			buildGalleryItems();
-			galleryFilter("all");
-			$(".gallery-item").respi(galleryJSON.sizes);
+			
+			//buildGalleryItems();
+			//galleryFilter("all");
+			//$(".gallery-item").respi(galleryJSON.sizes);
 		});
 
 		$("#thumbProportionSelect").on("change", function(){
@@ -20,11 +32,44 @@ function adminInit() {
 			galleryJSON.thumbProportion = value;
 			value = value.split(',');
 			$(".gallery-item").proportion(value[0],value[1]);
+		});
+
+		$("#thumbFitSelect").on("change", function(){
+			var value = $(this).val();
+			galleryJSON.thumbFit = value;
+			$(".gallery-item .thumb-div").removeClass('cover-image contain-image').addClass(value+'-image');
 		});		
+		
+		$("#thumbMarginInput").keydown(function(){
+	        // Allow: backspace, delete, tab, escape, enter
+	        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+	             // Allow: Ctrl+A
+	            (e.keyCode == 65 && e.ctrlKey === true) ||
+	             // Allow: Ctrl+C
+	            (e.keyCode == 67 && e.ctrlKey === true) ||
+	             // Allow: Ctrl+X
+	            (e.keyCode == 88 && e.ctrlKey === true) ||
+	             // Allow: home, end, left, right
+	            (e.keyCode >= 35 && e.keyCode <= 39)) {
+	                 // let it happen, don't do anything
+	                 return;
+	        }
+	        // Ensure that it is a number and stop the keypress
+	        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+	            e.preventDefault();
+	        }			
+		});
+		
+		$("#thumbMarginInput").on("change input", function(){
+			var value = $(this).val();
+			value = (!value || value < 1) ? 0 : value;
+			$(".gallery-item .thumb-div").css("margin",value+"px");
+		});
+		
 		
 		$("#inputSizes").attr('placeholder',galleryJSON.sizes)
 		.keydown(function (e) {
-	        // Allow: backspace, delete, tab, escape, enter and .
+	        // Allow: backspace, delete, tab, escape, enter and ,
 	        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
 	             // Allow: Ctrl+A
 	            (e.keyCode == 65 && e.ctrlKey === true) ||

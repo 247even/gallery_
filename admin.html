@@ -115,13 +115,12 @@
 								<!-- Tab panes -->
 								<div class="tab-content">
 									<div id="basics-panel" role="tabpanel" class="tab-pane  active" >
-										
-										basics
-										<form id="loginForm" class="form-signin">
 
-											<div>
-												
-												<form id="basicsForm">
+										basics
+
+										<div>
+
+											<form id="basicsForm">
 												<table class="table">
 													<caption>
 														Optional table caption.
@@ -134,65 +133,53 @@
 													<tbody>
 														<tr>
 															<th scope="row">1</th><td>Thumb display</td><td>
-																<select id="thumbDisplaySelect" class="form-control">
+															<select id="thumbDisplaySelect" class="form-control">
 																<option value="xs">extra small</option>
 																<option value="sm">small</option>
 																<option value="md">medium</option>
 																<option value="lg">large</option>
 																<option value="xl">extra large</option>
 																<option value="xxl">xx large</option>
-															</select>
-															</td>
+															</select></td>
 														</tr>
 														<tr>
 															<th scope="row">2</th><td>Thumb proportion</td><td>
 															<select id="thumbProportionSelect" class="form-control">
 																<option value="1,1">1:1</option>
-																<option value="3,4">3:4</option>
+																<option value="2,1">2:1</option>
+																<option value="4,3">4:3</option>
 																<option value="16,9">16:9</option>
 																<option value="9,16">9:16</option>
-																<option value="4,3">4:3</option>
+																<option value="3,4">3:4</option>
+																<option value="1,2">1:2</option>
 															</select></td>
 														</tr>
 														<tr>
 															<th scope="row">3</th><td>Thumb fit</td>
 															<td>
-																<select id="thumbFitSelect" class="form-control">
-																<option>cover</option>
-																<option>contain</option>
-															</select>
-
-															</td>
+															<select id="thumbFitSelect" class="form-control">
+																<option value="cover">cover</option>
+																<option value="contain">contain</option>
+															</select></td>
 														</tr>
 														<tr>
 															<th scope="row">4</th><td>Thumb margin</td>
 															<td>
-																<select id="thumbMarginSelect" class="form-control">
-																<option>0</option>
-																<option>1px</option>
-																<option>2px</option>
-																<option>3px</option>
-																<option>4px</option>
-																<option>5px</option>
-																<option>6px</option>
-																<option>7px</option>
-																<option>8px</option>
-																<option>9px</option>
-																<option>10px</option>
-															</select>
+															<input id="thumbMarginInput" type="text" class="form-control" placeholder="0">
 															</td>
 														</tr>
 														<tr>
 															<th scope="row">5</th><td>Sizes</td>
 															<td>
-																<input type="text" class="form-control" id="inputSizes" placeholder="">
+															<input id="inputSizes" type="text" class="form-control" placeholder="">
 															</td>
-														</tr>														
+														</tr>
 													</tbody>
 												</table>
-												</form>
-											</div>
-
+												<input type="reset" id="configreset" value="Reset">
+											</form>
+										</div>
+										<form id="loginForm" class="form-signin">
 											<h2 class="form-signin-heading">Please sign in</h2>
 											<label for="inputUsername" class="sr-only">Username</label>
 											<input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
