@@ -26,10 +26,14 @@
 		this.each(function() {
 			var _respi_el = !$(this).attr("respi-path") ? $(this).find("[respi-path]") : $(this);
 			var _respi = _respi_el.attr("respi-path").replace("_respi", "_"+nearest($(this), arr));
-			_respi_el.css('background-image', 'url(' + _respi + ')');
+			if (_respi_el.attr("data-src")){
+				_respi_el.attr("data-src", _respi);
+			} else {
+				_respi_el.css('background-image', 'url(' + _respi + ')');
+			}
 		})
 
-		return res;
+		return this;
 	};
 })(jQuery);
 

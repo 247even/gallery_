@@ -1,3 +1,10 @@
+// clear html elements
+function clearHtml(elements){
+	for(var i=0, len=elements.length; i < len; i++){
+		document.querySelector(elements[i]).innerHtml = "";
+	}
+}
+
 // debounce function, for executing funcs when event stops
 var debounce = function(func, threshold, execAsap) {
 	var timeout;
@@ -37,9 +44,9 @@ var waitForFinalEvent = (function() {
 // jquery proportion
 (function($) {
 	$.fn.proportion = function(a,b) {
-		console.log("a: "+a+" b: "+b);
 		var a = !a ? 1 : a;
 		var b = !b ? 1 : b;
+		console.log("a: "+a+" b: "+b);
 		$(this).css('height', $(this).outerWidth() * b / a);
 		return this;
 	}

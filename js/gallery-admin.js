@@ -5,15 +5,11 @@ function adminInit() {
         $('#basicsForm')[0].reset();
   });
   
-  
-	
 	/* Basics */
 	
 	//$('#basicsForm').validator();
 
 	$('.admin-header a[aria-controls="basics-panel"]').on('shown.bs.tab', function(e) {
-		
-		console.log("basics");
 		
 		// pre-/re-set thumbSize
 		var thumbSize = !galleryJSON.thumbDisplay ? "md" : galleryJSON.thumbDisplay;
@@ -111,8 +107,6 @@ function adminInit() {
 			var value = $(this).val().split(',');
 			value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
 			galleryJSON.sizes = value;
-			console.log(value);
-			
 		});	
 	
 		$("#coverCheckbox").click(function(e){
@@ -134,10 +128,8 @@ function adminInit() {
 			selectedImages = $(".gallery-row .selected-image");
 			
 			var firstTag = selectedImages.first().attr('data-tags');
-			if (firstTag) {
-				// firstTag.split(',');
-				firstTag = _.split(firstTag, ',');
-			}
+			firstTag = _.split(firstTag, ',');
+
 			var groupTags = $("#input-tags").attr("value").split(',');
 			var interTags;
 			var firstTags;
@@ -151,7 +143,6 @@ function adminInit() {
 			} else if (selectedImages.length > 1) {
 
 				if (!groupTags[0]) {
-					console.log('groupTags is empty, ' + i);
 					groupTags = firstTag;
 				}
 
@@ -171,9 +162,6 @@ function adminInit() {
 				selectedTags = [];
 				groupTags = [];
 			}
-
-			console.log("selectedtags: " + selectedTags);
-			console.log("grouptags: " + groupTags);
 
 			$("#input-tags").attr("value", groupTags);
 
@@ -202,7 +190,7 @@ function adminInit() {
 			plugins : ['remove_button'],
 			delimiter : ',',
 			create : function(input) {
-				console.log("create: " + input);
+				//console.log("create: " + input);
 				input = input.split(',');
 				selectedImages.each(function() {
 					var dataTags = $(this).attr('data-tags');
@@ -251,7 +239,6 @@ function adminInit() {
 			
 			tags = _.uniq(_.flattenDeep(tags));
 			galleryJSON.tags = tags;
-			console.log(tags);
 			buildGalleryNavigation();
 
 			//console.log(tagsJSON);
@@ -282,16 +269,17 @@ function adminInit() {
 
 		function loadBlur() {
 
-			var imgSrc = $(".selected-image").attr("respi-path");
+			//var imgSrc = $(".selected-image").attr("respi-path");
+			var imgSrc = document.querySelector(".selected-image .thumb-div").getAttribute("respi-path");
 			$("#blurPath").val(imgSrc);
 			var imgSrcSplit = imgSrc.split("/");
-			var imgSrc_720 = $(".selected-image").attr("respi-path").replace("_respi", "_720");
+			var imgSrc_720 = imgSrc.replace("_respi", "_720");
 			var imgSrc_720_blur = imgSrc_720.replace("gallery", "gallery/blur");
 			//var imgSrc_720 = imgSrcSplit[0] + "/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
 			// var imgSrc_720_blur = imgSrcSplit[0] + "/blur/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
 
-			var blurImage = imgSrc_720_blur + '?ts=' + $.now();
-			$("#blurImageFrame img").attr('src', blurImage).imagesLoaded().always(function(instance) {
+			$("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + $.now())
+			.imagesLoaded().always(function(instance) {
 				//console.log('blur image request');
 			}).done(function(instance) {
 				//console.log("blur image loaded");
@@ -376,46 +364,54 @@ function adminInit() {
 	/* Sliders */
 
 	$('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e) {
-
-		$('.sortable').sortable({
-			// options
-		});
-
+		
+		$('.sortable').sortable('destroy');
+		document.getElementById('sliderSortable').innerHtml = "";
+		$('#sliderSortable').html('');
+		
 		function selectedIds() {
 			var selected_ids = [];
-			$.each($("#sliderSortable .gallery-item"), function() {
-				selected_ids.push($(this).attr("data-id"));
-			})
+			var items = document.querySelectorAll("#sliderSortable .gallery-item");
+			for(var i=0, len=items.length; i < len; i++){
+				selected_ids.push(items[i].getAttribute("data-id"));
+			}
 			return selected_ids;
 		}
 
-
-		$(".gallery-row .gallery-item").removeClass("selected-image").off("click").on("click", function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			$(this).toggleClass("selected-image");
-
-			if ($(this).hasClass("selected-image")) {
-				$(this).clone().addClass("sortable-item").appendTo("#sliderSortable");
-			} else {
-				var data_id = $(this).attr("data-id");
-				$("#sliderSortable div[data-id='" + data_id + "']").remove();
-			}
-			$('.sortable').sortable('reload');
-
-			if (selectedIds().length >= 2) {
-				$("#sliderSubmit").prop("disabled", false);
-			} else {
-				$("#sliderSubmit").prop("disabled", true);
-			}
-
-			return false;
+		$(".gallery-row .gallery-item")
+			.removeClass("selected-image").off("click").on("click", function(e) {
+				
+				e.preventDefault();
+				e.stopPropagation();
+	
+				$(this).toggleClass("selected-image");
+	
+				if ($(this).hasClass("selected-image")) {
+					$(this).clone().addClass("sortable-item").appendTo("#sliderSortable");
+				} else {
+					var data_id = $(this).attr("data-id");
+					$("#sliderSortable div[data-id='" + data_id + "']").remove();
+				}
+				$('.sortable').sortable('reload');
+				
+				var selected_ids = selectedIds();
+				var prop = (selected_ids.length >= 2) ? false : true;
+				$("#sliderSubmit").prop("disabled", prop);
+				
+				//galleryJSON.sliders["slider1"] = selected_ids;
 		});
+		
+		
+		///return false;
 
-		$.each(selectedIds(), function(k, v) {
-			$(".gallery-row div[data-id='" + v + "']").addClass("selected-image");
-		});
+		$('.sortable').sortable().unbind('sortupdate').bind('sortupdate', function(e, ui) {
+			galleryJSON.sliders["slider1"] = selectedIds();
+		});		
+		
+		for(var i=0, len=galleryJSON.sliders.slider1.length; i < len; i++){
+			document.querySelector('.gallery-row div[data-id="'+galleryJSON.sliders.slider1[i]+'"]').click();
+		};	
+
 
 		$("#sliderSubmit").on("click", function(e) {
 			e.preventDefault();
@@ -424,12 +420,13 @@ function adminInit() {
 		});
 
 	})
+	
+	
 	/* Raw */
 	$('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
-		$(".gallery-item").removeClass("selected-image");
+		$(".gallery-row .gallery-item").removeClass("selected-image");
 
-		var JSONtext = JSON.stringify(galleryJSON, null, '\t');
-		$("#json-output").text(JSONtext);
+		$("#json-output").text(JSON.stringify(galleryJSON, null, '\t'));
 	});
 	
 	$('.admin-header a[aria-controls="basics-panel"').trigger("click");

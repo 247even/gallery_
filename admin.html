@@ -39,9 +39,9 @@
 						<div class="col col-lg-6 col-md-6">
 							<section class="gallery section section--no-padding after-navbar scroll-wrapper" id="arbeiten">
 								<!-- Gallery -->
-								<div class=" gallery-layout-default">
+								<div class="gallery-layout-default">
 									<div>
-										<div class="row gallery-row no-gutter">
+										<div id="gallery-row" class="row gallery-row no-gutter">
 
 										</div>
 									</div>
@@ -65,7 +65,7 @@
 												<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
 												<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
 
-												<span class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>
+												<span id="indicator-text" class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>
 											</div>
 										</div>
 									</div>
@@ -111,10 +111,10 @@
 								</ul>
 							</div>
 
-							<section class="section section--no-padding after-navbar scroll-wrapper">
+							<section class="section section--no-padding after-navbar height100">
 								<!-- Tab panes -->
 								<div class="tab-content">
-									<div id="basics-panel" role="tabpanel" class="tab-pane" >
+									<div id="basics-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 
 										basics
 
@@ -194,9 +194,9 @@
 												Sign in
 											</button>
 										</form>
-									</div>
-									<!-- end basics panel -->
-									<div id="tags-panel" role="tabpanel" class="tab-pane" >
+									</div><!-- end basics panel -->
+									
+									<div id="tags-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 										<section class="">
 
 											<form id="tags-form">
@@ -210,7 +210,8 @@
 											</form>
 										</section><!-- admin-panel -->
 									</div><!-- end tabs panel -->
-									<div id="effect-panel" role="tabpanel" class="tab-pane" >
+									
+									<div id="effect-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 										<form id="blur-form">
 											<input id="blurSlider" type="range" min="10" max="100" value="50" step="5" data-rangeslider>
 											<output id="blurSliderOutput">
@@ -230,7 +231,8 @@
 											<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"/>
 										</div>
 									</div>
-									<div id="slider-panel" role="tabpanel" class="tab-pane">
+									
+									<div id="slider-panel" role="tabpanel" class="tab-pane scroll-wrapper">
 										slider
 										<div id="sliderSortable" class="js-grid sortable grid clearfix ml4 myn1" data-sortable-id="1" aria-dropeffect="move">
 
@@ -239,10 +241,13 @@
 											<button id="sliderSubmit" type="submit" class="btn btn-default" disabled>
 												Save
 											</button>
+											<button id="sliderClear" class="btn btn-default" disabled>
+												Clear
+											</button>
 										</form>
-									</div>
-									<!-- slider-panel -->
-									<div id="raw-panel" role="tabpanel" class="tab-pane">
+									</div><!-- end slider-panel -->
+									
+									<div id="raw-panel" role="tabpanel" class="tab-pane scroll-wrapper">
 										Raw Output
 										<pre id="json-output">
 											
@@ -283,7 +288,7 @@
 		<script src="js/imgloaded.js"></script>
 		<script src="js/PxLoader.js"></script>
 		<script src="js/pxloader-images.min.js"></script>
-		<script src="js/blazy.min.js"></script>
+		<script src="js/onscreen.js"></script>
 		<script src="js/animatecss.min.js" async></script>
 		<script src="js/SmoothScroll.js"></script>
 		<script src="js/bootstrap-carousel-swipe.js"></script>

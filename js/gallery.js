@@ -35,14 +35,20 @@ function buildGalleryItems(filter) {
 	thumbPadding = thumbPadding != 0 ? 'style="padding:' + parseInt(thumbPadding) + 'px"' : '';
 
 	// reset
-	$('.gallery-row').html("");
+	document.getElementById('gallery-row').innerHTML = "";
 	$('#thumb-prototype').remove();
 
-	var gallery_item_div = '<div class="' + thumbSize + ' gallery-item img-hidden" ' + thumbPadding + '>' + '<div class="thumb-div cover-image b-lazy">' + '<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal">' + '<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">' + '<span class="glyphicon glyphicon-zoom-in"> </span>' + '</a>' + '</div>' + '</div>';
-
-	$('body').append('<div id="thumb-prototype" style="display:none"> </div>');
-	$('#thumb-prototype').append(gallery_item_div);
-
+	//$('body').append(
+	document.body.insertAdjacentHTML('beforeend',
+		'<div id="thumb-prototype" style="display:none">'
+		+ '<div class="' + thumbSize + ' gallery-item img-hidden" ' + thumbPadding + '>'
+		+ '<div class="thumb-div cover-image" data-src="xxx">'
+		+ '<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal">'
+		+ '<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">'
+		+ '<span class="glyphicon glyphicon-zoom-in"> </span>'
+		+ '</a>' + '</div>' + '</div></div>'
+	);	
+/*
 	$.each(galleryJSON.images, function(key, val) {
 		var folder = val.path;
 		var file = val.file;
@@ -51,7 +57,7 @@ function buildGalleryItems(filter) {
 
 		// check if a filter was passed to this function
 		if (filter && filter != "all") {
-			console.log("filter: " + filter);
+			//console.log("filter: " + filter);
 			if ($.inArray(filter, tags) == -1) {
 				return true
 			};
@@ -62,10 +68,36 @@ function buildGalleryItems(filter) {
 		$("#thumb-prototype a").attr('data-slide-to', i);
 		//$("#thumb-prototype img").attr('data-original', thumbFilePath);
 
-		$("#thumb-prototype .gallery-item").clone().appendTo(".gallery-row");
+		$("#thumb-prototype .gallery-item").clone().appendTo("#gallery-row");
 
 		i++;
 	});
+*/
+	
+	for( var key in galleryJSON.images){
+		
+		var val = galleryJSON.images[key];
+		var folder = val.path;
+		var file = val.file;
+		var respiPath = 'gallery/' + folder + '_respi/' + file;
+		var thumbFilePath = 'gallery/' + folder + '_' + initialThumbSize + '/' + file;
+
+		// check if a filter was passed to this function
+		if (filter && filter != "all") {
+			//console.log("filter: " + filter);
+			if ($.inArray(filter, tags) == -1) {
+				return true
+			};
+		}
+
+		document.querySelector("#thumb-prototype .thumb-div").setAttribute('respi-path', respiPath);
+		document.querySelector("#thumb-prototype a").setAttribute('data-slide-to', i);
+
+		$("#thumb-prototype .gallery-item").attr({"data-id": key, "data-time": val.time,"data-tags": val.tags})
+		.clone().appendTo("#gallery-row");
+
+		i++;
+	};	
 
 }
 
@@ -79,11 +111,16 @@ function buildGallery(data, filter) {
 
 	 var i = 0;
 	 */
-	$('body').attr("respi-sizes", galleryJSON.sizes);
+
+	document.body.setAttribute("respi-sizes", galleryJSON.sizes);
 
 	// reset
-	$('.carousel-inner').html("");
-	$('.carousel-indicators').html("");
+	//$('.carousel-inner').html("");
+	//$('.carousel-indicators').html("");
+	
+	//document.querySelector('.carousel-inner').innerHTML = "";
+	//document.querySelector('.carousel-indicators').innerHTML = "";
+	//clearHtml(['.carousel-inner','.carousel-indicators']);
 
 	buildGalleryItems();
 
@@ -93,11 +130,11 @@ function buildGallery(data, filter) {
 	buildGalleryNavigation();
 	initGalleryNavigation();
 
-	$(".gallery-item").respi(galleryJSON.sizes);
+	//$(".gallery-item").respi(galleryJSON.sizes);
 
 	// fade em in...
 	galleryFilter("all");
-	console.log("Filter");
+	//console.log("Filter");
 
 	//preloader();
 	//console.log("preloader");
@@ -107,49 +144,61 @@ function buildGallery(data, filter) {
 
 function buildLightbox(init) {
 
-	console.log("buildLightbox startet");
+	//console.log("buildLightbox startet");
 
 	var items;
 
 	// reset
-	$('.gallery .carousel-inner').html("");
-	$('.gallery .carousel-indicators').html("");
+	//$('.gallery .carousel-inner').html("");
+	//$('.gallery .carousel-indicators').html("");
+	//document.querySelector('.gallery .carousel-inner').innerHTML = "";
+	//document.querySelector('.gallery .carousel-indicators').innerHTML = "";
+	clearHtml(['.carousel-inner','.carousel-indicators']);
 
 	// init 'true' to fetch all images, else only active
 	if (init) {
-		items = $(".gallery .gallery-item");
+		//items = $(".gallery .gallery-item");
+		items = document.querySelectorAll(".gallery .gallery-item");
 	} else {
 		items = $(".gallery .gallery-item").filter('.img-active');
 	}
-
-	$.each(items, function(i) {
-		$(this).find("a").attr("data-slide-to", i);
+	
+	for(var i=0, len=items.length; i < len; i++){
+	//$.each(items, function(i) {
+		//$(this).find("a").attr("data-slide-to", i);
+		items[i].getElementsByTagName('a')[0].setAttribute("data-slide-to", i);
 		// Build Carousel
-		var _respi = $(this).find("[respi-path]");
-		var inner = '<div class=\"item\" respi-path="' + _respi.attr("respi-path") + '" style=\"background-image:' + _respi.css('background-image') + ';\"><img alt=\"\" src=\"images/FFF-0.png\"></div>';
-		$('.gallery .carousel-inner').append(inner);
-	})
-	var total = $(items).length;
+		//var _respi = $(this).find("[respi-path]");
+		var _respi_path = items[i].getElementsByClassName('thumb-div')[0].getAttribute("respi-path");
+		//var inner = '<div class=\"item\" respi-path="' + _respi.attr("respi-path") + '" style=\"background-image:' + _respi.css('background-image') + ';\"><img alt=\"\" src=\"images/FFF-0.png\"></div>';
+		//$('.gallery .carousel-inner').append(inner);
+		document.querySelector('.gallery .carousel-inner').insertAdjacentHTML('beforeend',
+			'<div class=\"item\" respi-path="' + _respi_path + '" style=\"background-image:;\"><img alt=\"\" src=\"images/FFF-0.png\"></div>'
+		);
+	}
+	//)
+
+	var total = items.length;
 	var currentIndex = $('.item.active').index() + 1;
-	$('.slidetext').html(currentIndex + '/' + total);
+	//$('.slidetext').html(currentIndex + '/' + total);
+	//document.querySelector('.slidetext').innerHTML = currentIndex + '/' + total;
 
 	// This triggers after each slide change
 	$('.gallery .lightbox').on('slid.bs.carousel', function() {
 		currentIndex = $('.gallery-carousel div.active').index() + 1;
-		console.log("current: " + currentIndex);
 		// Now display this wherever you want
-		var text = currentIndex + ' / ' + total;
-		$('.indicator-text').html(text);
+		//$('.indicator-text').html(currentIndex + ' / ' + total);
+		document.getElementById('indicator-text').innerHTML = currentIndex + '/' + total;
 	});
 
 	$('.gallery .lightbox').on('shown.bs.modal', function(e) {
 		$(".gallery-carousel .item").respi();
 	});
 
-	$('.gallery .carousel-indicators li').removeClass('active');
-	$('.gallery .carousel-indicators li:last').addClass('active');
-	$('.gallery .carousel-inner .item').removeClass('active');
-	$('.gallery .carousel-inner .item:last').addClass('active');
+	$('.gallery .carousel-indicators li').removeClass('active').last().addClass('active');;
+	//$('.gallery .carousel-indicators li:last').addClass('active');
+	$('.gallery .carousel-inner .item').removeClass('active').last().addClass('active');
+	//$('.gallery .carousel-inner .item:last').addClass('active');
 
 	$('.gallery .lightbox').carousel();
 };
@@ -159,28 +208,40 @@ function buildGalleryNavigation(tags) {
 		var tags = galleryJSON.tags;
 	}
 	// unique tags:
-	var utags = _.union(tags);
+	//var utags = _.union(tags);
 
 	// build filter buttons
-	$('#filter-select').html('');
-	$('#filter-select').append('<option value="all" data-filter="all">----</option>');
+	document.getElementById('filter-select').innerHTML = '<option value="all" data-filter="all">----</option>';
+	
+	for(var i=0, len=tags.length; i < len; i++){
+		var uval = tags[i];
+		document.getElementById('filter-select').insertAdjacentHTML('beforeend',
+				'<option value=\"' + uval + '\" data-filter=\"' + uval + '\">' + uval + '</option>'
+		);		
+	}
+	
+	/*
 	$.each(utags, function(key, val) {
-		$('#filter-select').append('<option value=\"' + val + '\" data-filter=\"' + val + '\">' + val + '</option>');
+		//$('#filter-select').append('<option value=\"' + val + '\" data-filter=\"' + val + '\">' + val + '</option>');
+		document.getElementById('filter-select').insertAdjacentHTML('beforeend',
+				'<option value=\"' + val + '\" data-filter=\"' + val + '\">' + val + '</option>'
+		);
 	});
+	*/
 	$('#filter-select').selectpicker('refresh');
 };
 
 function initGalleryNavigation() {
 
 	$('#filter-select').on('change', function() {
-		console.log("animrunning: " + animrunning);
+		//console.log("animrunning: " + animrunning);
 		$('#filter-select').selectpicker('refresh');
 
 		if (!animrunning) {
 			$('.gallery-footer .btn').removeClass('active');
-			$(this).addClass('active');
-			console.log($(this).val());
-			galleryFilter($(this).val());
+			//$(this).addClass('active');
+			//console.log($(this).val());
+			galleryFilter($(this).addClass('active').val());
 			$('#filter-select').selectpicker('refresh');
 		}
 	});
@@ -188,8 +249,9 @@ function initGalleryNavigation() {
 };
 
 function buildIndexCarousel(image, i) {
-	$('#slider-1 .carousel-inner').html("");
-	$('#slider-1 .carousel-indicators').html("");
+	//$('#slider-1 .carousel-inner').html("");
+	//$('#slider-1 .carousel-indicators').html("");
+	clearHtml(['#slider-1 .carousel-inner', '#slider-1 .carousel-indicators']);
 
 	$(".gallery .gallery-item").each(function(k, v) {
 
@@ -218,7 +280,7 @@ function buildIndexCarousel(image, i) {
 //requires var animrunning = false;
 function galleryFilter(fil) {
 
-	console.log("gallery filter started");
+	//console.log("gallery filter started");
 
 	var fi = 0;
 	var cb;
@@ -229,13 +291,21 @@ function galleryFilter(fil) {
 	if (animrunning) {
 		return false;
 	}
-	
-	console.log( _.filter(galleryJSON.images, {'tags': [fil]}) );
 
-	if (fil == "all") {
-		inItems = $(".gallery-row .gallery-item").not('.img-active');
+	var filteredIds = _.keys(_.pickBy(galleryJSON.images, {
+		'tags' : [fil]
+	}));
+
+	/*
+	 var elements = $(".gallery-row .gallery-item.img-active");
+	 var vals = [];
+	 for(var i=0;typeof(elements[i])!='undefined';vals.push(elements[i++].getAttribute('value')));
+	 */
+
+	if (!fil || fil == "all") {
+		inItems = $(".gallery .gallery-item").not('.img-active');
 	} else {
-		$(".gallery-row .gallery-item").each(function(k) {
+		$(".gallery .gallery-item").each(function(k) {
 			var tags = $(this).attr("data-tags");
 			if (tags.includes(fil)) {
 				if (!$(this).hasClass('img-active')) {
@@ -259,6 +329,8 @@ function galleryFilter(fil) {
 	};
 	var inLength = inItems.length;
 	var outLength = outItems.length;
+
+	//console.log(outItems);
 
 	$.each(outItems, function(i) {
 		// animate those, which are visible
@@ -324,6 +396,11 @@ function galleryFilter(fil) {
 
 };
 
+function loadImage(el){
+	//console.log(el.attr("data-src"));
+	el.css("background-image", "url(" + el.attr("data-src") + ")" );
+};
+
 function initGallery() {
 	console.log("initGallery");
 
@@ -332,33 +409,33 @@ function initGallery() {
 		//e.preventDefault();
 		$('.gallery-carousel .item').toggleClass('bg-cover');
 	});
+	
+	// 
+	$(".gallery .gallery-item").proportion(galleryJSON.proportion).respi(galleryJSON.sizes);
 
-	/*
-	 // lazyload
-	 var portfolioLoad = new LazyLoad({
-	 threshold: 600,
-	 container: document.getElementById('arbeiten'),
-	 elements_selector: ".img-active .lazy",
-	 skip_invisible : false,
-	 throttle: 60,
-	 data_src: "original",
-	 data_srcset: "srcset",
-	 show_while_loading: false,
-	 callback_set: function() { }
-	 });
-	 */
-
-	$(window).on('load resize', debounce(function() {
+	$(window).on('resize', debounce(function(e) {
+		console.log(e);
 		$(".gallery .gallery-item").proportion(galleryJSON.proportion).respi(galleryJSON.sizes);
 		$(".gallery .gallery-carousel .item").respi(galleryJSON.sizes);
 	}, 500, false));
 
-	//bLazy
-	var bLazy = new Blazy({
-		container : '.gallery', // Default is window
-		success : function(element) {
-			console.log('bLazy finish');
-		}
+	$('.gallery .gallery-item').onScreen({
+		container : '#arbeiten',
+		direction : 'vertical',
+		doIn : function(e) {
+			// Do something to the matched elements as they come in
+			loadImage($(this).find('.thumb-div'));
+		},
+		doOut : function() {
+			// Do something to the matched elements as they get off scren
+			console.log("doout");
+		},
+		tolerance : 0,
+		throttle : 50,
+		toggleClass : 'onscreen',
+		lazyAttr : null,
+		lazyPlaceholder : 'someImage.jpg',
+		debug : false
 	});
 
 	// load admin-functions, if available
