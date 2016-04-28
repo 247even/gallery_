@@ -226,7 +226,7 @@ function adminInit() {
 			
 			var tags = [];
 
-			$.each($(".gallery-row .edited"), function() {
+			$(".gallery-row .edited").each(function() {
 				var this_id = $(this).attr("data-id");
 				var this_tags = $(this).attr("data-tags");
 				this_tags = this_tags.split(',');
@@ -269,14 +269,11 @@ function adminInit() {
 
 		function loadBlur() {
 
-			//var imgSrc = $(".selected-image").attr("respi-path");
 			var imgSrc = document.querySelector(".selected-image .thumb-div").getAttribute("respi-path");
 			$("#blurPath").val(imgSrc);
 			var imgSrcSplit = imgSrc.split("/");
 			var imgSrc_720 = imgSrc.replace("_respi", "_720");
 			var imgSrc_720_blur = imgSrc_720.replace("gallery", "gallery/blur");
-			//var imgSrc_720 = imgSrcSplit[0] + "/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
-			// var imgSrc_720_blur = imgSrcSplit[0] + "/blur/" + imgSrcSplit[1] + "_720/" + imgSrcSplit[2];
 
 			$("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + $.now())
 			.imagesLoaded().always(function(instance) {
@@ -294,7 +291,6 @@ function adminInit() {
 			});
 		}
 
-
 		$(".gallery-row .gallery-item").removeClass("selected-image").off("click").on("click", function(e) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -305,8 +301,7 @@ function adminInit() {
 
 			return false;
 		});
-		//e.target // newly activated tab
-		//e.relatedTarget // previous active tab
+
 		$("#blurSlider").rangeslider({
 			polyfill : false,
 			// Callback function
@@ -400,9 +395,7 @@ function adminInit() {
 				
 				//galleryJSON.sliders["slider1"] = selected_ids;
 		});
-		
-		
-		///return false;
+
 
 		$('.sortable').sortable().unbind('sortupdate').bind('sortupdate', function(e, ui) {
 			galleryJSON.sliders["slider1"] = selectedIds();
