@@ -1,8 +1,9 @@
 <?php
 ini_set('display_errors', 'On');
-
+/*
 echo "Start<br><br>";
 echo 'Name des Benutzers: ' . get_current_user();
+
 echo "<br>";
 $processUser = posix_getpwuid(posix_geteuid());
 echo $processUser['name'];
@@ -21,16 +22,18 @@ echo "User: ".$user."<br>";
 unlink("testFile");
 echo "<br>";
 echo "<br>";
+*/
 
 require 'jsonutil.php';
 require 'resizeStore.php';
 require 'saveFileAs.php';
+require 'existingGallery.php';
+require 'allFolders.php';
+require 'checkFolders.php';
 
 $existingFolders;
-//$allFolders;
 $galleries;
 $existingGallery;
-//$sizes = "280,430,720,1200";
 $sizeValues = array(280, 430, 720, 1200);
 
 // http://www.url.com/gallery/gallery.php?scanFolder=objekte&force=true
@@ -49,54 +52,6 @@ if (isset($_GET['scanFolder'])) {
 	echo "imagesInFolder: " . count($imagesInFolder) . "<br>";
 	processImages($imagesInFolder, $scanFolder);
 	return false;
-}
-
-function checkFolders($jsonFolders, $existingFolders) {
-
-	$ck = 0;
-
-	if (!$jsonFolders) {
-		echo "Error: No jsonFolders!<br>";
-		return false;
-	}
-	if (!$existingFolders) {
-		echo "Error: No existingFolders!<br>";
-		return false;
-	}
-
-	$newFolders = array_diff($existingFolders, $jsonFolders);
-	if (!empty($newFolders)) {
-		foreach ($newFolders as $key => $value) {
-			$targetpath = $value . '_280/';
-			mkdir($targetpath);
-			processImages(imagesFromFolder($newFolder), $value);
-			$ck = 1;
-		}
-	}
-
-	$oldFolders = array_diff($jsonFolders, $existingFolders);
-	if (!empty($oldFolders)) {
-		foreach ($oldFolders as $key => $value) {
-			echo "Removed folder found: '" . $value . "'.<br>";
-			if (!file_exists($value)) {
-				// this folder is not present anymore
-				$tf = $value . "_280";
-				if (file_exists($tf)) {
-					echo "lonesome thumbs-Folder found: " . $tf . " <br>";
-					array_map('unlink', glob("$tf/*.*"));
-					if (rmdir($tf)) {
-						echo "...and removed.<br>";
-					}
-				}
-			}
-		}
-		$ck = 1;
-	}
-
-	if ($ck == 1) {
-		saveJSON(buildExistingGallery());
-		start();
-	}
 }
 
 function processImages($newImages, $folder) {
@@ -169,70 +124,7 @@ function saveJSON($jsf) {
 }
 */
 
-function buildExistingGallery() {
 
-	global $existingFolders;
-	global $sizeValues;
-	//	global $allFolders;
-
-	// find all galeries, aka folders:
-	$allFolders = array_values(array_filter(glob('*'), 'is_dir'));
-	//	echo "all Folders: " . json_encode($allFolders) . "<br><br>";
-	// exclude and ignore folders:
-	$folderfilter[] = 'blur';
-	$existingFolders = array_diff($allFolders, $folderfilter);
-	
-	// remove size directories from list
-	echo json_encode($sizeValues)."<br>";
-	foreach ($sizeValues as $size) {
-		echo "size: ".$size."<br>";
-		$existingFolders = array_filter($existingFolders, function($va) {
-			global $size;
-			if (strstr($va, '_'.$size) !== false) {
-				return false;
-			}
-			return true;
-		});
-	}
-	
-	$existingFolders = array_values($existingFolders);
-	echo "folders: ".json_encode($existingFolders)."<br>";
-
-	foreach ($existingFolders as $key => $value) {
-		//echo $key.' '.$value.'<br>';
-		$path = $value . '/';
-		// search all images in folder
-		foreach (glob("$path*.{jpg,jpeg,png,gif}", GLOB_BRACE) as $filename) {
-			resizeStore($value, basename($filename), $sizeValues);
-			$imageObject = array("file" => basename($filename), "path" => $value, "time" => filemtime($filename), "tags" => [$value]);
-			$existingImages[$value . basename($filename)] = $imageObject;
-		}
-
-		// prevent empty folders
-		if ($existingImages) {
-			$existingGallery = array("images" => $existingImages);
-		}
-		//echo 'existingImages: '.json_encode($existingImages).'<br>';
-		
-		// add hash
-		$gmd5 = md5(json_encode($existingGallery["images"]));
-		echo "md5: " . $gmd5 . "<br>";
-		$existingGallery["md5"] = $gmd5;
-
-		// add folder list
-		if ($existingFolders) {
-			$existingGallery["folders"] = $existingFolders;
-		}
-
-		// add sizes list
-		if ($sizeValues) {
-			$existingGallery["sizes"] = $sizeValues;
-		}
-
-	}
-
-	return $existingGallery;
-};
 
 function imagesFromFolder($folder) {
 	$path = $folder . '/';
@@ -255,59 +147,6 @@ function imagesFromFolder($folder) {
 	echo json_encode($images) . "<br>";
 	return $images;
 };
-
-//////////////////////////////////////////////////////////////////////
-
-function start() {
-	global $existingFolders;
-	//global $allFolders;
-
-	$existingGallery = buildExistingGallery();
-	//echo "existingGallery:<br>" . json_encode($existingGallery) . "<br><br>";
-	$existingMd5 = $existingGallery['md5'];
-
-	echo "existingFolders:<br>" . json_encode($existingFolders) . "<br><br>";
-
-	// look for gallery.json, else create new
-	if (file_exists("gallery.json")) {
-		$galleryJSON = file_get_contents('gallery.json');
-		$galleries = json_decode($galleryJSON, true);
-		//echo "json galleries:<br>" . json_encode($galleries) . "<br><br>";
-	} else {
-		saveFileAs(buildExistingGallery(), "gallery.json");
-		start();
-		return false;
-	}
-
-	$jsonMd5 = $galleries['md5'];
-	if (!$jsonMd5) {
-		echo "No json md5!<br>";
-		return false;
-	}
-
-	if (!$existingMd5) {
-		echo "No ex md5!<br>";
-		return false;
-	}
-
-	if ($jsonMd5 != $existingMd5) {
-		echo "<br>md5 is NOT equal!<br>";
-		echo "<br>" . $jsonMd5 . "<br>";
-		echo $existingMd5 . "<br>";
-		//return false;
-	} else {
-		echo "<br>md5 is equal..<br>";
-		//echo "<br>".$jsonMd5."<br>";
-		//echo $existingMd5."<br>";
-		return false;
-	}
-
-	$jsonFolders = $galleries['folders'];
-	echo "json folders:<br>" . json_encode($jsonFolders) . "<br><br>";
-
-	checkFolders($jsonFolders, $existingFolders);
-	checkDiff($galleries, $existingGallery);
-}
 
 function checkDiff($galleries, $existingGallery) {
 	//global $galleries;
@@ -374,6 +213,59 @@ function checkDiff($galleries, $existingGallery) {
 		processImages($newImages);
 		saveJSON(buildExistingGallery(), "gallery.json");
 	}
+}
+
+//////////////////////////////////////////////////////////////////////
+
+function start() {
+	global $existingFolders;
+	//global $allFolders;
+
+	$existingGallery = buildExistingGallery();
+	//echo "existingGallery:<br>" . json_encode($existingGallery) . "<br><br>";
+	$existingMd5 = $existingGallery['md5'];
+
+	echo "existingFolders:<br>" . json_encode($existingFolders) . "<br><br>";
+
+	// look for gallery.json, else create new
+	if (file_exists("gallery.json")) {
+		$galleryJSON = file_get_contents('gallery.json');
+		$galleries = json_decode($galleryJSON, true);
+		//echo "json galleries:<br>" . json_encode($galleries) . "<br><br>";
+	} else {
+		saveFileAs(buildExistingGallery(), "gallery.json");
+		start();
+		return false;
+	}
+
+	$jsonMd5 = $galleries['md5'];
+	if (!$jsonMd5) {
+		echo "No json md5!<br>";
+		return false;
+	}
+
+	if (!$existingMd5) {
+		echo "No ex md5!<br>";
+		return false;
+	}
+
+	if ($jsonMd5 != $existingMd5) {
+		echo "<br>md5 is NOT equal!<br>";
+		echo "<br>" . $jsonMd5 . "<br>";
+		echo $existingMd5 . "<br>";
+		//return false;
+	} else {
+		echo "<br>md5 is equal..<br>";
+		//echo "<br>".$jsonMd5."<br>";
+		//echo $existingMd5."<br>";
+		return false;
+	}
+
+	$jsonFolders = $galleries['folders'];
+	echo "json folders:<br>" . json_encode($jsonFolders) . "<br><br>";
+
+	checkFolders($jsonFolders, $existingFolders);
+	checkDiff($galleries, $existingGallery);
 }
 
 start();

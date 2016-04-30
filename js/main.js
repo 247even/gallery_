@@ -7,13 +7,6 @@ function pageFunction(t) {
 		}, null, "/portfolio");		
 		
 		$('.navbar').removeClass('navbar--transparent');
-		$('#lb-arbeiten').carousel();
-		
-		// background zoom function
-		$('.gallery .zoom').on('click', function(e){
-			//e.preventDefault();
-			$('.gallery-carousel .item').toggleClass('bg-cover');
-		});
 		
 		// logo on top position
 	    $('#lb-arbeiten').on('show.bs.modal', function () {
@@ -23,31 +16,15 @@ function pageFunction(t) {
 		}).on('hidden.bs.modal', function () {
 	
 		});
-		
-/*		
-		// https://github.com/verlok/lazyload
-		var portfolioLoad = new LazyLoad({
-		    threshold: 600,
-		    container: document.getElementById('arbeiten'),
-		    elements_selector: ".img-active .lazy",
-		    skip_invisible : false,
-		    throttle: 60,
-		    data_src: "original",
-		    data_srcset: "srcset",
-		    show_while_loading: false,
-		    callback_set: function(e) {
-		    	console.log('e');
-		    }
-		});		
-		return false;
-*/
 
+/*
 		var bLazy = new Blazy({
 			container: '#arbeiten', // Default is window
 	        success: function(element){
 				console.log('bLazy finish');
 	        }
 	   });
+*/
 	}
 
 	if (t == "page4") {
@@ -123,8 +100,7 @@ function navigation() {
 
 	function pageTransition(tgt) {
 
-		pgFunc = tgt;
-		target = '#' + tgt;
+		var target = '#' + tgt;
 
 		// check if active or animating
 		if ($(target).hasClass('page-active') || $(target).hasClass('page-animate')) {
@@ -142,7 +118,7 @@ function navigation() {
 					complete : function() {
 						$(this).addClass('page-active').removeAttr('style').removeClass('page-inactive page-animate');
 						$('.page-last').removeAttr('style').addClass('page-inactive').removeClass('page-last');
-						pageFunction(pgFunc);
+						pageFunction(tgt);
 					}
 				});
 			}
@@ -180,20 +156,15 @@ $(function() {
 
 	// init stuff
 	// mobile 
-	if($('html').hasClass('mobile')){
+	if( $('html').hasClass('mobile') ){
 		// carousel navigation arrows	
 		$('.carousel-control, .control-wrapper').addClass('hidden');
 		$('#filter-select').attr('data-mobile',"true");
 		
 	}
-	
-	$(window).resize(function () {
-	    waitForFinalEvent(function(){
-			//$('#logobox2').clonePosition('#logobox');
-	    }, 500, "clonePosition");
-	});
 
 	$(window).on('load resize', (function() {
+		//$('#logobox2').clonePosition('#logobox');
 		$('.control-wrapper').each(function() {
 			$(this).center();
 		});
@@ -204,10 +175,6 @@ $(function() {
 			//console.log("boing")
 		}, 500, false)
 	);
-	
-	//$(window).on('resize load', function(e){console.log(e)});
-	//$(window).on('resize load', function(){$('#logobox2').clonePosition('#logobox');});
-	//$('#logobox2').clonePosition('#logobox');
 	
 
 /*

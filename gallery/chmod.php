@@ -53,7 +53,7 @@ chmodphp();
  echo "chmod 777 set for: ".$filename."<br>";
  } */
  
- php > umask(0);
+php > umask(0);
 // Should get created as 666
 php > touch('file1.txt');
 

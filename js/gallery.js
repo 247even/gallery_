@@ -3,21 +3,15 @@ function loadJSON() {
 	$.ajax({
 		dataType : "json",
 		url : "gallery/gallery.json",
-		success : function(data) {
-			galleryJSON = data;
-			buildGallery(galleryJSON);
-		}
+	})
+	.done(function(data){
+		galleryJSON = data;
+		buildGallery(galleryJSON);		
 	});
 };
 
 function buildGalleryItems(filter) {
 
-	/*
-	 var imagesJSON = data.images;
-	 var folders = data.folders;
-	 var sizes = data.sizes;
-	 var tags = data.tags;
-	 */
 	var initialThumbSize = _.min(galleryJSON.sizes);
 	var i = 0;
 
@@ -38,7 +32,6 @@ function buildGalleryItems(filter) {
 	document.getElementById('gallery-row').innerHTML = "";
 	$('#thumb-prototype').remove();
 
-	//$('body').append(
 	document.body.insertAdjacentHTML('beforeend',
 		'<div id="thumb-prototype" style="display:none">'
 		+ '<div class="' + thumbSize + ' gallery-item img-hidden" ' + thumbPadding + '>'
@@ -111,7 +104,6 @@ function buildLightbox(init) {
 
 	// init 'true' to fetch all images, else only active
 	if (init) {
-		//items = $(".gallery .gallery-item");
 		items = document.querySelectorAll(".gallery .gallery-item");
 	} else {
 		items = $(".gallery .gallery-item").filter('.img-active');
@@ -321,6 +313,8 @@ function initGallery() {
 		//e.preventDefault();
 		$('.gallery-carousel .item').toggleClass('bg-cover');
 	});
+	
+	$('#lb-arbeiten').carousel();	
 	
 	// 
 	$(".gallery .gallery-item").proportion(galleryJSON.proportion).respi(galleryJSON.sizes);

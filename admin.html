@@ -94,7 +94,10 @@
 								<!-- Nav tabs -->
 								<ul class="nav nav-tabs" role="tablist">
 									<li role="presentation">
-										<a href="#basics-panel" aria-controls="basics-panel" role="tab" data-toggle="tab">Basics</a>
+										<a href="#start-panel" aria-controls="start-panel" role="tab" data-toggle="tab">Start</a>
+									</li>									
+									<li role="presentation">
+										<a href="#options-panel" aria-controls="options-panel" role="tab" data-toggle="tab">Options</a>
 									</li>
 									<li role="presentation">
 										<a href="#tags-panel" aria-controls="tags-panel" role="tab" data-toggle="tab">Tags</a>
@@ -114,13 +117,24 @@
 							<section class="section section--no-padding after-navbar height100">
 								<!-- Tab panes -->
 								<div class="tab-content">
-									<div id="basics-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
+									<div id="start-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
+										<div>
+											<div id="allFoldersResult">
+												
+											</div>
+											<button id="allFoldersButton" class="btn btn-lg btn-primary btn-block" type="submit">
+												allFolders
+											</button>
+										</div>
+									</div><!-- end start-panel -->
+									
+									<div id="options-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 
-										basics
+										options
 
 										<div>
 
-											<form id="basicsForm">
+											<form id="optionsForm">
 												<table class="table">
 													<caption>
 														Optional table caption.
@@ -194,7 +208,7 @@
 												Sign in
 											</button>
 										</form>
-									</div><!-- end basics panel -->
+									</div><!-- end options panel -->
 									
 									<div id="tags-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 										<section class="">

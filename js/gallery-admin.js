@@ -1,132 +1,159 @@
 function adminInit() {
 	console.log("adminInit");
-	
-	$('#configreset').click(function(){
-        $('#basicsForm')[0].reset();
-  });
-  
-	/* Basics */
-	
-	//$('#basicsForm').validator();
 
-	$('.admin-header a[aria-controls="basics-panel"]').on('shown.bs.tab', function(e) {
-		
+	$('.admin-header a[aria-controls="start-panel"]').on('shown.bs.tab', function(e) {
+
+		$('#allFoldersButton').click(function() {
+			allFolders().done(function(data) {
+				$("#allFoldersResult").html(data);
+			});
+
+		});
+
+		function allFolders() {
+			return $.ajax({
+				dataType : "json",
+				url : "gallery/allFolders.php",
+				type : "POST",
+				data : "allFolders"
+			}).done(function(data) {
+				//callback(data);
+				console.log(data);
+			});
+		}
+
+		/*
+		 .then(
+		 function(data){
+		 console.log("then: "+data)
+		 }
+		 );
+		 */
+		function existingGallery() {
+
+		};
+
+	});
+
+	/* options */
+
+	//$('#optionsForm').validator();
+
+	$('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(e) {
+
+		$('#configreset').click(function() {
+			$('#optionsForm')[0].reset();
+		});
+
 		// pre-/re-set thumbSize
 		var thumbSize = !galleryJSON.thumbDisplay ? "md" : galleryJSON.thumbDisplay;
-		$("#thumbDisplaySelect").val( thumbSize );
-		
-		$("#thumbDisplaySelect").on("change", function(){
+		$("#thumbDisplaySelect").val(thumbSize);
+
+		$("#thumbDisplaySelect").on("change", function() {
 			var value = $(this).val();
 			var proportion = galleryJSON.thumbProportion;
-			proportion = !proportion ? [1,1] : proportion.split(',');
-			
-			$('.gallery-item').removeClass( thumbDisplaySizes[ galleryJSON.thumbDisplay ] )
-			.addClass( thumbDisplaySizes[ value ] )
-			.proportion( proportion[0], proportion[1] );
+			proportion = !proportion ? [1, 1] : proportion.split(',');
+
+			$('.gallery-item').removeClass(thumbDisplaySizes[galleryJSON.thumbDisplay]).addClass(thumbDisplaySizes[value]).proportion(proportion[0], proportion[1]);
 			galleryJSON.thumbDisplay = value;
 		});
-		
-		
+
 		// pre-/re-set Proportion
 		var thumbProp = !galleryJSON.proportion ? "1,1" : galleryJSON.proportion;
-		$("#thumProportionSelect").val( thumbProp );		
+		$("#thumProportionSelect").val(thumbProp);
 
-		$("#thumbProportionSelect").on("change", function(){
+		$("#thumbProportionSelect").on("change", function() {
 			var value = $(this).val();
 			galleryJSON.thumbProportion = value;
 			value = value.split(',');
-			$(".gallery-item").proportion(value[0],value[1]);
+			$(".gallery-item").proportion(value[0], value[1]);
 		});
-		
-		
+
 		// pre-/re-set thumbFit
 		var thumbFit = !galleryJSON.thumbFit ? "cover" : galleryJSON.thumbFit;
-		$("#thumbFitSelect").val( thumbFit );
-		
-		$("#thumbFitSelect").on("change", function(){
+		$("#thumbFitSelect").val(thumbFit);
+
+		$("#thumbFitSelect").on("change", function() {
 			var value = $(this).val();
 			galleryJSON.thumbFit = value;
-			$(".gallery-item .thumb-div").removeClass('cover-image contain-image').addClass(value+'-image');
-		});		
-
+			$(".gallery-item .thumb-div").removeClass('cover-image contain-image').addClass(value + '-image');
+		});
 
 		// pre-/re-set thumbFit
 		var thumbPadding = !galleryJSON.thumbPadding ? 0 : galleryJSON.thumbPadding;
-		$("#thumbPaddingInput").val( thumbPadding );	
-			
-		$("#thumbPaddingInput").keydown(function(){
-	        // Allow: backspace, delete, tab, escape, enter
-	        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
-	             // Allow: Ctrl+A
-	            (e.keyCode == 65 && e.ctrlKey === true) ||
-	             // Allow: Ctrl+C
-	            (e.keyCode == 67 && e.ctrlKey === true) ||
-	             // Allow: Ctrl+X
-	            (e.keyCode == 88 && e.ctrlKey === true) ||
-	             // Allow: home, end, left, right
-	            (e.keyCode >= 35 && e.keyCode <= 39)) {
-	                 // let it happen, don't do anything
-	                 return;
-	        }
-	        // Ensure that it is a number and stop the keypress
-	        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-	            e.preventDefault();
-	        }			
+		$("#thumbPaddingInput").val(thumbPadding);
+
+		$("#thumbPaddingInput").keydown(function() {
+			// Allow: backspace, delete, tab, escape, enter
+			if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+			// Allow: Ctrl+A
+			(e.keyCode == 65 && e.ctrlKey === true) ||
+			// Allow: Ctrl+C
+			(e.keyCode == 67 && e.ctrlKey === true) ||
+			// Allow: Ctrl+X
+			(e.keyCode == 88 && e.ctrlKey === true) ||
+			// Allow: home, end, left, right
+			(e.keyCode >= 35 && e.keyCode <= 39)) {
+				// let it happen, don't do anything
+				return;
+			}
+			// Ensure that it is a number and stop the keypress
+			if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+				e.preventDefault();
+			}
 		});
-		
-		$("#thumbPaddingInput").on("change input", function(){
+
+		$("#thumbPaddingInput").on("change input", function() {
 			var value = $(this).val();
 			value = (!value || value < 1) ? 0 : value;
 			galleryJSON.thumbPadding = value;
-			$(".gallery-item").css("padding",value+"px");
+			$(".gallery-item").css("padding", value + "px");
 		});
-		
-		
-		$("#inputSizes").attr('placeholder',galleryJSON.sizes)
-		.keydown(function (e) {
-	        // Allow: backspace, delete, tab, escape, enter and ,
-	        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
-	             // Allow: Ctrl+A
-	            (e.keyCode == 65 && e.ctrlKey === true) ||
-	             // Allow: Ctrl+C
-	            (e.keyCode == 67 && e.ctrlKey === true) ||
-	             // Allow: Ctrl+X
-	            (e.keyCode == 88 && e.ctrlKey === true) ||
-	             // Allow: home, end, left, right
-	            (e.keyCode >= 35 && e.keyCode <= 39)) {
-	                 // let it happen, don't do anything
-	                 return;
-	        }
-	        // Ensure that it is a number and stop the keypress
-	        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-	            e.preventDefault();
-	        }
-	    });
-		
-		$("#inputSizes").on("change input", function(){
+
+		$("#inputSizes").attr('placeholder', galleryJSON.sizes).keydown(function(e) {
+			// Allow: backspace, delete, tab, escape, enter and ,
+			if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
+			// Allow: Ctrl+A
+			(e.keyCode == 65 && e.ctrlKey === true) ||
+			// Allow: Ctrl+C
+			(e.keyCode == 67 && e.ctrlKey === true) ||
+			// Allow: Ctrl+X
+			(e.keyCode == 88 && e.ctrlKey === true) ||
+			// Allow: home, end, left, right
+			(e.keyCode >= 35 && e.keyCode <= 39)) {
+				// let it happen, don't do anything
+				return;
+			}
+			// Ensure that it is a number and stop the keypress
+			if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+				e.preventDefault();
+			}
+		});
+
+		$("#inputSizes").on("change input", function() {
 			var value = $(this).val().split(',');
 			value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
 			galleryJSON.sizes = value;
-		});	
-	
-		$("#coverCheckbox").click(function(e){
-		    e.stopImmediatePropagation();
-		    var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
-		    var checked = (element.checked) ? false : true;
-		    element.checked = (checked) ? false : checked.toString();
-		});	
-	
+		});
+
+		$("#coverCheckbox").click(function(e) {
+			e.stopImmediatePropagation();
+			var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
+			var checked = (element.checked) ? false : true;
+			element.checked = (checked) ? false : checked.toString();
+		});
+
 	});
-	
+
 	/* Tags */
 
 	$('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
 		var selectedImages;
-		
+
 		function selectTags() {
-			
+
 			selectedImages = $(".gallery-row .selected-image");
-			
+
 			var firstTag = selectedImages.first().attr('data-tags');
 			firstTag = _.split(firstTag, ',');
 
@@ -172,16 +199,16 @@ function adminInit() {
 			})
 			selectizeTags.refreshItems()
 
-			$(".selectize-input .item").on("click", function(){
+			$(".selectize-input .item").on("click", function() {
 				var value = $(this).attr("data-value");
-				
+
 				$($(".gallery-row .gallery-item")).each(function(k) {
 					var tags = $(this).attr("data-tags");
 					if (tags.includes(value)) {
 						$(this).addClass('selected-image');
 					}
-				});				
-			});			
+				});
+			});
 
 			return groupTags;
 		};
@@ -200,7 +227,7 @@ function adminInit() {
 						$(this).attr('data-tags', unionTags).addClass('edited');
 					}
 				});
-				
+
 				return {
 					"text" : input,
 					"value" : input
@@ -223,7 +250,7 @@ function adminInit() {
 
 		$("#tagsSubmit").click(function(e) {
 			e.preventDefault();
-			
+
 			var tags = [];
 
 			$(".gallery-row .edited").each(function() {
@@ -232,11 +259,10 @@ function adminInit() {
 				this_tags = this_tags.split(',');
 				galleryJSON.images[this_id].tags = this_tags;
 			});
-			
-			$.each(galleryJSON.images, function(k,v){
+
+			$.each(galleryJSON.images, function(k, v) {
 				tags.push(v.tags);
 			})
-			
 			tags = _.uniq(_.flattenDeep(tags));
 			galleryJSON.tags = tags;
 			buildGalleryNavigation();
@@ -275,8 +301,7 @@ function adminInit() {
 			var imgSrc_720 = imgSrc.replace("_respi", "_720");
 			var imgSrc_720_blur = imgSrc_720.replace("gallery", "gallery/blur");
 
-			$("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + $.now())
-			.imagesLoaded().always(function(instance) {
+			$("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + $.now()).imagesLoaded().always(function(instance) {
 				//console.log('blur image request');
 			}).done(function(instance) {
 				//console.log("blur image loaded");
@@ -290,6 +315,7 @@ function adminInit() {
 				});
 			});
 		}
+
 
 		$(".gallery-row .gallery-item").removeClass("selected-image").off("click").on("click", function(e) {
 			e.preventDefault();
@@ -359,52 +385,50 @@ function adminInit() {
 	/* Sliders */
 
 	$('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e) {
-		
+
 		$('.sortable').sortable('destroy');
 		document.getElementById('sliderSortable').innerHtml = "";
 		$('#sliderSortable').html('');
-		
+
 		function selectedIds() {
 			var selected_ids = [];
 			var items = document.querySelectorAll("#sliderSortable .gallery-item");
-			for(var i=0, len=items.length; i < len; i++){
+			for (var i = 0, len = items.length; i < len; i++) {
 				selected_ids.push(items[i].getAttribute("data-id"));
 			}
 			return selected_ids;
 		}
 
-		$(".gallery-row .gallery-item")
-			.removeClass("selected-image").off("click").on("click", function(e) {
-				
-				e.preventDefault();
-				e.stopPropagation();
-	
-				$(this).toggleClass("selected-image");
-	
-				if ($(this).hasClass("selected-image")) {
-					$(this).clone().addClass("sortable-item").appendTo("#sliderSortable");
-				} else {
-					var data_id = $(this).attr("data-id");
-					$("#sliderSortable div[data-id='" + data_id + "']").remove();
-				}
-				$('.sortable').sortable('reload');
-				
-				var selected_ids = selectedIds();
-				var prop = (selected_ids.length >= 2) ? false : true;
-				$("#sliderSubmit").prop("disabled", prop);
-				
-				//galleryJSON.sliders["slider1"] = selected_ids;
-		});
 
+		$(".gallery-row .gallery-item").removeClass("selected-image").off("click").on("click", function(e) {
+
+			e.preventDefault();
+			e.stopPropagation();
+
+			$(this).toggleClass("selected-image");
+
+			if ($(this).hasClass("selected-image")) {
+				$(this).clone().addClass("sortable-item").appendTo("#sliderSortable");
+			} else {
+				var data_id = $(this).attr("data-id");
+				$("#sliderSortable div[data-id='" + data_id + "']").remove();
+			}
+			$('.sortable').sortable('reload');
+
+			var selected_ids = selectedIds();
+			var prop = (selected_ids.length >= 2) ? false : true;
+			$("#sliderSubmit").prop("disabled", prop);
+
+			//galleryJSON.sliders["slider1"] = selected_ids;
+		});
 
 		$('.sortable').sortable().unbind('sortupdate').bind('sortupdate', function(e, ui) {
 			galleryJSON.sliders["slider1"] = selectedIds();
-		});		
-		
-		for(var i=0, len=galleryJSON.sliders.slider1.length; i < len; i++){
-			document.querySelector('.gallery-row div[data-id="'+galleryJSON.sliders.slider1[i]+'"]').click();
-		};	
+		});
 
+		for (var i = 0, len = galleryJSON.sliders.slider1.length; i < len; i++) {
+			document.querySelector('.gallery-row div[data-id="' + galleryJSON.sliders.slider1[i] + '"]').click();
+		};
 
 		$("#sliderSubmit").on("click", function(e) {
 			e.preventDefault();
@@ -413,14 +437,12 @@ function adminInit() {
 		});
 
 	})
-	
-	
 	/* Raw */
 	$('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 		$(".gallery-row .gallery-item").removeClass("selected-image");
 
 		$("#json-output").text(JSON.stringify(galleryJSON, null, '\t'));
 	});
-	
-	$('.admin-header a[aria-controls="basics-panel"').trigger("click");
+
+	$('.admin-header a[aria-controls="start-panel"').trigger("click");
 };
