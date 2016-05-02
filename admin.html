@@ -95,7 +95,7 @@
 								<ul class="nav nav-tabs" role="tablist">
 									<li role="presentation">
 										<a href="#start-panel" aria-controls="start-panel" role="tab" data-toggle="tab">Start</a>
-									</li>									
+									</li>
 									<li role="presentation">
 										<a href="#options-panel" aria-controls="options-panel" role="tab" data-toggle="tab">Options</a>
 									</li>
@@ -119,15 +119,25 @@
 								<div class="tab-content">
 									<div id="start-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 										<div>
-											<div id="allFoldersResult">
-												
-											</div>
-											<button id="allFoldersButton" class="btn btn-lg btn-primary btn-block" type="submit">
-												allFolders
-											</button>
+											<table id="foldersTable" class="table">
+												<thead>
+													<tr>
+														<th>Folder</th>
+														<th>ignore</th>
+														<th>delete</th>
+													</tr>
+												</thead>
+												<tbody>
+
+												</tbody>
+											</table>
+
 										</div>
+										<button id="allFoldersButton" class="btn btn-lg btn-primary btn-block" type="submit">
+											allFolders
+										</button>
 									</div><!-- end start-panel -->
-									
+
 									<div id="options-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 
 										options
@@ -209,7 +219,7 @@
 											</button>
 										</form>
 									</div><!-- end options panel -->
-									
+
 									<div id="tags-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 										<section class="">
 
@@ -224,7 +234,7 @@
 											</form>
 										</section><!-- admin-panel -->
 									</div><!-- end tabs panel -->
-									
+
 									<div id="effect-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 										<form id="blur-form">
 											<input id="blurSlider" type="range" min="10" max="100" value="50" step="5" data-rangeslider>
@@ -245,7 +255,7 @@
 											<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"/>
 										</div>
 									</div>
-									
+
 									<div id="slider-panel" role="tabpanel" class="tab-pane scroll-wrapper">
 										slider
 										<div id="sliderSortable" class="js-grid sortable grid clearfix ml4 myn1" data-sortable-id="1" aria-dropeffect="move">
@@ -260,7 +270,7 @@
 											</button>
 										</form>
 									</div><!-- end slider-panel -->
-									
+
 									<div id="raw-panel" role="tabpanel" class="tab-pane scroll-wrapper">
 										Raw Output
 										<pre id="json-output">

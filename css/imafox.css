@@ -51,7 +51,7 @@ a:hover, a:focus {
 	color: #9c9c9c;
 }
 
-.btn {
+.mbr-buttons__link.btn {
 	padding: 6px 14px;
 }
 

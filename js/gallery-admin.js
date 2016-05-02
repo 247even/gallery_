@@ -3,9 +3,42 @@ function adminInit() {
 
 	$('.admin-header a[aria-controls="start-panel"]').on('shown.bs.tab', function(e) {
 
+
 		$('#allFoldersButton').click(function() {
 			allFolders().done(function(data) {
-				$("#allFoldersResult").html(data);
+				$("#allFoldersResult").html("");
+				//var data = data.sort();
+				var subFolders = _.filter(data, function(v, k) {
+					for (var i = 0,
+					    len = galleryJSON.sizes.length; i < len; i++) {
+						if (v.indexOf(galleryJSON.sizes[i]) > -1) {
+							console.log(galleryJSON.sizes[i] + ' ' + v);
+							return v;
+						}
+					}
+				});
+				var folders = _.difference(data, subFolders);
+				var newFolders = _.difference(folders, galleryJSON.folders);
+				var oldFolders = _.intersection(data, galleryJSON.folders);
+				console.log(newFolders);
+				console.log(oldFolders);
+
+				for(var i=0, len=newFolders.length; i < len; i++){
+					$("#foldersTable tbody").append('<tr class="success"><td>'+ newFolders[i] +'</td>'
+					+'<td class="td_ign"><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-ban-circle"></span></button></td>'
+					+'<td class="td_del"><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove-circle"></span></button></td>/tr>');
+				}
+				
+				if (newFolders){
+					$('#allFoldersButton').off("click").text("go on").on("click", function() {
+						for(var i=0, len=newFolders.length; i < len; i++){
+							var postData = "folder="+newFolders[i];
+							imagesFromFolder(postData).done(function(data){
+								console.log(data);
+							})
+						}
+					});
+				}
 			});
 
 		});
@@ -16,11 +49,28 @@ function adminInit() {
 				url : "gallery/allFolders.php",
 				type : "POST",
 				data : "allFolders"
-			}).done(function(data) {
+			})
+			.done(function(data) {
 				//callback(data);
 				console.log(data);
 			});
 		}
+		
+		function imagesFromFolder(postData) {
+			return $.ajax({
+				dataType : "json",
+				url : "gallery/imagesFromFolder.php",
+				type : "POST",
+				data : postData
+			})
+			.always(function(data){
+				console.log(data);
+			})
+			.done(function(data) {
+				//callback(data);
+				console.log(data);
+			});
+		}		
 
 		/*
 		 .then(
@@ -393,7 +443,8 @@ function adminInit() {
 		function selectedIds() {
 			var selected_ids = [];
 			var items = document.querySelectorAll("#sliderSortable .gallery-item");
-			for (var i = 0, len = items.length; i < len; i++) {
+			for (var i = 0,
+			    len = items.length; i < len; i++) {
 				selected_ids.push(items[i].getAttribute("data-id"));
 			}
 			return selected_ids;
@@ -426,7 +477,8 @@ function adminInit() {
 			galleryJSON.sliders["slider1"] = selectedIds();
 		});
 
-		for (var i = 0, len = galleryJSON.sliders.slider1.length; i < len; i++) {
+		for (var i = 0,
+		    len = galleryJSON.sliders.slider1.length; i < len; i++) {
 			document.querySelector('.gallery-row div[data-id="' + galleryJSON.sliders.slider1[i] + '"]').click();
 		};
 

@@ -317,3 +317,13 @@
 .tab-content, .overflow-auto {
 	overflow: auto; !important
 }
+
+.td_ign, .td_del {
+	width: 60px;
+	text-align: center;
+}
+
+.success {
+	color: #333;
+}
+

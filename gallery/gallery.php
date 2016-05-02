@@ -30,6 +30,7 @@ require 'saveFileAs.php';
 require 'existingGallery.php';
 require 'allFolders.php';
 require 'checkFolders.php';
+require 'imagesFromFolder.php';
 
 $existingFolders;
 $galleries;
@@ -123,30 +124,6 @@ function saveJSON($jsf) {
 	echo ">>> JSON SAVED<br><br>";
 }
 */
-
-
-
-function imagesFromFolder($folder) {
-	$path = $folder . '/';
-	$images = array();
-
-	if (!file_exists($folder)) {
-		echo "no such folder.<br>";
-		return false;
-	}
-
-	// search all images in folder
-	foreach (glob("".$path."*.{jpg,jpeg,png,gif}", GLOB_BRACE) as $filename) {
-		array_push($images, basename($filename));
-		/*
-		 $imageObject = array("file" => basename($filename), "path" => $value, "time" => filemtime($filename), "tags" => [$value]);
-		 $existingImages[$value.basename($filename)] = $imageObject;
-		 */
-	}
-
-	echo json_encode($images) . "<br>";
-	return $images;
-};
 
 function checkDiff($galleries, $existingGallery) {
 	//global $galleries;
