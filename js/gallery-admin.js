@@ -3,8 +3,16 @@ function adminInit() {
 
 	$('.admin-header a[aria-controls="start-panel"]').on('shown.bs.tab', function(e) {
 
+		$('#allFoldersButton').on("click", function() {
+			listAllFolders();
+		});
+		
+		/*$('#allFoldersButton').off("click").text("go on").on("click", function(){
+			processFirstNewFolder();
+		});
+		*/
 
-		$('#allFoldersButton').click(function() {
+		function listAllFolders() {
 			allFolders().done(function(data) {
 				$("#allFoldersResult").html("");
 				//var data = data.sort();
@@ -17,32 +25,36 @@ function adminInit() {
 						}
 					}
 				});
+				
 				var folders = _.difference(data, subFolders);
 				var newFolders = _.difference(_.difference(folders, galleryJSON.folders), galleryJSON.ignore);
 				var oldFolders = _.intersection(data, galleryJSON.folders);
 				console.log(newFolders);
 				console.log(oldFolders);
-				
+
 				$("#foldersTable tbody").html('');
-				for(var i=0, len=folders.length; i < len; i++){
+				for (var i = 0, len = folders.length; i < len; i++) {
 					// set table row style for new, known or ignored folders:
 					var fclass = "warning";
-					if(_.indexOf(galleryJSON.ignore, folders[i]) == -1){
+					if (_.indexOf(galleryJSON.ignore, folders[i]) == -1) {
 						fclass = "default";
-						 if(_.indexOf(newFolders, folders[i]) > -1){
-							fclass = "danger";
-						}
 					}
-					
-					$("#foldersTable tbody").append('<tr id="tr_'+folders[i]+'" data="'+ folders[i] +'" class="'+fclass+'" ><td>'+ folders[i] +'</td>'
-					+'<td class="td_ign"><button type="button" class="btn btn-default btn-xs btn_ign"><span class="glyphicon glyphicon-ban-circle"></span></button></td>'
-					+'<td class="td_del"><button type="button" class="btn btn-default btn-xs btn_del"><span class="glyphicon glyphicon-remove-circle"></span></button></td>/tr>');
-				}
+					if (_.indexOf(newFolders, folders[i]) > -1) {
+							fclass = "danger";
+					}
 				
+					$("#foldersTable tbody").append('<tr id="tr_' + folders[i] + '" data="' + folders[i] + '" class="' + fclass + '" ><td>' + folders[i] + '</td>'
+						+ '<td class="td_ign"><button type="button" class="btn btn-default btn-xs btn_ign"><span class="glyphicon glyphicon-ban-circle"></span></button></td>'
+						+ '<td class="td_del"><button type="button" class="btn btn-default btn-xs btn_del"><span class="glyphicon glyphicon-remove-circle"></span></button></td>/tr>'
+					);
+				
+				};
+				
+
 				// the row ignore button stuff:
-				$("#foldersTable .btn_ign").on("click", function(){
+				$("#foldersTable .btn_ign").on("click", function() {
 					var dataFolder = $(this).closest("tr").attr("data");
-					if(_.indexOf(galleryJSON.ignore, dataFolder) == -1){
+					if (_.indexOf(galleryJSON.ignore, dataFolder) == -1) {
 						galleryJSON.ignore.push(dataFolder);
 						$(this).closest("tr").removeClass("success").addClass("warning");
 					} else {
@@ -50,7 +62,7 @@ function adminInit() {
 						$(this).closest("tr").removeClass("warning").addClass("success");
 					}
 				});
-
+				
 				// the row delete button stuff:
 				$("#foldersTable .btn_del").on("click", function(){
 					var dataFolder = $(this).closest("tr").attr("data");
@@ -60,52 +72,103 @@ function adminInit() {
 					});
 				});
 				
-				// the big button stuff...
-				if (newFolders.length > 0){
-					$('#allFoldersButton').off("click").text("go on").on("click", function() {
-						
-						// read images from first new folder:
-						var postData = "folder="+newFolders[0];
-						imagesFromFolder(postData).done(function(imagesFromFolderData){
-							$('#processStatus').html(imagesFromFolderData.length+' images found in "'+newFolders[0]+'".');
-							$('#allFoldersButton').off("click").text("process Images").on("click", function() {
-
-								folder = newFolders[0];
-								imagesFromFolder = imagesFromFolderData;
-								
-								// the resizeStore function 
-								var i = 0;
-								function resizeStoreSync(){
-									console.log(folder);
-									console.log(imagesFromFolder.length)
-									console.log(imagesFromFolder[i])
-									if(i < imagesFromFolder.length){
-										resizeStore(folder, imagesFromFolder[i]).done(function(data){
-											i++;
-											console.log(data);
-											resizeStoreSync();
-										});
-									}		
-								};
-								
-								resizeStoreSync();	
-											
-							});
-						})
+				if(newFolders.length > 0){
+					$('#processStatus').html(newFolders.length + ' new folder(s) found.');
+					$('#allFoldersButton').off("click").text('look for Images in "'+newFolders[0]+'"').on("click", function() {
+						processFirstNewFolder();
 					});
-				} else {
-					$('#allFoldersButton').off("click").text("go on").on("click", function() {
-						for(var i=0, len=newFolders.length; i < len; i++){
-							var postData = "folder="+newFolders[i];
-							imagesFromFolder(postData).done(function(data){
-								console.log(data);
-							})
-						}
-					});					
 				}
-			});
 
-		});
+		var fnf = 0;
+		function processFirstNewFolder() {
+			if (newFolders.length > 0) {
+				
+				// read images from first new folder:
+				var postData = "folder=" + newFolders[0];
+				imagesFromFolder(postData).done(function(imagesFromFolderData) {
+					
+					$('#processStatus').html(Object.keys(imagesFromFolderData).length + ' images found in "' + newFolders[0] + '".');
+					
+					$('#allFoldersButton').off("click").text("process Images").on("click", function() {
+						folder = newFolders[0];
+	
+						// the resizeStore function
+						var length = Object.keys(imagesFromFolderData).length;
+						var keys = _.keys(imagesFromFolderData);
+						var i = 0;
+						
+						function resizeStoreSync() {
+
+							if (i < length){
+								var key = keys[i];
+								var val = imagesFromFolderData[key];
+								var folder = val.path;
+								var file = val.file;
+								console.log(val);
+
+								resizeStore(folder, file).done(function(data) {
+									i++;
+									
+									// add images to galleryJSON
+									galleryJSON.images[key] = imagesFromFolderData[key];
+									
+									console.log(data);
+									resizeStoreSync();
+								});
+							
+								// add folder to known folders
+								if ( _.indexOf( galleryJSON.folders, folder ) < 0 ){
+									galleryJSON.folders.push(folder);
+								}
+								$("#tr_"+folder).removeClass("danger");
+																	
+							} else {
+								
+								if(newFolders.length > 0){
+									$('#processStatus').html(newFolders.length + ' new folder(s).');
+									$('#allFoldersButton').off("click").text('look for Images in "'+newFolders[0]+'"').on("click", function() {
+										processFirstNewFolder();
+									});
+								}
+								
+							}
+							
+						};
+						
+						resizeStoreSync();
+								
+						// ...and remove from newFolders
+						newFolders = _.without(newFolders, folder);
+						console.log(newFolders);								
+				
+	
+					});
+				})
+			
+				console.log(fnf);
+				fnf++;
+
+			} else {
+				
+				$('#allFoldersButton').off("click").text("go on").on("click", function() {
+					for (var i = 0, len = newFolders.length; i < len; i++) {
+						var postData = "folder=" + newFolders[i];
+						imagesFromFolder(postData).done(function(data) {
+							console.log(data);
+						})
+					}
+				});
+			}
+			
+		};				
+				
+			});
+		};
+
+		// the big button stuff...
+		
+
+		
 
 		function allFolders() {
 			return $.ajax({
@@ -113,69 +176,63 @@ function adminInit() {
 				url : "gallery/allFolders.php",
 				type : "POST",
 				data : "allFolders"
-			})
-			.done(function(data) {
+			}).done(function(data) {
 				//callback(data);
 				console.log(data);
 			});
 		};
-		
+
 		function removeFolder(folders) {
 			return $.ajax({
 				//dataType : "json",
 				url : "gallery/removeFolder.php",
 				type : "GET",
-				data : "folder="+folders
+				data : "folder=" + folders
 			});
-		};		
-		
+		};
+
 		function imagesFromFolder(postData) {
 			return $.ajax({
 				dataType : "json",
 				url : "gallery/imagesFromFolder.php",
 				type : "POST",
 				data : postData
-			})
-			.always(function(data){
+			}).always(function(data) {
 				console.log(data);
-			})
-			.done(function(data) {
+			}).done(function(data) {
 				//callback(data);
 				console.log(data);
 			});
 		};
-		
 
-		function resizeStore(folder, file, sizes, force){
-			if(!folder){
+		function resizeStore(folder, file, sizes, force) {
+			if (!folder) {
 				console.log("no folder!")
 				return false;
 			}
-			if(!file){
+			if (!file) {
 				console.log("no file!")
 				return false;
-			}			
-			if(!sizes){
+			}
+			if (!sizes) {
 				var sizes = galleryJSON.sizes.join();
 			}
-			if(!force){
+			if (!force) {
 				var force = false;
-			}			
-			var postData = 'folder='+folder+'&file='+file+'&sizes='+sizes+'&force='+force;
+			}
+			var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes + '&force=' + force;
 			console.log(postData);
 			return $.ajax({
 				//dataType : "json",
 				url : "gallery/resizeStore.php",
 				type : "GET",
 				data : postData
-			})
-			.always(function(data){
+			}).always(function(data) {
 				//console.log(data);
-			})
-			.fail(function(data){
+			}).fail(function(data) {
 				console.log("fail!");
 				//console.log(data);
-			})			
+			})
 		};
 
 		/*
@@ -189,7 +246,7 @@ function adminInit() {
 
 		};
 
-	});
+	}); // <-- end start panel
 
 	/* options */
 

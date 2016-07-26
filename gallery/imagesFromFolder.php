@@ -16,14 +16,14 @@ function imagesFromFolder($folder) {
 	// search all images in folder
 	foreach (glob("".$path."*.{jpg,jpeg,png,gif}", GLOB_BRACE) as $filename) {
 		array_push($images, basename($filename));
-		/*
-		 $imageObject = array("file" => basename($filename), "path" => $value, "time" => filemtime($filename), "tags" => [$value]);
-		 $existingImages[$value.basename($filename)] = $imageObject;
-		 */
+		
+		 $imageObject = array("file" => basename($filename), "path" => $folder, "time" => filemtime($filename), "tags" => [$folder]);
+		 $existingImages[$folder.basename($filename)] = $imageObject;
+		 
 	}
-
+	return $existingImages;
 	//echo json_encode($images) . "<br>";
-	return $images;
+	//return $images;
 };
 
 if (isset($_GET['folder']) || isset($_POST['folder'])) {
