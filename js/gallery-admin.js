@@ -18,18 +18,82 @@ function adminInit() {
 					}
 				});
 				var folders = _.difference(data, subFolders);
-				var newFolders = _.difference(folders, galleryJSON.folders);
+				var newFolders = _.difference(_.difference(folders, galleryJSON.folders), galleryJSON.ignore);
 				var oldFolders = _.intersection(data, galleryJSON.folders);
 				console.log(newFolders);
 				console.log(oldFolders);
-
-				for(var i=0, len=newFolders.length; i < len; i++){
-					$("#foldersTable tbody").append('<tr class="success"><td>'+ newFolders[i] +'</td>'
-					+'<td class="td_ign"><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-ban-circle"></span></button></td>'
-					+'<td class="td_del"><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove-circle"></span></button></td>/tr>');
+				
+				$("#foldersTable tbody").html('');
+				for(var i=0, len=folders.length; i < len; i++){
+					// set table row style for new, known or ignored folders:
+					var fclass = "warning";
+					if(_.indexOf(galleryJSON.ignore, folders[i]) == -1){
+						fclass = "default";
+						 if(_.indexOf(newFolders, folders[i]) > -1){
+							fclass = "danger";
+						}
+					}
+					
+					$("#foldersTable tbody").append('<tr id="tr_'+folders[i]+'" data="'+ folders[i] +'" class="'+fclass+'" ><td>'+ folders[i] +'</td>'
+					+'<td class="td_ign"><button type="button" class="btn btn-default btn-xs btn_ign"><span class="glyphicon glyphicon-ban-circle"></span></button></td>'
+					+'<td class="td_del"><button type="button" class="btn btn-default btn-xs btn_del"><span class="glyphicon glyphicon-remove-circle"></span></button></td>/tr>');
 				}
 				
-				if (newFolders){
+				// the row ignore button stuff:
+				$("#foldersTable .btn_ign").on("click", function(){
+					var dataFolder = $(this).closest("tr").attr("data");
+					if(_.indexOf(galleryJSON.ignore, dataFolder) == -1){
+						galleryJSON.ignore.push(dataFolder);
+						$(this).closest("tr").removeClass("success").addClass("warning");
+					} else {
+						galleryJSON.ignore = _.without(galleryJSON.ignore, dataFolder);
+						$(this).closest("tr").removeClass("warning").addClass("success");
+					}
+				});
+
+				// the row delete button stuff:
+				$("#foldersTable .btn_del").on("click", function(){
+					var dataFolder = $(this).closest("tr").attr("data");
+					removeFolder(dataFolder).done(function(data){
+						console.log("folder removed");
+						$("#tr_"+dataFolder).remove();
+					});
+				});
+				
+				// the big button stuff...
+				if (newFolders.length > 0){
+					$('#allFoldersButton').off("click").text("go on").on("click", function() {
+						
+						// read images from first new folder:
+						var postData = "folder="+newFolders[0];
+						imagesFromFolder(postData).done(function(imagesFromFolderData){
+							$('#processStatus').html(imagesFromFolderData.length+' images found in "'+newFolders[0]+'".');
+							$('#allFoldersButton').off("click").text("process Images").on("click", function() {
+
+								folder = newFolders[0];
+								imagesFromFolder = imagesFromFolderData;
+								
+								// the resizeStore function 
+								var i = 0;
+								function resizeStoreSync(){
+									console.log(folder);
+									console.log(imagesFromFolder.length)
+									console.log(imagesFromFolder[i])
+									if(i < imagesFromFolder.length){
+										resizeStore(folder, imagesFromFolder[i]).done(function(data){
+											i++;
+											console.log(data);
+											resizeStoreSync();
+										});
+									}		
+								};
+								
+								resizeStoreSync();	
+											
+							});
+						})
+					});
+				} else {
 					$('#allFoldersButton').off("click").text("go on").on("click", function() {
 						for(var i=0, len=newFolders.length; i < len; i++){
 							var postData = "folder="+newFolders[i];
@@ -37,7 +101,7 @@ function adminInit() {
 								console.log(data);
 							})
 						}
-					});
+					});					
 				}
 			});
 
@@ -54,7 +118,16 @@ function adminInit() {
 				//callback(data);
 				console.log(data);
 			});
-		}
+		};
+		
+		function removeFolder(folders) {
+			return $.ajax({
+				//dataType : "json",
+				url : "gallery/removeFolder.php",
+				type : "GET",
+				data : "folder="+folders
+			});
+		};		
 		
 		function imagesFromFolder(postData) {
 			return $.ajax({
@@ -70,7 +143,40 @@ function adminInit() {
 				//callback(data);
 				console.log(data);
 			});
-		}		
+		};
+		
+
+		function resizeStore(folder, file, sizes, force){
+			if(!folder){
+				console.log("no folder!")
+				return false;
+			}
+			if(!file){
+				console.log("no file!")
+				return false;
+			}			
+			if(!sizes){
+				var sizes = galleryJSON.sizes.join();
+			}
+			if(!force){
+				var force = false;
+			}			
+			var postData = 'folder='+folder+'&file='+file+'&sizes='+sizes+'&force='+force;
+			console.log(postData);
+			return $.ajax({
+				//dataType : "json",
+				url : "gallery/resizeStore.php",
+				type : "GET",
+				data : postData
+			})
+			.always(function(data){
+				//console.log(data);
+			})
+			.fail(function(data){
+				console.log("fail!");
+				//console.log(data);
+			})			
+		};
 
 		/*
 		 .then(

@@ -87,6 +87,7 @@
 	},
 	"md5": "704ea2ff5cf8f6bd937daf9f2ed1c8bd",
 	"folders": ["birds", "ships", "trees"],
+	"ignore": ["blur"],
 	"tags": ["birds", "ships", "trees"],
 	"sizes": [280, 430, 720, 1200],
 	"sliders": {"slider1" : []}

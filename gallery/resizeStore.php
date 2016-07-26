@@ -17,7 +17,7 @@ function resizeStore($folder, $file, $sizes) {
 	global $force;
 	global $cropThumbnails;
 	
-	echo "resizeStore: ".json_encode($folder).'<br>'.json_encode($file).'<br>'.json_encode($sizes);
+	//echo "resizeStore: ".json_encode($folder).'<br>'.json_encode($file).'<br>'.json_encode($sizes);
 	
 	if ($folder) {
 
@@ -95,7 +95,7 @@ function resizeStore($folder, $file, $sizes) {
 				} else {
 					$image -> resizeToBestFit($size, $size);
 				}
-				$image -> save($targetFolder . '/' . $file);
+				$image -> save( $targetFolder . '/' . $file);
 			}
 		} else {
 			echo "invalid size <br>";
