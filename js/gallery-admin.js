@@ -7,18 +7,164 @@ function adminInit() {
 			listAllFolders();
 		});
 		
-		/*$('#allFoldersButton').off("click").text("go on").on("click", function(){
-			processFirstNewFolder();
-		});
-		*/
+		$('#allImagesButton').on("click", function() {
+			
+			var i = 0;
+			var folder = galleryJSON.folders[i];
+			var postData = "folder=" + folder;
+			
+			// check images in folder:
+			imagesFromFolder(postData).done(function(imagesFromFolderData) {
+				var imagesRemoved = [];
+				var imagesAdded = [];
+				var imagesModified = [];
+				var imagesNotProcessed = [];
+				
+				// images added:
+				for( var key in imagesFromFolderData){
+		
+					var iff = imagesFromFolderData[key];
+					var ifg = galleryJSON.images[key];
+					
+					if(!ifg){
+						// this image is not in galleryJSON, must be new
+						console.log(iff);
+						imagesAdded.push(key);
+						$("#imageStatus").html("").html(imagesAdded.length+' new image/s found in "'+folder+'".<br>');
+					
+					} else {
+						if( !_.isEqual(iff, ifg) ){
+							// this image is in galleryJSON, but something is different
+							//console.log(iff);
+						}
+
+						// look for different thumbnail versions:
+						var t = 0;
+						for (var sz in galleryJSON.sizes ) {
+							// check if image is present
+							var image_url = 'gallery/' + folder + '_' + galleryJSON.sizes[sz] + '/' + imagesFromFolderData[key].file;
+
+							$.ajax({
+								type : "HEAD",
+								url : image_url
+							}).done(function() {
+								t++;
+								console.log("done " + t);
+								finished();
+							}).fail(function() {
+								console.log("fail " + t);
+								imagesNotProcessed.push(imagesFromFolderData[key].file);
+								finished();
+							});
+
+						}
+
+						function finished() {
+							if (t >= galleryJSON.sizes.length) {
+								// we're done checking if this single image is available in all sizes
+								console.log("finished");
+								t = 0;
+							}
+						}	
+		
+						
+					}
+					
+				} // <-- end 'for' loop check images in folder
+				
+								
+				// images removed:
+				var galleryByFolder = _.pickBy(galleryJSON.images, {'path' : folder });
+
+				for( var key in galleryByFolder){
+
+					if(!imagesFromFolderData[key]){
+						// this image is not present anymore
+						imagesRemoved.push(key);
+					}					
+					
+				}
+				
+				var statusCt = $("#imageStatus").html();
+				$("#imageStatus").html("").html(statusCt+' '+imagesRemoved.length+' image/s removed from "'+folder+'".<br>');			
+			
+				processImages();
+			
+				function processImages(){
+					
+					if(imagesRemoved.length > 0){
+						
+						$('#allImagesButton').off("click").text("remove "+imagesRemoved.length+" images").on("click", function() {
+							
+							for( var key in imagesRemoved){
+								delete galleryJSON.images[key];
+								delete imagesRemoved[key];
+								console.log("image '"+key+"' deleted");
+							}
+							
+							processImages();
+												
+						})
+										
+					} else {
+				
+						$('#allImagesButton').off("click").text("resize "+imagesNotProcessed+" image/s").on("click", function() {
+							
+							function resizeStoreSync(i, data, keys, length, folder) {
+								
+								if (i < length) {
+									var key = keys[i];
+									var val = data[key];
+									var folder = val.path;
+									var file = val.file;	
+		
+									resizeStore(folder, file).done( function(resizeData) {
+										i++;
+		
+										// add images to galleryJSON
+										galleryJSON.images[key] = data[key];
+		
+										resizeStoreSync();
+										
+									});
+		
+								} else {
+								/*
+									if (newFolders.length > 0) {
+										$('#processStatus').html(newFolders.length + ' new folder(s).');
+										$('#allFoldersButton').off("click").text('look for Images in "' + newFolders[0] + '"').on("click", function() {
+											processFirstNewFolder();
+										});
+									}
+								*/
+								}
+							};
+							
+							var i = 0;
+							var data = imagesFromFolderData;
+							var keys = imagesAdded;
+							var length = 0;
+							if(keys){
+								var length = keys.length;
+							}
+							resizeStoreSync(i, data, keys, length, folder);
+		
+						});
+					
+						processImages();
+											
+					} // end 'else'			
+				} // end function processImages 
+			}); // end imagesFromFolder.done function
+
+		}); // end all images button
 
 		function listAllFolders() {
 			allFolders().done(function(data) {
 				$("#allFoldersResult").html("");
 				//var data = data.sort();
 				var subFolders = _.filter(data, function(v, k) {
-					for (var i = 0,
-					    len = galleryJSON.sizes.length; i < len; i++) {
+					for (var i = 0, len = galleryJSON.sizes.length; i < len; i++) {
 						if (v.indexOf(galleryJSON.sizes[i]) > -1) {
 							console.log(galleryJSON.sizes[i] + ' ' + v);
 							return v;
@@ -78,8 +224,12 @@ function adminInit() {
 						processFirstNewFolder();
 					});
 				}
+	
+			});
+		};				
 
 		var fnf = 0;
+		
 		function processFirstNewFolder() {
 			if (newFolders.length > 0) {
 				
@@ -87,7 +237,7 @@ function adminInit() {
 				var postData = "folder=" + newFolders[0];
 				imagesFromFolder(postData).done(function(imagesFromFolderData) {
 					
-					$('#processStatus').html(Object.keys(imagesFromFolderData).length + ' images found in "' + newFolders[0] + '".');
+					$('#processStatus').html(Object.keys(imagesFromFolderData).length + ' image/s found in "' + newFolders[0] + '".');
 					
 					$('#allFoldersButton').off("click").text("process Images").on("click", function() {
 						folder = newFolders[0];
@@ -133,17 +283,17 @@ function adminInit() {
 								
 							}
 							
-						};
+						}; // end resizeStoreSync
 						
 						resizeStoreSync();
 								
 						// ...and remove from newFolders
 						newFolders = _.without(newFolders, folder);
-						console.log(newFolders);								
-				
+						console.log(newFolders);
 	
-					});
-				})
+					}); // end all folder button "process images"
+					
+				}); // end images from folder function
 			
 				console.log(fnf);
 				fnf++;
@@ -160,15 +310,8 @@ function adminInit() {
 				});
 			}
 			
-		};				
-				
-			});
-		};
+		};	// end process first new folder		
 
-		// the big button stuff...
-		
-
-		
 
 		function allFolders() {
 			return $.ajax({
@@ -192,6 +335,8 @@ function adminInit() {
 		};
 
 		function imagesFromFolder(postData) {
+			var postData = postData+"&ts="+$.now();
+			console.log(postData);
 			return $.ajax({
 				dataType : "json",
 				url : "gallery/imagesFromFolder.php",
@@ -204,7 +349,41 @@ function adminInit() {
 				console.log(data);
 			});
 		};
-
+/*	
+		function resizeStoreSync() {
+			if (i < length){
+				var key = keys[i];
+				var val = imagesFromFolderData[key];
+				var folder = val.path;
+				var file = val.file;
+				console.log(val);
+				resizeStore(folder, file).done(function(data) {
+					i++;
+					
+					// add images to galleryJSON
+					galleryJSON.images[key] = imagesFromFolderData[key];
+					
+					console.log(data);
+					resizeStoreSync();
+				});
+			
+				// add folder to known folders
+				if ( _.indexOf( galleryJSON.folders, folder ) < 0 ){
+					galleryJSON.folders.push(folder);
+				}
+				$("#tr_"+folder).removeClass("danger");
+													
+			} else {
+				
+				if(newFolders.length > 0){
+					$('#processStatus').html(newFolders.length + ' new folder(s).');
+					$('#allFoldersButton').off("click").text('look for Images in "'+newFolders[0]+'"').on("click", function() {
+						processFirstNewFolder();
+					});
+				}	
+			}					
+		};		
+*/
 		function resizeStore(folder, file, sizes, force) {
 			if (!folder) {
 				console.log("no folder!")
@@ -606,8 +785,7 @@ function adminInit() {
 		function selectedIds() {
 			var selected_ids = [];
 			var items = document.querySelectorAll("#sliderSortable .gallery-item");
-			for (var i = 0,
-			    len = items.length; i < len; i++) {
+			for (var i = 0, len = items.length; i < len; i++) {
 				selected_ids.push(items[i].getAttribute("data-id"));
 			}
 			return selected_ids;
@@ -640,8 +818,7 @@ function adminInit() {
 			galleryJSON.sliders["slider1"] = selectedIds();
 		});
 
-		for (var i = 0,
-		    len = galleryJSON.sliders.slider1.length; i < len; i++) {
+		for (var i = 0, len = galleryJSON.sliders.slider1.length; i < len; i++) {
 			document.querySelector('.gallery-row div[data-id="' + galleryJSON.sliders.slider1[i] + '"]').click();
 		};
 
