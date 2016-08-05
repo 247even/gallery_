@@ -35,7 +35,7 @@ $gContent = false;
 $gTarget = false;
 
 if (isset($_GET['content']) || isset($_POST['content'])) {
-	$gContent = $_GET['content'];
+	$gContent = json_decode($_GET['content']);
 }
 
 if (isset($_GET['target']) || isset($_POST['target'])) {

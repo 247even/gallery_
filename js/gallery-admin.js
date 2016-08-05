@@ -1,38 +1,72 @@
 function adminInit() {
 	console.log("adminInit");
 
+	var imagesRemoved = [];
+	var imagesAdded = [];
+	var imagesModified = [];
+	var imagesNotProcessed = [];	
+
 	$('.admin-header a[aria-controls="start-panel"]').on('shown.bs.tab', function(e) {
 
 		$('#allFoldersButton').on("click", function() {
 			listAllFolders();
 		});
 		
-		$('#allImagesButton').on("click", function() {
+		$('#allImagesButton').on("click", function(){
+			allImages();
+		});
+		
+		function allImages(){
 			
 			var i = 0;
 			var folder = galleryJSON.folders[i];
-			var postData = "folder=" + folder;
+			var sizedImages = [];
 			
+			var si = 0;
+			
+			function getSizedImages(){
+				for( var s in galleryJSON.sizes){
+					
+					var tnFolder = folder + '_' + galleryJSON.sizes[s];
+					imagesFromFolder("folder="+tnFolder).done(function(tnData){
+						_.extend(sizedImages, tnData);
+						getSizedImagesSync();
+					});
+					
+				}				
+			};
+			
+			function getSizedImagesSync(){
+				if(si >= galleryJSON.sizes){
+					
+					si = 0;
+				} else {
+					getSizedImages();
+					si++;
+				}
+			}
+
 			// check images in folder:
-			imagesFromFolder(postData).done(function(imagesFromFolderData) {
-				var imagesRemoved = [];
-				var imagesAdded = [];
-				var imagesModified = [];
-				var imagesNotProcessed = [];
+			imagesFromFolder("folder="+folder).done(function(imagesFromFolderData){
+				
+				//var keys = Object.keys(imagesFromFolderData);
 				
 				// images added:
-				for( var key in imagesFromFolderData){
+				for( var k in imagesFromFolderData){
 		
-					var iff = imagesFromFolderData[key];
-					var ifg = galleryJSON.images[key];
+					var iff = imagesFromFolderData[k];
+					var ifg = galleryJSON.images[k];
+					
+					console.log(iff);
 					
 					if(!ifg){
+						console.log(ifg);
 						// this image is not in galleryJSON, must be new
-						console.log(iff);
-						imagesAdded.push(key);
+						imagesAdded.push(k);
 						$("#imageStatus").html("").html(imagesAdded.length+' new image/s found in "'+folder+'".<br>');
 					
 					} else {
+						
 						if( !_.isEqual(iff, ifg) ){
 							// this image is in galleryJSON, but something is different
 							//console.log(iff);
@@ -40,35 +74,49 @@ function adminInit() {
 
 						// look for different thumbnail versions:
 						var t = 0;
-						for (var sz in galleryJSON.sizes ) {
-							// check if image is present
-							var image_url = 'gallery/' + folder + '_' + galleryJSON.sizes[sz] + '/' + imagesFromFolderData[key].file;
+						
+						
+						imagesFromFolder(postData).done(function(imagesFromFolderData) {
+							
+						})
+						
+						
+						checkSizesSync();	
+						
+						function checkSizes(){
+						
+							var image_url = 'gallery/' + folder + '_' + galleryJSON.sizes[t] + '/' + imagesFromFolderData[k].file;
+							console.log(image_url);
 
 							$.ajax({
 								type : "HEAD",
 								url : image_url
 							}).done(function() {
-								t++;
 								console.log("done " + t);
-								finished();
+								checkSizesSync();
 							}).fail(function() {
 								console.log("fail " + t);
-								imagesNotProcessed.push(imagesFromFolderData[key].file);
-								finished();
-							});
+								imagesNotProcessed.push(imagesFromFolderData[k].file);
+								checkSizesSync();
+							});					
+									
+						};
+						
 
-						}
-
-						function finished() {
+						function checkSizesSync(){	
 							if (t >= galleryJSON.sizes.length) {
 								// we're done checking if this single image is available in all sizes
 								console.log("finished");
 								t = 0;
+							} else {
+								checkSizes();
+								t++;
 							}
-						}	
-		
+						};
 						
-					}
+											
+						
+					} // end else
 					
 				} // <-- end 'for' loop check images in folder
 				
@@ -76,11 +124,11 @@ function adminInit() {
 				// images removed:
 				var galleryByFolder = _.pickBy(galleryJSON.images, {'path' : folder });
 
-				for( var key in galleryByFolder){
+				for( var kk in galleryByFolder){
 
-					if(!imagesFromFolderData[key]){
+					if(!imagesFromFolderData[kk]){
 						// this image is not present anymore
-						imagesRemoved.push(key);
+						imagesRemoved.push(kk);
 					}					
 					
 				}
@@ -90,74 +138,79 @@ function adminInit() {
 			
 				processImages();
 			
-				function processImages(){
-					
-					if(imagesRemoved.length > 0){
-						
-						$('#allImagesButton').off("click").text("remove "+imagesRemoved.length+" images").on("click", function() {
-							
-							for( var key in imagesRemoved){
-								delete galleryJSON.images[key];
-								delete imagesRemoved[key];
-								console.log("image '"+key+"' deleted");
-							}
-							
-							processImages();
-												
-						})
-										
-					} else {
 				
-						$('#allImagesButton').off("click").text("resize "+imagesNotProcessed+" image/s").on("click", function() {
-							
-							function resizeStoreSync(i, data, keys, length, folder) {
-								
-								if (i < length) {
-									var key = keys[i];
-									var val = data[key];
-									var folder = val.path;
-									var file = val.file;	
-		
-									resizeStore(folder, file).done( function(resizeData) {
-										i++;
-		
-										// add images to galleryJSON
-										galleryJSON.images[key] = data[key];
-		
-										resizeStoreSync();
-										
-									});
-		
-								} else {
-								/*
-									if (newFolders.length > 0) {
-										$('#processStatus').html(newFolders.length + ' new folder(s).');
-										$('#allFoldersButton').off("click").text('look for Images in "' + newFolders[0] + '"').on("click", function() {
-											processFirstNewFolder();
-										});
-									}
-								*/
-								}
-							};
-							
-							var i = 0;
-							var data = imagesFromFolderData;
-							var keys = imagesAdded;
-							var length = 0;
-							if(keys){
-								var length = keys.length;
-							}
-							resizeStoreSync(i, data, keys, length, folder);
-		
-						});
-					
-						processImages();
-											
-					} // end 'else'			
-				} // end function processImages 
-			}); // end imagesFromFolder.done function
+			}); // end imagesFromFolder.done
 
-		}); // end all images button
+		}; // end function allImages
+
+		
+		function processImages() {
+
+			if (imagesRemoved.length > 0) {
+
+				$('#allImagesButton').off("click").text("remove " + imagesRemoved.length + " images").on("click", function() {
+
+					for (var key in imagesRemoved) {
+						delete galleryJSON.images[key];
+						delete imagesRemoved[key];
+						console.log("image '" + key + "' deleted");
+					}
+
+					processImages();
+
+				})
+				
+			} else {
+				
+				$('#allImagesButton').off("click").text("resize " + imagesAdded.length + " image/s").on("click", function() {
+
+					window.ri = 0;
+					var data = imagesFromFolderData;
+					var keys = imagesAdded;
+					var length = 0;
+					if (keys) {
+						var length = keys.length;
+					}
+					resizeStoreSync(data, keys, length, folder);
+
+				});
+
+				processImages();
+
+			} // end 'else'
+		} // end function processImages
+
+
+		function resizeStoreSync(data, keys, length, folder) {
+
+			if (window.ri < length) {
+				var key = keys[window.ri];
+				var val = data[key];
+				var folder = val.path;
+				var file = val.file;
+
+				resizeStore(folder, file).done(function(resizeData) {
+					window.ri++;
+
+					// add images to galleryJSON
+					galleryJSON.images[key] = data[key];
+
+					resizeStoreSync();
+
+				});
+
+			} else {
+				/*
+				 if (newFolders.length > 0) {
+				 $('#processStatus').html(newFolders.length + ' new folder(s).');
+				 $('#allFoldersButton').off("click").text('look for Images in "' + newFolders[0] + '"').on("click", function() {
+				 processFirstNewFolder();
+				 });
+				 }
+				 */
+			}
+		};
+	
 
 		function listAllFolders() {
 			allFolders().done(function(data) {
@@ -171,7 +224,7 @@ function adminInit() {
 						}
 					}
 				});
-				
+
 				var folders = _.difference(data, subFolders);
 				var newFolders = _.difference(_.difference(folders, galleryJSON.folders), galleryJSON.ignore);
 				var oldFolders = _.intersection(data, galleryJSON.folders);
@@ -186,16 +239,12 @@ function adminInit() {
 						fclass = "default";
 					}
 					if (_.indexOf(newFolders, folders[i]) > -1) {
-							fclass = "danger";
+						fclass = "danger";
 					}
-				
-					$("#foldersTable tbody").append('<tr id="tr_' + folders[i] + '" data="' + folders[i] + '" class="' + fclass + '" ><td>' + folders[i] + '</td>'
-						+ '<td class="td_ign"><button type="button" class="btn btn-default btn-xs btn_ign"><span class="glyphicon glyphicon-ban-circle"></span></button></td>'
-						+ '<td class="td_del"><button type="button" class="btn btn-default btn-xs btn_del"><span class="glyphicon glyphicon-remove-circle"></span></button></td>/tr>'
-					);
-				
+
+					$("#foldersTable tbody").append('<tr id="tr_' + folders[i] + '" data="' + folders[i] + '" class="' + fclass + '" ><td>' + folders[i] + '</td>' + '<td class="td_ign"><button type="button" class="btn btn-default btn-xs btn_ign"><span class="glyphicon glyphicon-ban-circle"></span></button></td>' + '<td class="td_del"><button type="button" class="btn btn-default btn-xs btn_del"><span class="glyphicon glyphicon-remove-circle"></span></button></td>/tr>');
+
 				};
-				
 
 				// the row ignore button stuff:
 				$("#foldersTable .btn_ign").on("click", function() {
@@ -208,25 +257,26 @@ function adminInit() {
 						$(this).closest("tr").removeClass("warning").addClass("success");
 					}
 				});
-				
+
 				// the row delete button stuff:
-				$("#foldersTable .btn_del").on("click", function(){
+				$("#foldersTable .btn_del").on("click", function() {
 					var dataFolder = $(this).closest("tr").attr("data");
-					removeFolder(dataFolder).done(function(data){
+					removeFolder(dataFolder).done(function(data) {
 						console.log("folder removed");
-						$("#tr_"+dataFolder).remove();
+						$("#tr_" + dataFolder).remove();
 					});
 				});
-				
-				if(newFolders.length > 0){
+
+				if (newFolders.length > 0) {
 					$('#processStatus').html(newFolders.length + ' new folder(s) found.');
-					$('#allFoldersButton').off("click").text('look for Images in "'+newFolders[0]+'"').on("click", function() {
+					$('#allFoldersButton').off("click").text('look for Images in "' + newFolders[0] + '"').on("click", function() {
 						processFirstNewFolder();
 					});
 				}
-	
+
 			});
-		};				
+		};
+
 
 		var fnf = 0;
 		
@@ -336,17 +386,17 @@ function adminInit() {
 
 		function imagesFromFolder(postData) {
 			var postData = postData+"&ts="+$.now();
-			console.log(postData);
+			//console.log(postData);
 			return $.ajax({
 				dataType : "json",
 				url : "gallery/imagesFromFolder.php",
 				type : "POST",
 				data : postData
-			}).always(function(data) {
-				console.log(data);
 			}).done(function(data) {
 				//callback(data);
 				console.log(data);
+			}).fail(function(){
+				console.log("imagesFromFolder fail");
 			});
 		};
 /*	
@@ -537,7 +587,7 @@ function adminInit() {
 
 	});
 
-	/* Tags */
+	/* Tags Panel */
 
 	$('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
 		var selectedImages;
@@ -674,6 +724,71 @@ function adminInit() {
 				}
 			})
 		});
+		
+		function deleteSelectedImages(){
+			var i = 0;
+			var paths = [];
+			
+			if(selectedImages.length > 0){
+				selectedImages.each(function() {
+					i++;
+					var id = $(this).attr('data-id');
+					// For testing! >>
+					//paths.push(galleryJSON.images[id].path+'/'+galleryJSON.images[id].file);
+					for(var sz in galleryJSON.sizes){
+						var size = galleryJSON.sizes[sz];
+						paths.push(galleryJSON.images[id].path+'_'+size+'/'+galleryJSON.images[id].file);
+					}
+					
+					delete galleryJSON.images[id];
+				})
+
+				function deleteImage(path) {
+					if(paths.length > 0){
+						$.ajax({
+							type : "GET",
+							url : "gallery/removeImage.php",
+							data : "path="+path
+						}).done(function() {
+							p++;
+							console.log("done " + p);
+							deleteFinished();
+						}).fail(function() {
+							p++;
+							console.log("fail " + p);
+							deleteFinished();
+						})						
+					}
+				};
+				
+				var p = 0;
+				var pl = paths.length;
+				
+				function deleteFinished(){
+					if(p <= pl){
+						deleteImage(paths[p]);
+					} else {
+						console.log("finished deleting");
+						// save JSON:
+						$("#deleteImagesButton").off("click").text("save").on("click", function(){
+							backup().done(function(data){
+								var content = JSON.stringify(galleryJSON);
+								var target = "gallery.json";
+								saveFileAs(content, target);
+							});
+						});
+					}				
+				};
+				
+				deleteFinished();
+			}
+		};
+		
+		$("#deleteImagesButton").on("click", function(){
+			console.log("delete clicked");
+			deleteSelectedImages();
+		});
+		
 	});
 
 	/* Effect */
@@ -837,4 +952,30 @@ function adminInit() {
 	});
 
 	$('.admin-header a[aria-controls="start-panel"').trigger("click");
+};
+
+function backup(){
+	
+	return $.ajax({
+		type : "GET",
+		url : "gallery/backup.php",
+		data : "backup=true"
+	}).done(function(data) {
+		//console.log(data);
+	})
+	
+};
+
+function saveFileAs(content, target){
+	
+	var postdata = "content="+content+"&target="+target;
+	
+	$.ajax({
+		type : "GET",
+		url : "gallery/saveFileAs.php",
+		data : postdata
+	}).done(function(data) {
+		console.log(data);
+	})
+
 };
