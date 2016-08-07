@@ -13,38 +13,118 @@ function adminInit() {
 		});
 		
 		$('#allImagesButton').on("click", function(){
-			allImages();
+			getAllImages();
 		});
 		
-		function allImages(){
+		function getAllImages(){
 			
 			var i = 0;
 			var folder = galleryJSON.folders[i];
-			var sizedImages = [];
+			var sourceFolder = folder;
+			var allImagesFromServer = [];
+			// all IDs from galleryJSON filtered by folder:
+			var filesByFolder = _.pickBy(galleryJSON.images, {'path' : folder });
 			
 			var si = 0;
 			
-			function getSizedImages(){
-				for( var s in galleryJSON.sizes){
-					
-					var tnFolder = folder + '_' + galleryJSON.sizes[s];
-					imagesFromFolder("folder="+tnFolder).done(function(tnData){
-						_.extend(sizedImages, tnData);
-						getSizedImagesSync();
-					});
-					
-				}				
+			function getAllImagesFromServer(){
+				imagesFromFolder("folder="+sourceFolder).done(function(tnData){
+					console.log(tnData);
+					_.extend(allImagesFromServer, tnData);
+					getAllImagesFromServerSync();
+				}).fail(function(){
+					console.log("getAllImagesFromServerFail");
+					getAllImagesFromServerSync();
+				});					
 			};
 			
-			function getSizedImagesSync(){
-				if(si >= galleryJSON.sizes){
+			function getAllImagesFromServerSync(){
+				
+				if(si <= galleryJSON.sizes.length){
 					
-					si = 0;
-				} else {
-					getSizedImages();
+					sourceFolder = folder + '_' + galleryJSON.sizes[si];
 					si++;
+					//console.log("new sourceFolder: "+sourceFolder);
+					getAllImagesFromServer();
+				} else {
+					// we now have all images from the server!
+					//console.log(allImagesFromServer);
+					//console.log("done!");
+					checkImages();
 				}
+				
+			};
+			
+
+			function checkImages() {
+
+				console.log(si);
+				
+				for (var id in filesByFolder) {
+					for (var sz in galleryJSON.sizes) {
+						var idkey = folder + '_' + galleryJSON.sizes[sz] + filesByFolder[id].file;
+						console.log(allImagesFromServer[idkey]);
+						if(!allImagesFromServer[idkey]){
+							imagesNotProcessed.push(id);
+							imagesNotProcessed = _.uniq(imagesNotProcessed);
+							console.log(imagesNotProcessed);
+						}
+					}
+				}
+				
+				return false;			
+
+				for (var key in allImagesFromServer) {
+					var iff = allImagesFromServer[key];
+					var iid = folder + allImagesFromServer[key].file;
+					var ifg = galleryJSON.images[iid];
+
+					if (!ifg) {
+						// this image is not in galleryJSON, must be new
+						imagesAdded.push(iid);
+						// bad:
+						imagesAdded = _.uniq(imagesAdded);
+
+						$("#imageStatus").html("").html(imagesAdded.length + ' new image/s found in "' + folder + '".<br>');
+
+					} else {
+
+						if (!_.isEqual(iff, ifg)) {
+							// this image is in galleryJSON, but something is different
+							//console.log(iff);
+						}
+
+						console.log(filesByFolder);
+
+						for (var id in filesByFolder) {
+							for (var sz in galleryJSON.sizes) {
+								var idkey = folder + '_' + galleryJSON.sizes[sz] + filesByFolder[id].file;
+								//console.log(allImagesFromServer[idkey]);
+								console.log(idkey);
+								console.log(id);
+								if (!allImagesFromServer[idkey]) {
+									var id = folder + filesByFolder[id].file;
+									imagesNotProcessed.push(id);
+									imagesNotProcessed = _.uniq(imagesNotProcessed);
+									console.log(imagesNotProcessed);
+								}
+							}
+						}
+					}
+
+				}
+
+				var statusCt = $("#imageStatus").html();
+				$("#imageStatus").html("").html(statusCt + ' ' + imagesNotProcessed.length + ' image/s unprocessed from "' + folder + '".<br>');
+
 			}
+
+			
+			getAllImagesFromServer();
+			console.log("getAllImagesFromServer after");
+			return false;
+			
+			
 
 			// check images in folder:
 			imagesFromFolder("folder="+folder).done(function(imagesFromFolderData){
@@ -74,12 +154,6 @@ function adminInit() {
 
 						// look for different thumbnail versions:
 						var t = 0;
-						
-						
-						imagesFromFolder(postData).done(function(imagesFromFolderData) {
-							
-						})
-						
 						
 						checkSizesSync();	
 						
@@ -393,8 +467,7 @@ function adminInit() {
 				type : "POST",
 				data : postData
 			}).done(function(data) {
-				//callback(data);
-				console.log(data);
+				//console.log(data);
 			}).fail(function(){
 				console.log("imagesFromFolder fail");
 			});
