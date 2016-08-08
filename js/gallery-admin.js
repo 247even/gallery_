@@ -2,7 +2,7 @@ function adminInit() {
 	console.log("adminInit");
 
 	var imagesRemoved = [];
-	var imagesAdded = [];
+	var imagesAdded = {};
 	var imagesModified = [];
 	var imagesNotProcessed = [];	
 
@@ -16,20 +16,21 @@ function adminInit() {
 			getAllImages();
 		});
 		
+		var i = 0;
+		var si = 0;
+		
 		function getAllImages(){
-			
-			var i = 0;
+
 			var folder = galleryJSON.folders[i];
 			var sourceFolder = folder;
 			var allImagesFromServer = [];
 			// all IDs from galleryJSON filtered by folder:
-			var filesByFolder = _.pickBy(galleryJSON.images, {'path' : folder });
-			
-			var si = 0;
+			var galleryByFolder = _.pickBy(galleryJSON.images, {'path' : folder });
 			
 			function getAllImagesFromServer(){
 				imagesFromFolder("folder="+sourceFolder).done(function(tnData){
-					console.log(tnData);
+					//console.log(tnData);
+					console.log("getAllImagesFromServer done si: "+si);
 					_.extend(allImagesFromServer, tnData);
 					getAllImagesFromServerSync();
 				}).fail(function(){
@@ -39,8 +40,13 @@ function adminInit() {
 			};
 			
 			function getAllImagesFromServerSync(){
+				// si = 0 == base folder, without thimbnails
+				if(si == 0){
+					getNewImages();
+					getRemovedImages();
+				}
 				
-				if(si <= galleryJSON.sizes.length){
+				if(si < galleryJSON.sizes.length){
 					
 					sourceFolder = folder + '_' + galleryJSON.sizes[si];
 					si++;
@@ -51,190 +57,121 @@ function adminInit() {
 					//console.log(allImagesFromServer);
 					//console.log("done!");
 					checkImages();
+					
+					// Done! Next folder...
+					i++;
+					if(i < galleryJSON.folders.length){
+						si = 0;
+						//folder = galleryJSON.folders[i];
+						console.log(imagesAdded);
+						console.log("i: "+i+", galleryJSON.folders.length: "+galleryJSON.folders.length);
+						//getAllImagesFromServerSync();
+						getAllImages();
+						
+					} else {
+
+						$('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " new images").on("click", function() {
+						
+						});
+
+					}
 				}
 				
 			};
-			
+
+			function getNewImages(){
+				var ct = $("#imageStatus").html();
+				$("#imageStatus").html(ct+'<br> 0 new images found in "' + folder + '".<br>');
+	
+				for (var key in allImagesFromServer) {
+					if (!galleryJSON.images[key]) {
+						// this image is not in galleryJSON, must be new
+						imagesAdded[key] = allImagesFromServer[key];
+						//imagesAdded.push(allImagesFromServer[key]);
+						// bad:
+						//imagesAdded = _.uniq(imagesAdded);
+						
+						$("#imageStatus").html("").html(_.size(imagesAdded) + ' new image/s found in "' + folder + '".<br>');
+					}
+				}
+				
+				//console.log(imagesAdded);							
+			};
+
+			function getRemovedImages(){
+
+				var statusCt = $("#imageStatus").html();
+				$("#imageStatus").html("").html(statusCt + '0 images removed from "' + folder + '".<br>');
+					
+
+				for( var key in galleryByFolder){
+
+					if(!allImagesFromServer[key]){
+						// this image is not present anymore
+						imagesRemoved.push(kk);
+						$("#imageStatus").html("").html(statusCt + ' ' + imagesRemoved.length + ' image/s removed from "' + folder + '".<br>');
+					}					
+									
+				}				
+			};						
 
 			function checkImages() {
 
 				console.log(si);
 				
-				for (var id in filesByFolder) {
+				var statusCt = $("#imageStatus").html();
+				$("#imageStatus").html("").html(statusCt + '0 images unprocessed from "' + folder + '".<br>');				
+				
+				for (var id in galleryByFolder) {
+					
+					if(!allImagesFromServer[id]){
+						// this image was deleted, as it is not in gallery.json
+					}
+					
+					// search for unprocessed images:
 					for (var sz in galleryJSON.sizes) {
-						var idkey = folder + '_' + galleryJSON.sizes[sz] + filesByFolder[id].file;
-						console.log(allImagesFromServer[idkey]);
+						var idkey = folder + '_' + galleryJSON.sizes[sz] + galleryByFolder[id].file;
+						//console.log(allImagesFromServer[idkey]);
 						if(!allImagesFromServer[idkey]){
 							imagesNotProcessed.push(id);
 							imagesNotProcessed = _.uniq(imagesNotProcessed);
-							console.log(imagesNotProcessed);
+							//console.log(imagesNotProcessed);
+							
+							$("#imageStatus").html("").html(statusCt + ' ' + imagesNotProcessed.length + ' image/s unprocessed from "' + folder + '".<br>');
+							
 						}
 					}
 				}
-				
-				return false;			
+			};
 
-				for (var key in allImagesFromServer) {
-					var iff = allImagesFromServer[key];
-					var iid = folder + allImagesFromServer[key].file;
-					var ifg = galleryJSON.images[iid];
-
-					if (!ifg) {
-						// this image is not in galleryJSON, must be new
-						imagesAdded.push(iid);
-						// bad:
-						imagesAdded = _.uniq(imagesAdded);
-
-						$("#imageStatus").html("").html(imagesAdded.length + ' new image/s found in "' + folder + '".<br>');
-
-					} else {
-
-						if (!_.isEqual(iff, ifg)) {
-							// this image is in galleryJSON, but something is different
-							//console.log(iff);
-						}
-
-						console.log(filesByFolder);
-
-						for (var id in filesByFolder) {
-							for (var sz in galleryJSON.sizes) {
-								var idkey = folder + '_' + galleryJSON.sizes[sz] + filesByFolder[id].file;
-								//console.log(allImagesFromServer[idkey]);
-								console.log(idkey);
-								console.log(id);
-								if (!allImagesFromServer[idkey]) {
-									var id = folder + filesByFolder[id].file;
-									imagesNotProcessed.push(id);
-									imagesNotProcessed = _.uniq(imagesNotProcessed);
-									console.log(imagesNotProcessed);
-								}
-							}
-						}
-					}
-
-				}
-
-				var statusCt = $("#imageStatus").html();
-				$("#imageStatus").html("").html(statusCt + ' ' + imagesNotProcessed.length + ' image/s unprocessed from "' + folder + '".<br>');
-
-			}
-
-			
 			getAllImagesFromServer();
 			console.log("getAllImagesFromServer after");
 			return false;
-			
-			
-
-			// check images in folder:
-			imagesFromFolder("folder="+folder).done(function(imagesFromFolderData){
-				
-				//var keys = Object.keys(imagesFromFolderData);
-				
-				// images added:
-				for( var k in imagesFromFolderData){
-		
-					var iff = imagesFromFolderData[k];
-					var ifg = galleryJSON.images[k];
-					
-					console.log(iff);
-					
-					if(!ifg){
-						console.log(ifg);
-						// this image is not in galleryJSON, must be new
-						imagesAdded.push(k);
-						$("#imageStatus").html("").html(imagesAdded.length+' new image/s found in "'+folder+'".<br>');
-					
-					} else {
-						
-						if( !_.isEqual(iff, ifg) ){
-							// this image is in galleryJSON, but something is different
-							//console.log(iff);
-						}
-
-						// look for different thumbnail versions:
-						var t = 0;
-						
-						checkSizesSync();	
-						
-						function checkSizes(){
-						
-							var image_url = 'gallery/' + folder + '_' + galleryJSON.sizes[t] + '/' + imagesFromFolderData[k].file;
-							console.log(image_url);
-
-							$.ajax({
-								type : "HEAD",
-								url : image_url
-							}).done(function() {
-								console.log("done " + t);
-								checkSizesSync();
-							}).fail(function() {
-								console.log("fail " + t);
-								imagesNotProcessed.push(imagesFromFolderData[k].file);
-								checkSizesSync();
-							});					
-									
-						};
-						
-
-						function checkSizesSync(){	
-							if (t >= galleryJSON.sizes.length) {
-								// we're done checking if this single image is available in all sizes
-								console.log("finished");
-								t = 0;
-							} else {
-								checkSizes();
-								t++;
-							}
-						};
-						
-											
-						
-					} // end else
-					
-				} // <-- end 'for' loop check images in folder
-				
-								
-				// images removed:
-				var galleryByFolder = _.pickBy(galleryJSON.images, {'path' : folder });
-
-				for( var kk in galleryByFolder){
-
-					if(!imagesFromFolderData[kk]){
-						// this image is not present anymore
-						imagesRemoved.push(kk);
-					}					
-					
-				}
-				
-				var statusCt = $("#imageStatus").html();
-				$("#imageStatus").html("").html(statusCt+' '+imagesRemoved.length+' image/s removed from "'+folder+'".<br>');			
-			
-				processImages();
-			
-				
-			}); // end imagesFromFolder.done
 
 		}; // end function allImages
+		
+		function removeImages(){
+			if (imagesRemoved.length > 0) {
+				for (var key in imagesRemoved) {
+					delete galleryJSON.images[key];
+					delete imagesRemoved[key];
+					console.log("image '" + key + "' deleted from galleryJSON");
+				}
+			}
+		};
 
+		function addNewImages(){
+			if( _.size(imagesAdded) <= 0 ){
+				return false;
+			}
+			
+			for(var k in imagesAdded ){
+				resizeStoreSync(data, keys, length, folder);
+			}
+			
+		};
 		
 		function processImages() {
-
-			if (imagesRemoved.length > 0) {
-
-				$('#allImagesButton').off("click").text("remove " + imagesRemoved.length + " images").on("click", function() {
-
-					for (var key in imagesRemoved) {
-						delete galleryJSON.images[key];
-						delete imagesRemoved[key];
-						console.log("image '" + key + "' deleted");
-					}
-
-					processImages();
-
-				})
-				
-			} else {
 				
 				$('#allImagesButton').off("click").text("resize " + imagesAdded.length + " image/s").on("click", function() {
 
@@ -251,8 +188,7 @@ function adminInit() {
 
 				processImages();
 
-			} // end 'else'
-		} // end function processImages
+		}; // end function processImages
 
 
 		function resizeStoreSync(data, keys, length, folder) {
@@ -472,41 +408,7 @@ function adminInit() {
 				console.log("imagesFromFolder fail");
 			});
 		};
-/*	
-		function resizeStoreSync() {
-			if (i < length){
-				var key = keys[i];
-				var val = imagesFromFolderData[key];
-				var folder = val.path;
-				var file = val.file;
-				console.log(val);
-				resizeStore(folder, file).done(function(data) {
-					i++;
-					
-					// add images to galleryJSON
-					galleryJSON.images[key] = imagesFromFolderData[key];
-					
-					console.log(data);
-					resizeStoreSync();
-				});
-			
-				// add folder to known folders
-				if ( _.indexOf( galleryJSON.folders, folder ) < 0 ){
-					galleryJSON.folders.push(folder);
-				}
-				$("#tr_"+folder).removeClass("danger");
-													
-			} else {
-				
-				if(newFolders.length > 0){
-					$('#processStatus').html(newFolders.length + ' new folder(s).');
-					$('#allFoldersButton').off("click").text('look for Images in "'+newFolders[0]+'"').on("click", function() {
-						processFirstNewFolder();
-					});
-				}	
-			}					
-		};		
-*/
+
 		function resizeStore(folder, file, sizes, force) {
 			if (!folder) {
 				console.log("no folder!")
