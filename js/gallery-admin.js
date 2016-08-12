@@ -3,6 +3,7 @@ function adminInit() {
 
 	var imagesRemoved = [];
 	var imagesAdded = {};
+	var imagesAddedKeys = [];
 	var imagesModified = [];
 	var imagesNotProcessed = [];	
 
@@ -63,17 +64,30 @@ function adminInit() {
 					if(i < galleryJSON.folders.length){
 						si = 0;
 						//folder = galleryJSON.folders[i];
-						console.log(imagesAdded);
+						
 						console.log("i: "+i+", galleryJSON.folders.length: "+galleryJSON.folders.length);
 						//getAllImagesFromServerSync();
 						getAllImages();
 						
 					} else {
 
-						$('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " new images").on("click", function() {
+			//			$('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " new images").on("click", function() {
 						
-						});
-
+			//			});
+						
+						if(_.size(imagesRemoved) > 0 ){
+							$('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {
+							
+							})						
+						} else if (_.size(imagesAdded) > 0 ){
+							$('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " images").on("click", function() {
+								addNewImages();
+							})							
+						} else if (_.size(imagesNotProcessed) > 0){
+							$('#allImagesButton').off("click").text("process " + _.size(imagesNotProcessed) + " images").on("click", function() {
+							
+							})								
+						}
 					}
 				}
 				
@@ -90,10 +104,13 @@ function adminInit() {
 						//imagesAdded.push(allImagesFromServer[key]);
 						// bad:
 						//imagesAdded = _.uniq(imagesAdded);
+						console.log(imagesAdded.length);
 						
 						$("#imageStatus").html("").html(_.size(imagesAdded) + ' new image/s found in "' + folder + '".<br>');
 					}
 				}
+				
+				imagesAddedKeys = Object.keys(imagesAdded);
 				
 				//console.log(imagesAdded);							
 			};
@@ -150,23 +167,100 @@ function adminInit() {
 
 		}; // end function allImages
 		
-		function removeImages(){
-			if (imagesRemoved.length > 0) {
-				for (var key in imagesRemoved) {
-					delete galleryJSON.images[key];
-					delete imagesRemoved[key];
-					console.log("image '" + key + "' deleted from galleryJSON");
-				}
-			}
+
+		function removeImage(path) {
+			return $.ajax({
+				type : "GET",
+				url : "gallery/removeImage.php",
+				data : "path=" + path
+			})
 		};
 
+		function removeImages(){
+			var l = imagesRemoved.length;
+			var paths = [];
+			var i = 0;
+
+			if (l > 0) {
+				var id = imagesRemoved[i];
+
+				for (var sz in galleryJSON.sizes) {
+					var size = galleryJSON.sizes[sz];
+					var file = galleryJSON.images[sz].file;
+					var folder = galleryJSON.images[sz].path;
+					var gid = folder + '_' + size + file;
+
+					// check if this file's thumbnail is on the server
+					if (allImagesFromServer[gid]) {
+						paths.push(galleryJSON.images[id].path + '_' + size + '/' + galleryJSON.images[id].file);
+					}
+				}
+			}
+				
+			function removeImageSync(){
+
+				if(i < paths.length ) {	
+					//var path = folder+'_'+size+'/'+file; 
+					var path = paths[i];
+					removeImage(path).done(function(){
+							i++;
+							delete galleryJSON.images[key];
+							delete imagesRemoved[key];							
+							console.log("done " + i);
+							removeImageSync();						
+					}).fail(function(){
+							i++;
+							console.log("fail " + i);
+							removeImageSync();						
+					});
+					
+				} else {
+					console.log("finished deleting");
+						// save JSON:
+					$("#deleteImagesButton").off("click").text("save").on("click", function(){
+						/*
+							backup().done(function(data){
+								var content = JSON.stringify(galleryJSON);
+								var target = "gallery.json";
+								saveFileAs(content, target);
+							});
+						*/
+						
+						saveJSON();
+					});		
+				}				
+			};
+								
+			var p = 0;
+			var pl = paths.length;
+			removeImageSync();
+						
+		};
+		
+		var ani = 0;
 		function addNewImages(){
-			if( _.size(imagesAdded) <= 0 ){
+			
+			var length = imagesAddedKeys.length;
+			
+			if( length <= 0 ){
 				return false;
 			}
 			
-			for(var k in imagesAdded ){
-				resizeStoreSync(data, keys, length, folder);
+			if (ani < length ){
+				var key = imagesAddedKeys[ani];
+				var file = imagesAdded[key].file;
+				var folder = imagesAdded[key].path;
+				console.log(file);
+				
+				resizeStore(folder, file).done(function(){
+					galleryJSON.images[key] = imagesAdded[key];
+					ani++;
+					addNewImages()
+				});
+			} else {
+				console.log("all images added" );
+				buildGallery(galleryJSON);
+				saveStatus();
 			}
 			
 		};
@@ -210,14 +304,7 @@ function adminInit() {
 				});
 
 			} else {
-				/*
-				 if (newFolders.length > 0) {
-				 $('#processStatus').html(newFolders.length + ' new folder(s).');
-				 $('#allFoldersButton').off("click").text('look for Images in "' + newFolders[0] + '"').on("click", function() {
-				 processFirstNewFolder();
-				 });
-				 }
-				 */
+				console.log("resizeStoreSync else");
 			}
 		};
 	
@@ -409,47 +496,6 @@ function adminInit() {
 			});
 		};
 
-		function resizeStore(folder, file, sizes, force) {
-			if (!folder) {
-				console.log("no folder!")
-				return false;
-			}
-			if (!file) {
-				console.log("no file!")
-				return false;
-			}
-			if (!sizes) {
-				var sizes = galleryJSON.sizes.join();
-			}
-			if (!force) {
-				var force = false;
-			}
-			var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes + '&force=' + force;
-			console.log(postData);
-			return $.ajax({
-				//dataType : "json",
-				url : "gallery/resizeStore.php",
-				type : "GET",
-				data : postData
-			}).always(function(data) {
-				//console.log(data);
-			}).fail(function(data) {
-				console.log("fail!");
-				//console.log(data);
-			})
-		};
-
-		/*
-		 .then(
-		 function(data){
-		 console.log("then: "+data)
-		 }
-		 );
-		 */
-		function existingGallery() {
-
-		};
-
 	}); // <-- end start panel
 
 	/* options */
@@ -458,8 +504,9 @@ function adminInit() {
 
 	$('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(e) {
 
-		$('#configreset').click(function() {
+		$('#configReset').click(function() {
 			$('#optionsForm')[0].reset();
+			buildGallery(galleryJSON);
 		});
 
 		// pre-/re-set thumbSize
@@ -473,6 +520,7 @@ function adminInit() {
 
 			$('.gallery-item').removeClass(thumbDisplaySizes[galleryJSON.thumbDisplay]).addClass(thumbDisplaySizes[value]).proportion(proportion[0], proportion[1]);
 			galleryJSON.thumbDisplay = value;
+			saveStatus(true);
 		});
 
 		// pre-/re-set Proportion
@@ -484,6 +532,7 @@ function adminInit() {
 			galleryJSON.thumbProportion = value;
 			value = value.split(',');
 			$(".gallery-item").proportion(value[0], value[1]);
+			saveStatus(true);
 		});
 
 		// pre-/re-set thumbFit
@@ -494,6 +543,7 @@ function adminInit() {
 			var value = $(this).val();
 			galleryJSON.thumbFit = value;
 			$(".gallery-item .thumb-div").removeClass('cover-image contain-image').addClass(value + '-image');
+			saveStatus(true);		
 		});
 
 		// pre-/re-set thumbFit
@@ -525,6 +575,7 @@ function adminInit() {
 			value = (!value || value < 1) ? 0 : value;
 			galleryJSON.thumbPadding = value;
 			$(".gallery-item").css("padding", value + "px");
+			saveStatus(true);
 		});
 
 		$("#inputSizes").attr('placeholder', galleryJSON.sizes).keydown(function(e) {
@@ -551,6 +602,7 @@ function adminInit() {
 			var value = $(this).val().split(',');
 			value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
 			galleryJSON.sizes = value;
+			saveStatus(true);
 		});
 
 		$("#coverCheckbox").click(function(e) {
@@ -558,6 +610,7 @@ function adminInit() {
 			var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
 			var checked = (element.checked) ? false : true;
 			element.checked = (checked) ? false : checked.toString();
+			saveStatus(true);
 		});
 
 	});
@@ -683,11 +736,19 @@ function adminInit() {
 			tags = _.uniq(_.flattenDeep(tags));
 			galleryJSON.tags = tags;
 			buildGalleryNavigation();
+			
+			saveStatus(true);
 
 			//console.log(tagsJSON);
 			return false;
 
 			var postdata = $("#tags-form").serialize();
+			
+			
+			
+			
+			// ?????
+			/*
 			console.log(postdata);
 			$.ajax({
 				type : "GET",
@@ -698,6 +759,7 @@ function adminInit() {
 
 				}
 			})
+			*/
 		});
 		
 		function deleteSelectedImages(){
@@ -744,13 +806,18 @@ function adminInit() {
 						deleteImage(paths[p]);
 					} else {
 						console.log("finished deleting");
+						
 						// save JSON:
 						$("#deleteImagesButton").off("click").text("save").on("click", function(){
-							backup().done(function(data){
+							
+							/* 
+							 backup().done(function(data){
 								var content = JSON.stringify(galleryJSON);
 								var target = "gallery.json";
 								saveFileAs(content, target);
 							});
+							*/
+							saveJSON();
 						});
 					}				
 				};
@@ -870,7 +937,7 @@ function adminInit() {
 
 		$('.sortable').sortable('destroy');
 		document.getElementById('sliderSortable').innerHtml = "";
-		$('#sliderSortable').html('');
+		//$('#sliderSortable').html('');
 
 		function selectedIds() {
 			var selected_ids = [];
@@ -906,6 +973,7 @@ function adminInit() {
 
 		$('.sortable').sortable().unbind('sortupdate').bind('sortupdate', function(e, ui) {
 			galleryJSON.sliders["slider1"] = selectedIds();
+			saveStatus(true);
 		});
 
 		for (var i = 0, len = galleryJSON.sliders.slider1.length; i < len; i++) {
@@ -916,9 +984,13 @@ function adminInit() {
 			e.preventDefault();
 			console.log(selectedIds());
 			galleryJSON.sliders["slider1"] = selectedIds();
+			saveStatus(true);
 		});
 
 	})
+	
+	
+	
 	/* Raw */
 	$('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 		$(".gallery-row .gallery-item").removeClass("selected-image");
@@ -954,3 +1026,89 @@ function saveFileAs(content, target){
 	})
 
 };
+
+function resizeStore(folder, file, sizes, force) {
+	if (!folder) {
+		console.log("no folder!")
+		return false;
+	}
+	if (!file) {
+		console.log("no file!")
+		return false;
+	}
+	if (!sizes) {
+		var sizes = galleryJSON.sizes.join();
+	}
+	if (!force) {
+		var force = false;
+	}
+	var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes + '&force=' + force;
+	console.log(postData);
+	return $.ajax({
+		//dataType : "json",
+		url : "gallery/resizeStore.php",
+		type : "GET",
+		data : postData
+	}).always(function(data) {
+		//console.log(data);
+	}).fail(function(data) {
+		console.log("fail!");
+		//console.log(data);
+	})
+};
+
+function backup(){
+	
+	return $.ajax({
+		type : "GET",
+		url : "gallery/backup.php",
+		data : "backup=true"
+	}).done(function(data) {
+		//console.log(data);
+	})
+	
+};
+
+function saveFileAs(content, target){
+	
+	var postdata = "content="+content+"&target="+target;
+	
+	return $.ajax({
+		type : "GET",
+		url : "gallery/saveFileAs.php",
+		data : postdata
+	}).done(function(data) {
+		console.log(data);
+	})
+
+};
+
+var saving = false;
+
+function saveJSON(){
+	//saveStatus(false);
+	saving = true;
+	$("#saveButton").prop('disabled', true).text("saving");
+	backup().done(function(){
+		var content = JSON.stringify(galleryJSON);
+		var target = "gallery.json";
+		saveFileAs(content, target).done(function(){
+			//saveStatus(true);
+			$("#saveButton").prop('disabled', false).text("Save");
+			saving = false;
+		});
+	});	
+};
+
+function saveStatus(state){
+	var st = (state) ? false : true;
+	if(saving){ st = true }
+	$("#saveButton").prop('disabled', st);
+};
+
+$("#saveButton").on("click", function(){
+	//$("#saveButton").prop('disabled', true);
+	saveJSON();
+});
+
+
