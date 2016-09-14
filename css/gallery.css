@@ -332,9 +332,10 @@
 	color: #333;
 }
 
-.sort-placeholder {
-	min-width: 50px;
-	min-height: 50px;
-	background-color: #ccc;
+.sortable-placeholder {
+	position: relative;
+	float: left;
+	width: 100px;
+	height: 100px;
 }
 

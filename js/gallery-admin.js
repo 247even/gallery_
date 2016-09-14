@@ -959,7 +959,7 @@ function adminInit() {
 				return false;
 			}
 			
-			var slider1 = galleryJSON.sliders.slider1;
+			var slider1 = galleryJSON.sliders[0];
 			if(slider1.length > 1 || slider1 != "auto"){
 				/*
 				for (var i = 0, len = slider1.length; i < len; i++) {
@@ -970,7 +970,7 @@ function adminInit() {
 				for (var i = 0, len = slider1.length; i < len; i++) {
 					console.log(slider1[i]);
 					$('*[data-id="'+slider1[i]+'"]').addClass("selected-image");
-					document.querySelector('.gallery-row div[data-id="' + galleryJSON.sliders.slider1[i] + '"]').click();
+					document.querySelector('.gallery-row div[data-id="' + galleryJSON.sliders[0][i] + '"]').click();
 				}
 			}
 			
@@ -989,6 +989,43 @@ function adminInit() {
 		};
 		autoIds();
 
+/*
+		sortable('.sortable',{
+				placeholderClass: 'col-xs-3 gallery-item sort-placeholder',
+				forcePlaceholderSize: true
+				//hoverClass: 'sort-placeholder'
+		});
+		
+		sortable('.sortable')[0].addEventListener('sortupdate', function(e) {
+			console.log(e);
+			galleryJSON.sliders["slider1"] = selectedIds();
+			saveStatus(true);			
+		});
+	*/
+		
+		function reset(){
+			$(".gallery-item").removeClass("selected-image");
+			$("#sliderSortable").html("");		
+		};
+
+		$("#sliderClear").on("click", function(e) {
+			reset();
+		});
+		
+		$("#sliderAuto").on("click", function(e) {
+			
+			reset();
+			
+			var a = 10;
+			$(".gallery .gallery-item").each(function(k, v) {
+				if (k < a) {
+					$(this).trigger('click');
+				}
+			});
+			
+			galleryJSON.sliders[0] = [];
+			
+		});
 
 		$(".gallery-row .gallery-item").off("click").on("click", function(e) {
 		//$(".gallery-row .gallery-item").removeClass("selected-image").off("click").on("click", function(e) {
@@ -1005,32 +1042,35 @@ function adminInit() {
 				$("#sliderSortable div[data-id='" + data_id + "']").remove();
 			}
 			//$('.sortable').sortable('reload');
-			sortable('.sortable');
 
 			var selected_ids = selectedIds();
 			var prop = (selected_ids.length >= 2) ? false : true;
 			$("#sliderSubmit").prop("disabled", prop);
 
-			//galleryJSON.sliders["slider1"] = selected_ids;
+			galleryJSON.sliders[0] = selected_ids;
+			saveStatus(true);
+
+			$('.sortable').sortable('.sortable',{
+					placeholderClass: 'col-xs-3 gallery-item sort-placeholder',
+					forcePlaceholderSize: true,
+					hoverClass: 'is-hovered'
+				}).unbind('sortupdate').bind('sortupdate', function(e, ui) {
+				galleryJSON.sliders[0] = selectedIds();
+				saveStatus(true);
+			});				
+
 		});
 
-		sortable('.sortable',{
-				placeholderClass: 'col-xs-3 gallery-item sort-placeholder',
-				forcePlaceholderSize: true,
-				//hoverClass: 'sort-placeholder',
-				dragImage: null
-		});
 		
 /*
 		$('.sortable').sortable('.sortable',{
-				placeholderClass: 'sort-placeholder gallery-item',
+				placeholderClass: 'col-xs-3 gallery-item sort-placeholder',
 				forcePlaceholderSize: true,
 				hoverClass: 'is-hovered'
 			}).unbind('sortupdate').bind('sortupdate', function(e, ui) {
 			galleryJSON.sliders["slider1"] = selectedIds();
 			saveStatus(true);
 		});
-		*/
 
 
 		$("#sliderSubmit").on("click", function(e) {
@@ -1039,6 +1079,7 @@ function adminInit() {
 			galleryJSON.sliders["slider1"] = selectedIds();
 			saveStatus(true);
 		});
+		*/
 
 	})
 	
