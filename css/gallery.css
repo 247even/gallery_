@@ -310,6 +310,11 @@
 	width: 100%;
 }
 
+.rangeslider {
+	margin-top:20px;	
+	background: #e6e6e6;
+}
+
 .tab-content {
     margin: 0;
     padding-bottom: 50px	
@@ -325,5 +330,11 @@
 
 .success {
 	color: #333;
+}
+
+.sort-placeholder {
+	min-width: 50px;
+	min-height: 50px;
+	background-color: #ccc;
 }
 
