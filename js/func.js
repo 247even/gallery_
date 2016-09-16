@@ -3,7 +3,7 @@ function clearHtml(elements){
 	for(var i=0, len=elements.length; i < len; i++){
 		document.querySelector(elements[i]).innerHtml = "";
 	}
-}
+};
 
 // debounce function, for executing funcs when event stops
 var debounce = function(func, threshold, execAsap) {

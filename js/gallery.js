@@ -1,5 +1,26 @@
 var galleryJSON;
+
 function loadJSON() {
+
+	var request = new XMLHttpRequest();
+	request.open('GET', 'gallery/gallery.json', true);
+	
+	request.onload = function() {
+	  if (request.status >= 200 && request.status < 400) {
+		galleryJSON = JSON.parse(request.responseText);
+		buildGallery(galleryJSON);
+	  } else {
+	    console.log("no gallery.json received");
+	  }
+	};
+	
+	request.onerror = function() {
+	  console.log("connection error");
+	};
+	
+	request.send();
+
+/*	
 	$.ajax({
 		dataType : "json",
 		url : "gallery/gallery.json",
@@ -8,7 +29,32 @@ function loadJSON() {
 		galleryJSON = data;
 		buildGallery(galleryJSON);		
 	});
+*/
 };
+
+
+function buildGallery(data, filter) {
+
+	document.body.setAttribute("respi-sizes", galleryJSON.sizes);
+
+	buildGalleryItems();
+
+	// do the lightbox stuff
+	buildLightbox(true);
+
+	buildGalleryNavigation();
+	initGalleryNavigation();
+
+	// fade em in...
+	galleryFilter("all");
+	//console.log("Filter");
+
+	//preloader();
+	//console.log("preloader");
+
+	initGallery();
+};
+
 
 function buildGalleryItems(filter) {
 
@@ -17,11 +63,11 @@ function buildGalleryItems(filter) {
 
 	thumbDisplaySizes = {
 		"xs" : "col-xs-1",
-		"sm" : "col-xs-2",
-		"md" : "col-xs-3",
-		"lg" : "col-xs-4",
-		"xl" : "col-xs-6",
-		"xxl" : "col-xs-12"
+		"sm" : "col-xs-2 col-sm-1",
+		"md" : "col-xs-3 col-sm-2 col-md-1",
+		"lg" : "col-xs-4 col-sm-3 col-md-2 col-lg-1",
+		"xl" : "col-xs-5 col-sm-4 col-md-3 col-lg-2",
+		"xxl" : "col-xs-6 col-sm-5 col-md-4 col-lg-3"
 	};
 
 	var thumbSize = !galleryJSON.thumbDisplay ? thumbDisplaySizes["md"] : thumbDisplaySizes[galleryJSON.thumbDisplay];
@@ -29,8 +75,10 @@ function buildGalleryItems(filter) {
 	thumbPadding = thumbPadding != 0 ? 'style="padding:' + parseInt(thumbPadding) + 'px"' : '';
 
 	// reset
-	document.getElementById('gallery-row').innerHTML = "";
-	$('#thumb-prototype').remove();
+	document.getElementsByClassName('gallery-row').innerHTML = "";
+	//$('#thumb-prototype').remove();
+	//var tp = document.getElementById('thumb-prototype');
+	//tp.parentNode.removeChild(tp);
 
 	document.body.insertAdjacentHTML('beforeend',
 		'<div id="thumb-prototype" style="display:none">'
@@ -70,29 +118,6 @@ function buildGalleryItems(filter) {
 
 }
 
-function buildGallery(data, filter) {
-
-
-	document.body.setAttribute("respi-sizes", galleryJSON.sizes);
-
-	buildGalleryItems();
-
-	// do the lightbox stuff
-	buildLightbox(true);
-
-	buildGalleryNavigation();
-	initGalleryNavigation();
-
-	// fade em in...
-	galleryFilter("all");
-	//console.log("Filter");
-
-	//preloader();
-	//console.log("preloader");
-
-	initGallery();
-};
-
 function buildLightbox(init) {
 
 	//console.log("buildLightbox startet");
@@ -126,8 +151,7 @@ function buildLightbox(init) {
 	// This triggers after each slide change
 	$('.gallery .lightbox').on('slid.bs.carousel', function() {
 		currentIndex = $('.gallery-carousel div.active').index() + 1;
-		// Now display this wherever you want
-		document.getElementById('indicator-text').innerHTML = currentIndex + '/' + total;
+		$('.indicator-text').html(currentIndex + '/' + total);
 	});
 
 	$('.gallery .lightbox').on('shown.bs.modal', function(e) {
@@ -320,7 +344,7 @@ function initGallery() {
 	$(".gallery .gallery-item").proportion(galleryJSON.proportion).respi(galleryJSON.sizes);
 
 	$(window).on('resize', debounce(function(e) {
-		console.log(e);
+		//console.log(e);
 		$(".gallery .gallery-item").proportion(galleryJSON.proportion).respi(galleryJSON.sizes);
 		$(".gallery .gallery-carousel .item").respi(galleryJSON.sizes);
 	}, 500, false));
@@ -345,9 +369,17 @@ function initGallery() {
 	});
 
 	// load admin-functions, if available
-	if (adminInit) {
+/*
+	if (adminInit != null || typeof adminInit != 'undefined') {
 		adminInit();
 	}
+*/	
+	try {
+	    adminInit();
+	}
+	catch(err) {
+	    console.log(err);
+	}	
 
 	/*
 	 $('.img-active').each(function(i){
