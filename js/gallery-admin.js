@@ -22,11 +22,11 @@ function adminInit() {
 		
 		function getAllImages(){
 
-			var folder = galleryJSON.folders[i];
+			var folder = gJ.folders[i];
 			var sourceFolder = folder;
 			var allImagesFromServer = [];
-			// all IDs from galleryJSON filtered by folder:
-			var galleryByFolder = _.pickBy(galleryJSON.images, {'path' : folder });
+			// all IDs from gJ filtered by folder:
+			var galleryByFolder = _.pickBy(gJ.images, {'path' : folder });
 			
 			function getAllImagesFromServer(){
 				imagesFromFolder("folder="+sourceFolder).done(function(tnData){
@@ -47,9 +47,9 @@ function adminInit() {
 					getRemovedImages();
 				}
 				
-				if(si < galleryJSON.sizes.length){
+				if(si < gJ.sizes.length){
 					
-					sourceFolder = folder + '_' + galleryJSON.sizes[si];
+					sourceFolder = folder + '_' + gJ.sizes[si];
 					si++;
 					//console.log("new sourceFolder: "+sourceFolder);
 					getAllImagesFromServer();
@@ -61,11 +61,11 @@ function adminInit() {
 					
 					// Done! Next folder...
 					i++;
-					if(i < galleryJSON.folders.length){
+					if(i < gJ.folders.length){
 						si = 0;
-						//folder = galleryJSON.folders[i];
+						//folder = gJ.folders[i];
 						
-						console.log("i: "+i+", galleryJSON.folders.length: "+galleryJSON.folders.length);
+						console.log("i: "+i+", gJ.folders.length: "+gJ.folders.length);
 						//getAllImagesFromServerSync();
 						getAllImages();
 						
@@ -98,8 +98,8 @@ function adminInit() {
 				$("#imageStatus").html(ct+'<br> 0 new images found in "' + folder + '".<br>');
 	
 				for (var key in allImagesFromServer) {
-					if (!galleryJSON.images[key]) {
-						// this image is not in galleryJSON, must be new
+					if (!gJ.images[key]) {
+						// this image is not in gJ, must be new
 						imagesAdded[key] = allImagesFromServer[key];
 						//imagesAdded.push(allImagesFromServer[key]);
 						// bad:
@@ -143,8 +143,8 @@ function adminInit() {
 					}
 					
 					// search for unprocessed images:
-					for (var sz in galleryJSON.sizes) {
-						var idkey = folder + '_' + galleryJSON.sizes[sz] + galleryByFolder[id].file;
+					for (var sz in gJ.sizes) {
+						var idkey = folder + '_' + gJ.sizes[sz] + galleryByFolder[id].file;
 						//console.log(allImagesFromServer[idkey]);
 						if(!allImagesFromServer[idkey]){
 							imagesNotProcessed.push(id);
@@ -181,15 +181,15 @@ function adminInit() {
 			if (l > 0) {
 				var id = imagesRemoved[i];
 
-				for (var sz in galleryJSON.sizes) {
-					var size = galleryJSON.sizes[sz];
-					var file = galleryJSON.images[sz].file;
-					var folder = galleryJSON.images[sz].path;
+				for (var sz in gJ.sizes) {
+					var size = gJ.sizes[sz];
+					var file = gJ.images[sz].file;
+					var folder = gJ.images[sz].path;
 					var gid = folder + '_' + size + file;
 
 					// check if this file's thumbnail is on the server
 					if (allImagesFromServer[gid]) {
-						paths.push(galleryJSON.images[id].path + '_' + size + '/' + galleryJSON.images[id].file);
+						paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
 					}
 				}
 			}
@@ -201,7 +201,7 @@ function adminInit() {
 					var path = paths[i];
 					removeImage(path).done(function(){
 							i++;
-							delete galleryJSON.images[key];
+							delete gJ.images[key];
 							delete imagesRemoved[key];							
 							console.log("done " + i);
 							removeImageSync();						
@@ -217,7 +217,7 @@ function adminInit() {
 					$("#deleteImagesButton").off("click").text("save").on("click", function(){
 						/*
 							backup().done(function(data){
-								var content = JSON.stringify(galleryJSON);
+								var content = JSON.stringify(gJ);
 								var target = "gallery.json";
 								saveFileAs(content, target);
 							});
@@ -250,13 +250,13 @@ function adminInit() {
 				console.log(file);
 				
 				resizeStore(folder, file).done(function(){
-					galleryJSON.images[key] = imagesAdded[key];
+					gJ.images[key] = imagesAdded[key];
 					ani++;
 					addNewImages()
 				});
 			} else {
 				console.log("all images added" );
-				buildGallery(galleryJSON);
+				buildGallery(gJ);
 				saveStatus(true);
 			}
 			
@@ -293,8 +293,8 @@ function adminInit() {
 				resizeStore(folder, file).done(function(resizeData) {
 					window.ri++;
 
-					// add images to galleryJSON
-					galleryJSON.images[key] = data[key];
+					// add images to gJ
+					gJ.images[key] = data[key];
 
 					resizeStoreSync();
 
@@ -311,17 +311,17 @@ function adminInit() {
 				$("#allFoldersResult").html("");
 				//var data = data.sort();
 				var subFolders = _.filter(data, function(v, k) {
-					for (var i = 0, len = galleryJSON.sizes.length; i < len; i++) {
-						if (v.indexOf(galleryJSON.sizes[i]) > -1) {
-							console.log(galleryJSON.sizes[i] + ' ' + v);
+					for (var i = 0, len = gJ.sizes.length; i < len; i++) {
+						if (v.indexOf(gJ.sizes[i]) > -1) {
+							console.log(gJ.sizes[i] + ' ' + v);
 							return v;
 						}
 					}
 				});
 
 				var folders = _.difference(data, subFolders);
-				var newFolders = _.difference(_.difference(folders, galleryJSON.folders), galleryJSON.ignore);
-				var oldFolders = _.intersection(data, galleryJSON.folders);
+				var newFolders = _.difference(_.difference(folders, gJ.folders), gJ.ignore);
+				var oldFolders = _.intersection(data, gJ.folders);
 				console.log(newFolders);
 				console.log(oldFolders);
 
@@ -329,7 +329,7 @@ function adminInit() {
 				for (var i = 0, len = folders.length; i < len; i++) {
 					// set table row style for new, known or ignored folders:
 					var fclass = "warning";
-					if (_.indexOf(galleryJSON.ignore, folders[i]) == -1) {
+					if (_.indexOf(gJ.ignore, folders[i]) == -1) {
 						fclass = "default";
 					}
 					if (_.indexOf(newFolders, folders[i]) > -1) {
@@ -343,11 +343,11 @@ function adminInit() {
 				// the row ignore button stuff:
 				$("#foldersTable .btn_ign").on("click", function() {
 					var dataFolder = $(this).closest("tr").attr("data");
-					if (_.indexOf(galleryJSON.ignore, dataFolder) == -1) {
-						galleryJSON.ignore.push(dataFolder);
+					if (_.indexOf(gJ.ignore, dataFolder) == -1) {
+						gJ.ignore.push(dataFolder);
 						$(this).closest("tr").removeClass("success").addClass("warning");
 					} else {
-						galleryJSON.ignore = _.without(galleryJSON.ignore, dataFolder);
+						gJ.ignore = _.without(gJ.ignore, dataFolder);
 						$(this).closest("tr").removeClass("warning").addClass("success");
 					}
 				});
@@ -403,16 +403,16 @@ function adminInit() {
 								resizeStore(folder, file).done(function(data) {
 									i++;
 									
-									// add images to galleryJSON
-									galleryJSON.images[key] = imagesFromFolderData[key];
+									// add images to gJ
+									gJ.images[key] = imagesFromFolderData[key];
 									
 									console.log(data);
 									resizeStoreSync();
 								});
 							
 								// add folder to known folders
-								if ( _.indexOf( galleryJSON.folders, folder ) < 0 ){
-									galleryJSON.folders.push(folder);
+								if ( _.indexOf( gJ.folders, folder ) < 0 ){
+									gJ.folders.push(folder);
 								}
 								$("#tr_"+folder).removeClass("danger");
 																	
@@ -503,48 +503,48 @@ function adminInit() {
 
 		$('#configReset').click(function() {
 			$('#optionsForm')[0].reset();
-			buildGallery(galleryJSON);
+			buildGallery(gJ);
 		});
 
 		// pre-/re-set thumbSize
-		var thumbSize = !galleryJSON.thumbDisplay ? "md" : galleryJSON.thumbDisplay;
+		var thumbSize = !gJ.thumbDisplay ? "md" : gJ.thumbDisplay;
 		$("#thumbDisplaySelect").val(thumbSize);
 
 		$("#thumbDisplaySelect").on("change", function() {
 			var value = $(this).val();
-			var proportion = galleryJSON.thumbProportion;
+			var proportion = gJ.thumbProportion;
 			proportion = !proportion ? [1, 1] : proportion.split(',');
 
-			$('.gallery-item').removeClass(thumbDisplaySizes[galleryJSON.thumbDisplay]).addClass(thumbDisplaySizes[value]).proportion(proportion[0], proportion[1]);
-			galleryJSON.thumbDisplay = value;
+			$('.gallery-item').removeClass(thumbDisplaySizes[gJ.thumbDisplay]).addClass(thumbDisplaySizes[value]).proportion(proportion[0], proportion[1]);
+			gJ.thumbDisplay = value;
 			saveStatus(true);
 		});
 
 		// pre-/re-set Proportion
-		var thumbProp = !galleryJSON.proportion ? "1,1" : galleryJSON.proportion;
+		var thumbProp = !gJ.proportion ? "1,1" : gJ.proportion;
 		$("#thumProportionSelect").val(thumbProp);
 
 		$("#thumbProportionSelect").on("change", function() {
 			var value = $(this).val();
-			galleryJSON.thumbProportion = value;
+			gJ.thumbProportion = value;
 			value = value.split(',');
 			$(".gallery-item").proportion(value[0], value[1]);
 			saveStatus(true);
 		});
 
 		// pre-/re-set thumbFit
-		var thumbFit = !galleryJSON.thumbFit ? "cover" : galleryJSON.thumbFit;
+		var thumbFit = !gJ.thumbFit ? "cover" : gJ.thumbFit;
 		$("#thumbFitSelect").val(thumbFit);
 
 		$("#thumbFitSelect").on("change", function() {
 			var value = $(this).val();
-			galleryJSON.thumbFit = value;
+			gJ.thumbFit = value;
 			$(".gallery-item .thumb-div").removeClass('cover-image contain-image').addClass(value + '-image');
 			saveStatus(true);		
 		});
 
 		// pre-/re-set thumbFit
-		var thumbPadding = !galleryJSON.thumbPadding ? 0 : galleryJSON.thumbPadding;
+		var thumbPadding = !gJ.thumbPadding ? 0 : gJ.thumbPadding;
 		$("#thumbPaddingInput").val(thumbPadding);
 
 		$("#thumbPaddingInput").keydown(function() {
@@ -570,12 +570,12 @@ function adminInit() {
 		$("#thumbPaddingInput").on("change input", function() {
 			var value = $(this).val();
 			value = (!value || value < 1) ? 0 : value;
-			galleryJSON.thumbPadding = value;
+			gJ.thumbPadding = value;
 			$(".gallery-item").css("padding", value + "px");
 			saveStatus(true);
 		});
 
-		$("#inputSizes").attr('placeholder', galleryJSON.sizes).keydown(function(e) {
+		$("#inputSizes").attr('placeholder', gJ.sizes).keydown(function(e) {
 			// Allow: backspace, delete, tab, escape, enter and ,
 			if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
 			// Allow: Ctrl+A
@@ -598,7 +598,7 @@ function adminInit() {
 		$("#inputSizes").on("change input", function() {
 			var value = $(this).val().split(',');
 			value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
-			galleryJSON.sizes = value;
+			gJ.sizes = value;
 			saveStatus(true);
 		});
 
@@ -724,14 +724,14 @@ function adminInit() {
 				var this_id = $(this).attr("data-id");
 				var this_tags = $(this).attr("data-tags");
 				this_tags = this_tags.split(',');
-				galleryJSON.images[this_id].tags = this_tags;
+				gJ.images[this_id].tags = this_tags;
 			});
 
-			$.each(galleryJSON.images, function(k, v) {
+			$.each(gJ.images, function(k, v) {
 				tags.push(v.tags);
 			})
 			tags = _.uniq(_.flattenDeep(tags));
-			galleryJSON.tags = tags;
+			gJ.tags = tags;
 			buildGalleryNavigation();
 			
 			saveStatus(true);
@@ -768,13 +768,13 @@ function adminInit() {
 					i++;
 					var id = $(this).attr('data-id');
 					// For testing! >>
-					//paths.push(galleryJSON.images[id].path+'/'+galleryJSON.images[id].file);
-					for(var sz in galleryJSON.sizes){
-						var size = galleryJSON.sizes[sz];
-						paths.push(galleryJSON.images[id].path+'_'+size+'/'+galleryJSON.images[id].file);
+					//paths.push(gJ.images[id].path+'/'+gJ.images[id].file);
+					for(var sz in gJ.sizes){
+						var size = gJ.sizes[sz];
+						paths.push(gJ.images[id].path+'_'+size+'/'+gJ.images[id].file);
 					}
 					
-					delete galleryJSON.images[id];
+					delete gJ.images[id];
 				})
 
 				function deleteImage(path) {
@@ -809,7 +809,7 @@ function adminInit() {
 							
 							/* 
 							 backup().done(function(data){
-								var content = JSON.stringify(galleryJSON);
+								var content = JSON.stringify(gJ);
 								var target = "gallery.json";
 								saveFileAs(content, target);
 							});
@@ -959,7 +959,7 @@ function adminInit() {
 				return false;
 			}
 			
-			var slider1 = galleryJSON.sliders[0];
+			var slider1 = gJ.sliders[0];
 			if(slider1.length > 1 || slider1 != "auto"){
 				/*
 				for (var i = 0, len = slider1.length; i < len; i++) {
@@ -970,7 +970,7 @@ function adminInit() {
 				for (var i = 0, len = slider1.length; i < len; i++) {
 					console.log(slider1[i]);
 					$('*[data-id="'+slider1[i]+'"]').addClass("selected-image");
-					document.querySelector('.gallery-row div[data-id="' + galleryJSON.sliders[0][i] + '"]').click();
+					document.querySelector('.gallery-row div[data-id="' + gJ.sliders[0][i] + '"]').click();
 				}
 			}
 			
@@ -998,7 +998,7 @@ function adminInit() {
 		
 		sortable('.sortable')[0].addEventListener('sortupdate', function(e) {
 			console.log(e);
-			galleryJSON.sliders["slider1"] = selectedIds();
+			gJ.sliders["slider1"] = selectedIds();
 			saveStatus(true);			
 		});
 	*/
@@ -1023,7 +1023,7 @@ function adminInit() {
 				}
 			});
 			
-			galleryJSON.sliders[0] = [];
+			gJ.sliders[0] = [];
 			
 		});
 
@@ -1047,7 +1047,7 @@ function adminInit() {
 			var prop = (selected_ids.length >= 2) ? false : true;
 			$("#sliderSubmit").prop("disabled", prop);
 
-			galleryJSON.sliders[0] = selected_ids;
+			gJ.sliders[0] = selected_ids;
 			saveStatus(true);
 
 			$('.sortable').sortable('.sortable',{
@@ -1055,7 +1055,7 @@ function adminInit() {
 					forcePlaceholderSize: true,
 					hoverClass: 'is-hovered'
 				}).unbind('sortupdate').bind('sortupdate', function(e, ui) {
-				galleryJSON.sliders[0] = selectedIds();
+				gJ.sliders[0] = selectedIds();
 				saveStatus(true);
 			});				
 
@@ -1068,7 +1068,7 @@ function adminInit() {
 				forcePlaceholderSize: true,
 				hoverClass: 'is-hovered'
 			}).unbind('sortupdate').bind('sortupdate', function(e, ui) {
-			galleryJSON.sliders["slider1"] = selectedIds();
+			gJ.sliders["slider1"] = selectedIds();
 			saveStatus(true);
 		});
 
@@ -1076,7 +1076,7 @@ function adminInit() {
 		$("#sliderSubmit").on("click", function(e) {
 			e.preventDefault();
 			console.log(selectedIds());
-			galleryJSON.sliders["slider1"] = selectedIds();
+			gJ.sliders["slider1"] = selectedIds();
 			saveStatus(true);
 		});
 		*/
@@ -1085,14 +1085,61 @@ function adminInit() {
 	
 	
 	
-	/* Raw */
+	/* Raw Panel */
 	$('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
+		
+		getAllBackups().done(function(data){
+			$("#loadBackupSelect").html("").append("<option>---</option>");
+			var data = JSON.parse(data);
+			for (var i=0; i < data.length; i++) {
+			  var split = data[i].split(".");
+			  var opt = "<option data-url="+data[i]+">"+convertTimestamp(split[1])+"</option>";
+			  $("#loadBackupSelect").append(opt);
+			};
+			
+			$("#loadBackupSelect").on("change", function(){
+				var dataUrl = $('#loadBackupSelect option:selected').attr("data-url");
+				var url = "gallery/"+dataUrl;
+				var outputText = "Gallery JSON";
+				var outputData = gJ;
+				if(!dataUrl){
+					$("#json-output").text(JSON.stringify(outputData, null, '\t'));
+					$(".outputFile").text(outputText);
+					return false;				
+				}
+				
+				$.getJSON(url, function(data){
+						outputData = data;
+						outputText = dataUrl;
+					}).always(function(){
+						$("#json-output").text(JSON.stringify(outputData, null, '\t'));
+						$(".outputFile").text(outputText);							
+				});
+				
+				$("#loadBuBtn").on("click", function(){
+					buildGallery(outputData);
+				});						
+			});
+		});
+		
 		$(".gallery-row .gallery-item").removeClass("selected-image");
 
-		$("#json-output").text(JSON.stringify(galleryJSON, null, '\t'));
+		$("#json-output").text(JSON.stringify(gJ, null, '\t'));
 	});
 
 	$('.admin-header a[aria-controls="start-panel"').trigger("click");
+};
+
+function getAllBackups(){
+	
+	return $.ajax({
+		type : "GET",
+		url : "gallery/allBackups.php",
+		data : "allBackups=true&t="+$.now()
+	}).done(function(data) {
+		//console.log(data);
+	})	
+	
 };
 
 function backup(){
@@ -1131,7 +1178,7 @@ function resizeStore(folder, file, sizes, force) {
 		return false;
 	}
 	if (!sizes) {
-		var sizes = galleryJSON.sizes.join();
+		var sizes = gJ.sizes.join();
 	}
 	if (!force) {
 		var force = false;
@@ -1178,13 +1225,12 @@ function saveFileAs(content, target){
 };
 
 var saving = false;
-
 function saveJSON(){
 	//saveStatus(false);
 	saving = true;
 	$("#saveButton").prop('disabled', true).text("saving");
 	backup().done(function(){
-		var content = JSON.stringify(galleryJSON);
+		var content = JSON.stringify(gJ);
 		var target = "gallery.json";
 		saveFileAs(content, target).done(function(){
 			//saveStatus(true);

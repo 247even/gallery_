@@ -2,7 +2,7 @@
 function backup() {
 	$t = time();
 	$file = 'gallery.json';
-	$newfile = 'gallery_bu'.$t.'.json';
+	$newfile = 'gallery.'.$t.'.json';
 	if(!copy($file,$newfile)) {
 		echo "copy $newfile failed";
 	}

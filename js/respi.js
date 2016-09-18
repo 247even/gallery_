@@ -5,9 +5,9 @@
 		function nearest(el,arr){
 			
 			var arr = !arr ? $('body').attr("respi-sizes").split(',') : arr;
-			var width = el.width();
-			var height = el.height();
-			var frame = (height >= width) ? height : width;
+			var w = el.width();
+			var h = el.height();
+			var frame = (h >= w) ? h : w;
 			var min = arr[0];
 			    
 			$.each(arr, function(k, value) {

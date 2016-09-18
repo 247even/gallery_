@@ -283,7 +283,16 @@
 									</div><!-- end slider-panel -->
 
 									<div id="raw-panel" role="tabpanel" class="tab-pane scroll-wrapper">
-										Raw Output
+										<section>
+											<select id="loadBackupSelect" class="form-control">
+											  <option>---</option>
+											</select>
+										</section>
+										<section>
+											<span class="outputFile">Raw Output</span>
+											<button id="loadBuBtn" class="btn btn-default">Load</button>
+											<button id="restoreBuBtn" class="btn btn-default">Restore</button>
+										</section>
 										<pre id="json-output">
 											
 										</pre>
