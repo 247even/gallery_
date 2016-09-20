@@ -1,3 +1,14 @@
+function loader(s){
+	var stat = '';
+	if(s){
+		stat = 'none';
+	}
+	if(!document.getElementsByClassName('loader')[0]){
+		document.body.insertAdjacentHTML('afterBegin', '<div class="loader"><div class="loader-spinner loader03"></div></div>');		
+	}
+	document.getElementsByClassName('loader')[0].style.display = stat;
+};
+
 function convertTimestamp(timestamp) {
   var d = new Date(timestamp * 1000),	// Convert the passed timestamp to milliseconds
 		yyyy = d.getFullYear(),
@@ -27,7 +38,6 @@ function convertTimestamp(timestamp) {
 		
 	return time2;
 }
-console.log(convertTimestamp(1470333835));
 
 // clear html elements
 function clearHtml(elements){
@@ -64,11 +74,19 @@ var debounce = function(func, threshold, execAsap) {
 	$.fn.proportion = function(a,b) {
 		var a = !a ? 1 : a;
 		var b = !b ? 1 : b;
-		//console.log("a: "+a+" b: "+b);
 		$(this).css('height', $(this).outerWidth() * b / a);
 		return this;
 	}
 })(jQuery);
+
+function proportion(el,a,b) {
+		var a = !a ? 1 : a;
+		var b = !b ? 1 : b;
+		for (i = 0; i < el.length; i++) {
+			el[i].style.height = el[i].offsetWidth * b / a;
+		}	
+};
+
 
 (function($) {
 	$.fn.center = function(vh) {

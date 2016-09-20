@@ -8,12 +8,16 @@ function adminInit() {
 	var imagesNotProcessed = [];	
 
 	$('.admin-header a[aria-controls="start-panel"]').on('shown.bs.tab', function(e) {
+		
+		loader("off");
 
 		$('#allFoldersButton').on("click", function() {
+			loader();
 			listAllFolders();
 		});
 		
 		$('#allImagesButton').on("click", function(){
+			loader();
 			getAllImages();
 		});
 		
@@ -90,7 +94,6 @@ function adminInit() {
 						}
 					}
 				}
-				
 			};
 
 			function getNewImages(){
@@ -156,11 +159,12 @@ function adminInit() {
 						}
 					}
 				}
+				
+				loader("off");
 			};
 
 			getAllImagesFromServer();
 			console.log("getAllImagesFromServer after");
-			return false;
 
 		}; // end function allImages
 		
@@ -368,6 +372,8 @@ function adminInit() {
 					});
 				}
 
+			loader("off");
+			
 			});
 		};
 
@@ -479,7 +485,7 @@ function adminInit() {
 		};
 
 		function imagesFromFolder(postData) {
-			var postData = postData+"&ts="+$.now();
+			var postData = postData+"&ts="+Date.now();
 			//console.log(postData);
 			return $.ajax({
 				dataType : "json",
@@ -847,7 +853,7 @@ function adminInit() {
 			var imgSrc_720 = imgSrc.replace("_respi", "_720");
 			var imgSrc_720_blur = imgSrc_720.replace("gallery", "gallery/blur");
 
-			$("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + $.now()).imagesLoaded().always(function(instance) {
+			$("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + Date.now()).imagesLoaded().always(function(instance) {
 				//console.log('blur image request');
 			}).done(function(instance) {
 				$("#blurStatus").html("Static blur image found.");
@@ -1088,6 +1094,8 @@ function adminInit() {
 	/* Raw Panel */
 	$('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 		
+		loader();
+		
 		getAllBackups().done(function(data){
 			$("#loadBackupSelect").html("").append("<option>---</option>");
 			var data = JSON.parse(data);
@@ -1098,6 +1106,7 @@ function adminInit() {
 			};
 			
 			$("#loadBackupSelect").on("change", function(){
+				loader();
 				var dataUrl = $('#loadBackupSelect option:selected').attr("data-url");
 				var url = "gallery/"+dataUrl;
 				var outputText = "Gallery JSON";
@@ -1113,18 +1122,22 @@ function adminInit() {
 						outputText = dataUrl;
 					}).always(function(){
 						$("#json-output").text(JSON.stringify(outputData, null, '\t'));
-						$(".outputFile").text(outputText);							
+						$(".outputFile").text(outputText);	
+						loader("off");						
 				});
 				
 				$("#loadBuBtn").on("click", function(){
 					buildGallery(outputData);
 				});						
 			});
+		
 		});
 		
 		$(".gallery-row .gallery-item").removeClass("selected-image");
 
 		$("#json-output").text(JSON.stringify(gJ, null, '\t'));
+		loader("off");
+		
 	});
 
 	$('.admin-header a[aria-controls="start-panel"').trigger("click");
@@ -1135,7 +1148,7 @@ function getAllBackups(){
 	return $.ajax({
 		type : "GET",
 		url : "gallery/allBackups.php",
-		data : "allBackups=true&t="+$.now()
+		data : "allBackups=true&t="+Date.now()
 	}).done(function(data) {
 		//console.log(data);
 	})	
