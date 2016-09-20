@@ -1,3 +1,9 @@
+function addClasses(el, classes){
+	for(var i=0,j=classes.length; i<j; i++){
+		el.classList ? el.classList.add(classes[i]) : el.className += ' '+classes[i];
+	};
+};
+
 function loader(s){
 	var stat = '';
 	if(s){

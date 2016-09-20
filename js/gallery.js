@@ -61,12 +61,12 @@ function buildGalleryItems(filter) {
 	var i = 0;
 
 	thumbDisplaySizes = {
-		"xs" : "col-xs-1",
-		"sm" : "col-xs-2 col-sm-1",
-		"md" : "col-xs-3 col-sm-2 col-md-1",
-		"lg" : "col-xs-4 col-sm-3 col-md-2 col-lg-1",
-		"xl" : "col-xs-5 col-sm-4 col-md-3 col-lg-2",
-		"xxl" : "col-xs-6 col-sm-5 col-md-4 col-lg-3"
+		"xs" : ["col-xs-1"],
+		"sm" : ["col-xs-2", "col-sm-1"],
+		"md" : ["col-xs-3", "col-sm-2", "col-md-1"],
+		"lg" : ["col-xs-4", "col-sm-3", "col-md-2", "col-lg-1"],
+		"xl" : ["col-xs-5", "col-sm-4", "col-md-3", "col-lg-2"],
+		"xxl" : ["col-xs-6", "col-sm-5", "col-md-4", "col-lg-3"]
 	};
 
 	var thumbSize = !gJ.thumbDisplay ? thumbDisplaySizes["md"] : thumbDisplaySizes[gJ.thumbDisplay];
@@ -79,7 +79,14 @@ function buildGalleryItems(filter) {
 	//$('#thumb-prototype').remove();
 	//var tp = document.getElementById('thumb-prototype');
 	//tp.parentNode.removeChild(tp);
+	
+	var tpgi = document.querySelector('#thumb-prototype .gallery-item');
+	addClasses(tpgi, thumbSize);
+	//addClasses(tpgi, thumbPadding);
+	//tpgi.classList ? tpgi.classList.add(thumbSize) : tpgi.className += ' '+thumbSize;
+	//tpgi.classList ? tpgi.classList.add(thumbPadding) : tpgi.className += ' '+thumbPadding;
 
+/*
 	document.body.insertAdjacentHTML('beforeend',
 		'<div id="thumb-prototype" style="display:none">'
 		+ '<div class="' + thumbSize + ' gallery-item img-hidden" ' + thumbPadding + '>'
@@ -89,6 +96,7 @@ function buildGalleryItems(filter) {
 		+ '<span class="glyphicon glyphicon-zoom-in"> </span>'
 		+ '</a></div></div></div>'
 	);	
+*/
 	
 	for( var key in gJ.images){
 		
@@ -110,7 +118,7 @@ function buildGalleryItems(filter) {
 		document.querySelector("#thumb-prototype .thumb-div").setAttribute('respi-path', respiPath);
 		document.querySelector("#thumb-prototype a").setAttribute('data-slide-to', i);
 		
-		var tpgi = document.querySelector("#thumb-prototype .gallery-item");
+		//var tpgi = document.querySelector("#thumb-prototype .gallery-item");
 		tpgi.setAttribute('data-id', key);
 		tpgi.setAttribute('data-time', val.time);
 		tpgi.setAttribute('data-tags', val.tags);

@@ -10,7 +10,8 @@
 		<link rel="shortcut icon" href="" type="image/x-icon">
 		<meta name="description" content="">
 		<title>gallery_</title>
-
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.min.js"></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:700,400&amp;subset=latin">
 		<link href='https://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -22,20 +23,15 @@
 		<link rel="stylesheet" href="css/animate.min.css">
 		<link rel="stylesheet" href="css/imafox.css">
 		<link rel="stylesheet" href="css/loader.css">
-
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.min.js"></script>
-		<script src="js/respi.js"></script>	
-
 	</head>
 	<body>
 		<div id="main">
 			<div id="page3" class="page no-scroll">
 				<section class="gallery section section--no-padding after-navbar scroll-wrapper" id="arbeiten">
 					<!-- Gallery -->
-					<div class="gallery-layout-default">
+					<div class=" gallery-layout-default">
 						<div>
-							<div id="gallery-row" class="row gallery-row no-gutter">
+							<div class="row gallery-row no-gutter">
 
 							</div>
 						</div>
@@ -43,7 +39,7 @@
 					</div>
 
 					<!-- Lightbox -->
-					<div data-app-prevent-settings="" class="lightbox slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false" id="lb-arbeiten">
+					<div data-app-prevent-settings="" class="slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false" id="lb-arbeiten">
 						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-body">
@@ -53,8 +49,8 @@
 									<div class="gallery-carousel carousel-inner">
 
 									</div>
-									<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"> </span> <span class="sr-only">Previous</span> </a>
-									<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"> </span> <span class="sr-only">Next</span> </a>
+									<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> <span class="sr-only">Previous</span> </a>
+									<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> <span class="sr-only">Next</span> </a>
 
 									<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
 									<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
@@ -71,73 +67,51 @@
 					<div class="section navbar navbar-fixed-bottom">
 						<div class="navbar__container">
 							<div class="navbar__column navbar__menu">
+
 								<select id="filter-select" class="selectpicker dropup">
 									<option value="all" data-filter="all">alle</option>
+
 								</select>
 							</div>
 						</div>
 					</div>
 				</footer>
 
-			</div><!-- page -->
-		</div><!-- main -->
+			</div>
+			<!-- page -->
 
-<!--
+		</div>
+		<!-- main -->
+		
 		<div id="prototypes" style="display:none">
 			<div id="thumb-prototype">
-				<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 gallery-item proportion img-hidden" data-id="id" data-time="time" data-path="filePath" data-tags="tagsString">
-					<div class="thumb-div cover-image b-lazy" data-src="thumbSrc">
-						<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal"> <img alt="" class="lazy" data-original="thumbFilePath" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"> <span class="icon glyphicon glyphicon-zoom-in"> </span> </a>
-					</div>
-				</div>
+				<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 gallery-item img-hidden" data-time="time" data-path="filePath" data-tags="tagsString">
+					<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal"> 
+						<img alt="" class="lazy" data-original="thumbFilePath" src="images/FFF-0.png">'
+						<span class="icon glyphicon glyphicon-zoom-in"> </span>
+					</a>
+				</div>				
 			</div>
 		</div>
--->
-
-		<!-- Latest compiled and minified bootstrap JavaScript 
+		
+		<!-- Latest compiled and minified bootstrap JavaScript -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		<script src="js/bootstrap-select.min.js"></script>
 		<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
+		<!--<script src="https://cdn.jsdelivr.net/velocity/1.2.3/velocity.ui.min.js"></script>-->
 		<script src="js/relative-fade.min.js"></script>
-		<script src="js/vague.js"></script>
+		<script src="js/stackblur.min.js"></script>
 		<script src="js/bluur.js"></script>
 		<script src="js/imgloaded.js"></script>
 		<script src="js/PxLoader.js"></script>
 		<script src="js/pxloader-images.min.js"></script>
-		<script src="js/onscreen.js"></script>
+		<script src="js/px.js"></script>
+		<script src="js/lazyload.js"></script>
 		<script src="js/animatecss.min.js" async></script>
 		<script src="js/SmoothScroll.js"></script>
 		<script src="js/bootstrap-carousel-swipe.js"></script>
-		<script src="js/selectize.min.js"></script>
-		<script src="js/image-crop.js"></script>
+		<script src="js/sortit.js"></script>
 		<script src="js/gallery.js"></script>
-		<script src="js/px.js"></script>
-		<script src="js/func.js"></script>
-		<script src="js/init.js"></script>
-		<script src="js/main.js"></script>
--->
-
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-		<script src="js/bootstrap-select.min.js"></script>
-		<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
-		<script src="js/relative-fade.min.js"></script>
-		<script src="js/vague.js"></script>
-		<script src="js/bluur.js"></script>
-		<script src="js/imgloaded.js"></script>
-		<script src="js/PxLoader.js"></script>
-		<script src="js/pxloader-images.min.js"></script>
-		<script src="js/onscreen.js"></script>
-		<script src="js/animatecss.min.js" async></script>
-		<script src="js/SmoothScroll.js"></script>
-		<script src="js/bootstrap-carousel-swipe.js"></script>
-		<script src="js/rangeslider.min.js"></script>
-		<script src="js/validator.min.js"></script>
-		<script src="js/login.js"></script>
-		<script src="js/html.sortable.min.js"></script>
-		<script src="js/image-crop.js"></script>
-		<script src="js/gallery.js"></script>
-		<!-- <script src="js/gallery-admin.js"></script> -->
-		<script src="js/px.js"></script>
 		<script src="js/func.js"></script>
 		<script src="js/init.js"></script>
 		<script src="js/main.js"></script>
