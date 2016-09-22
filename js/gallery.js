@@ -341,7 +341,6 @@ function initGallery() {
 	
 	window.addEventListener('resize', debounce(
 		function(e){
-			console.log(e);
 			proportion(document.querySelectorAll(".gallery .gallery-item"),gJ.proportion);
 			proportion(document.querySelectorAll(".gallery .gallery-carousel .item"),gJ.proportion);
 			/*

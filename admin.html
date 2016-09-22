@@ -34,7 +34,7 @@
 	<body>
 
 		<div id="main">
-			<figure id="effect-fullscreen" style="display: none"> </figure>
+			<figure id="effect-fullscreen" style="display: none"></figure>
 			<div id="page3" class="page no-scroll">
 				<div class="container gallery-container">
 					<div class="row height100">
@@ -101,9 +101,6 @@
 									</li>
 									<li role="presentation">
 										<a href="#tags-panel" aria-controls="tags-panel" role="tab" data-toggle="tab">Tags</a>
-									</li>
-									<li role="presentation">
-										<a href="#effect-panel" aria-controls="effect-panel" role="tab" data-toggle="tab">Effect</a>
 									</li>
 									<li role="presentation">
 										<a href="#slider-panel" aria-controls="slider-panel" role="tab" data-toggle="tab">Slider</a>
@@ -245,82 +242,52 @@
 										</section><!-- admin-panel -->
 									</div><!-- end tabs panel -->
 
-									<div id="effect-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
-								<!--
-										<form id="blur-form">
-											<input id="blurSlider" type="range" min="10" max="100" value="50" step="5" data-rangeslider>
-											<output id="blurSliderOutput">
-												60
-											</output>
-											<input id="blurPath" type="hidden" name="img" value=""/>
-											<input id="blurOverwrite" type="hidden" name="overwrite" value="true"/>
-											<input name="depth" id="blurInput" class="form-control" type="number" value="60" maxlength="3" min="1" max="100">
-											<button id="blurSubmit" type="submit" class="btn btn-default">
-												Save
-											</button>
-										</form>
-										<div id="blurStatus">
-
-										</div>
-										<div id="blurImageFrame">
-											<img id="effect-preview-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"/>
-										</div>
-										<div>
-											<canvas id="blurImageCanvas" width="400" height="300"></canvas>
-										</div>
-								-->
-									</div>
-
 									<div id="slider-panel" role="tabpanel" class="tab-pane scroll-wrapper">
-										slider
-										<div id="sliderSortable" class="js-grid sortable grid clearfix ml4 myn1" data-sortable-id="1" aria-dropeffect="move">
+
+										<div id="sliderSortable" class="sortable clearfix">
 
 										</div><!-- #sliderSortable -->
-										<form id="sliderForm" class="form-inline">
-											<select id="sliderNumber" class="form-control">
-												<option>2</option>
-												<option>3</option>
-												<option>4</option>
-												<option selected="selected">5</option>
-												<option>6</option>
-												<option>7</option>
-												<option>8</option>
-												<option>9</option>
-												<option>10</option>
-											</select>
-											<button id="sliderAuto" type="submit" class="btn btn-default">
-												auto
-											</button>
-											<button id="sliderSubmit" type="submit" class="btn btn-default" disabled>
-												Save
-											</button>
-											<button id="sliderClear" class="btn btn-default">
-												Clear
-											</button>
-										</form>
 
-<form id="blur-form">
-											<input id="blurSlider" type="range" min="10" max="100" value="50" step="5" data-rangeslider>
-											<output id="blurSliderOutput">
-												60
-											</output>
-											<input id="blurPath" type="hidden" name="img" value=""/>
-											<input id="blurOverwrite" type="hidden" name="overwrite" value="true"/>
-											<input name="depth" id="blurInput" class="form-control" type="number" value="60" maxlength="3" min="1" max="100">
-											<button id="blurSubmit" type="submit" class="btn btn-default">
+										<section>
+											<form id="sliderForm" class="form-inline">
+												<select id="sliderNumber" class="form-control">
+													<option>2</option>
+													<option>3</option>
+													<option>4</option>
+													<option selected="selected">5</option>
+													<option>6</option>
+													<option>7</option>
+													<option>8</option>
+													<option>9</option>
+													<option>10</option>
+												</select>
+												<button id="sliderAuto" type="submit" class="btn btn-default">
+													auto
+												</button>
+												<button id="sliderSubmit" type="submit" class="btn btn-default" disabled>
+													Save
+												</button>
+												<button id="sliderClear" class="btn btn-default">
+													Clear
+												</button>
+											</form>
+										</section>
+
+										
+											<input id="blur-slider" type="range" min="0" max="20" step="1" data-rangeslider>
+										<form id="blur-form" class="form-inline">
+											<input  id="blur-input" type="text" name="depth" class="form-control" maxlength="2" min="0" max="20">
+											<button id="blur-submit" type="submit" class="btn btn-default">
 												Save
 											</button>
 										</form>
-										<div id="blurStatus">
+										<div id="blur-status">
 
 										</div>
 										<div id="blurImageFrame">
 											<img id="effect-preview-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"/>
 										</div>
-										<div>
-											<canvas id="blurImageCanvas" width="400" height="300"></canvas>
-										</div>
-										
+
 									</div><!-- end slider-panel -->
 
 									<div id="raw-panel" role="tabpanel" class="tab-pane scroll-wrapper">

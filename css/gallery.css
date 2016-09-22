@@ -237,7 +237,7 @@
     margin-top: 30px;
 }
 
-.contain-image, .cover-image, .contain-image {
+.gallery-item, .contain-image, .cover-image, .contain-image {
 	overflow: hidden;
 }
 
