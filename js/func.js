@@ -1,3 +1,27 @@
+function blur(el,val){
+	var els = document.querySelector(el).style;
+	els.filter = 'blur('+val+'px)';
+	els.webkitFilter = 'blur('+val+'px)';
+	els.mozFilter = 'blur('+val+'px)';
+	els.oFilter = 'blur('+val+'px)';
+	els.msFilter = 'blur('+val+'px)';
+	els.filter = 'progid: DXImageTransform.Microsoft.Blur(PixelRadius='+val+')';
+};
+
+function removeClasses(el, classes){
+	var el = document.querySelectorAll(el);
+	for(var e=0; e<el.length; e++){
+		for(var i=0; i<classes.length; i++){
+			if (el[e].classList){
+		  		el[e].classList.remove(classes[i]);
+			} else {
+		  		el[e].classes[i] = el[e].classes[i].replace(new RegExp('(^|\\b)' 
+		  		+ classes[i].split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+		  	}
+		 }
+	}
+};
+
 function addClasses(el, classes){
 	for(var i=0,j=classes.length; i<j; i++){
 		el.classList ? el.classList.add(classes[i]) : el.className += ' '+classes[i];
@@ -46,9 +70,9 @@ function convertTimestamp(timestamp) {
 }
 
 // clear html elements
-function clearHtml(elements){
-	for(var i=0, len=elements.length; i < len; i++){
-		document.querySelector(elements[i]).innerHtml = "";
+function clearHtml(el){
+	for(var i=0; i < el.length; i++){
+		document.querySelector(el[i]).innerHTML = "";
 	}
 };
 
