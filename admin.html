@@ -34,7 +34,7 @@
 	</head>
 	<body>
 
-		<div id="main">		
+		<div id="main">
 			<figure id="effect-fullscreen" style="display: none"></figure>
 			<div id="page3" class="page no-scroll">
 				<div class="container gallery-container">
@@ -294,19 +294,19 @@
 									</div><!-- end slider-panel -->
 
 									<div id="upload-panel" role="tabpanel" class="tab-pane scroll-wrapper">
+										
+										<div id="drop-zone">Drop files here</div>
 
-										<form id="image_upload_form" enctype="multipart/form-data" method="post">
-											                <span class="btn btn-success fileinput-button">
-                    <i class="glyphicon glyphicon-plus"></i>
-                    <span>Add files...</span>
-                    <input type="file" name="files[]" multiple>
-                </span>
-											<input type="file" name="file1" id="image1" style="position:relative;z-index:9999999999">
-											<input type="file" name="img">
-											<br>
-											
+										<form id="image-upload-form" enctype="multipart/form-data" method="post">
+											<span id="fileinput-button" class="btn btn-success fileinput-button"> <i class="glyphicon glyphicon-plus"></i> <span>Add files...</span>
+												<input id="input-file" type="file" name="files[]" multiple />
+											</span>
 										</form>
 										
+										<div id="file-output"> </div>
+										<div id="file-thumbs"> </div>
+										
+
 									</div><!-- end upload-panel -->
 
 									<div id="raw-panel" role="tabpanel" class="tab-pane scroll-wrapper">
@@ -377,8 +377,8 @@
 		<script src="js/bootstrap-carousel-swipe.js"></script>
 		<script src="js/rangeslider.min.js"></script>
 		<script src="js/validator.min.js"></script>
-		<<script src="js/login.js"></script>-
-		<script src="js/html.sortable.min.js"></script>
+		<<script src="js/login.js"></script>
+		- <script src="js/html.sortable.min.js"></script>
 		<script src="js/uploader.js"></script>
 		<script src="js/px.js"></script>
 		<script src="js/gallery.js"></script>

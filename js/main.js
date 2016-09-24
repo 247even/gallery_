@@ -128,12 +128,10 @@ function navigation() {
 var imagesPreLoaded;
 var blurredImageloaded = null;
 var imagesJSON;
-var galleryJSON;
-var animrunning = false;
 
 $(function() {
 
-	loadJSON();
+	//loadJSON();
 	navigation();
 	init();
 	
