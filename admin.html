@@ -26,6 +26,7 @@
 		<link rel="stylesheet" href="css/loader.css">
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
 		<script src="js/selectize.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.min.js"></script>
 		<script src="js/respi.js"></script>
@@ -33,7 +34,7 @@
 	</head>
 	<body>
 
-		<div id="main">
+		<div id="main">		
 			<figure id="effect-fullscreen" style="display: none"></figure>
 			<div id="page3" class="page no-scroll">
 				<div class="container gallery-container">
@@ -104,6 +105,9 @@
 									</li>
 									<li role="presentation">
 										<a href="#slider-panel" aria-controls="slider-panel" role="tab" data-toggle="tab">Slider</a>
+									</li>
+									<li role="presentation">
+										<a href="#upload-panel" aria-controls="upload-panel" role="tab" data-toggle="tab">Upload</a>
 									</li>
 									<li role="presentation">
 										<a href="#raw-panel" aria-controls="raw-panel" role="tab" data-toggle="tab">Raw</a>
@@ -273,8 +277,7 @@
 											</form>
 										</section>
 
-										
-											<input id="blur-slider" type="range" min="0" max="20" step="1" data-rangeslider>
+										<input id="blur-slider" type="range" min="0" max="20" step="1" data-rangeslider>
 										<form id="blur-form" class="form-inline">
 											<input  id="blur-input" type="number" name="depth" class="form-control" maxlength="2" min="0" max="20">
 											<button id="blur-submit" type="submit" class="btn btn-default">
@@ -289,6 +292,22 @@
 										</div>
 
 									</div><!-- end slider-panel -->
+
+									<div id="upload-panel" role="tabpanel" class="tab-pane scroll-wrapper">
+
+										<form id="image_upload_form" enctype="multipart/form-data" method="post">
+											                <span class="btn btn-success fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Add files...</span>
+                    <input type="file" name="files[]" multiple>
+                </span>
+											<input type="file" name="file1" id="image1" style="position:relative;z-index:9999999999">
+											<input type="file" name="img">
+											<br>
+											
+										</form>
+										
+									</div><!-- end upload-panel -->
 
 									<div id="raw-panel" role="tabpanel" class="tab-pane scroll-wrapper">
 										<section>
@@ -308,8 +327,8 @@
 										<pre id="json-output">
 											
 										</pre>
-									</div>
-									<!-- raw-panel -->
+									</div><!-- end raw-panel -->
+
 								</div><!-- tab-content -->
 							</section>
 
@@ -349,9 +368,6 @@
 		<script src="js/bootstrap-select.min.js"></script>
 		<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
 		<script src="js/relative-fade.min.js"></script>
-		<script src="js/stackblur.min.js"></script>
-		<script src="js/vague.js"></script>
-		<script src="js/bluur.js"></script>
 		<script src="js/imgloaded.js"></script>
 		<script src="js/PxLoader.js"></script>
 		<script src="js/pxloader-images.min.js"></script>
@@ -361,15 +377,15 @@
 		<script src="js/bootstrap-carousel-swipe.js"></script>
 		<script src="js/rangeslider.min.js"></script>
 		<script src="js/validator.min.js"></script>
-		<script src="js/login.js"></script>
+		<<script src="js/login.js"></script>-
 		<script src="js/html.sortable.min.js"></script>
-		<script src="js/image-crop.js"></script>
+		<script src="js/uploader.js"></script>
+		<script src="js/px.js"></script>
 		<script src="js/gallery.js"></script>
 		<script src="js/gallery-admin.js"></script>
-		<script src="js/px.js"></script>
 		<script src="js/func.js"></script>
 		<script src="js/init.js"></script>
-		<script src="js/main.js"></script>
+		<!--<script src="js/main.js"></script>-->
 
 	</body>
 </html>

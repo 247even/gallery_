@@ -132,8 +132,6 @@ var galleryJSON;
 var animrunning = false;
 
 $(function() {
-	
-	bluur.config('gallery/blur.php');
 
 	loadJSON();
 	navigation();
