@@ -22,10 +22,8 @@ function handleFileSelect(evt) {
 	}
 	
 	
-	var fo = document.getElementById('file-output');
-	var ft = document.getElementById("file-thumbs");
-	fo.innerHTML = "";
-	ft.innerHTML = "";
+	var ftb = document.getElementById('file-table-body');
+	ftb.innerHTML = "";
 
 	for (var i = 0; i < files.length; i++) {
 		var f = files[i];
@@ -35,13 +33,22 @@ function handleFileSelect(evt) {
 		var fSize = (f.size / 1000).toFixed(2);
 		var fLastMod = f.lastModifiedDate.toLocaleDateString();
 		
-		var outEl = '<li><strong>'+fName+'</strong> ('+fType+') - '+fSize+' KB, last modified: '+fLastMod+'</li>';
-		fo.insertAdjacentHTML('beforeend', outEl);
-
 		var reader = new FileReader();
 		reader.onload = function(e) {
-			var imgEl = '<img class="thumb" src="'+e.target.result+'" title="'+f.name+'"/>'
-			ft.insertAdjacentHTML('beforeend', imgEl);
+
+			var src = e.target.result;
+			//var tableRow = '<tr><th>'+imgEl+'</th><th>'+fName+'</th><th>'+fType+'</th><th>'+fSize+' KB</th><th>'+fLastMod+'</th></tr>'; 
+			//ftb.insertAdjacentHTML('beforeend', tableRow);
+			
+			prototype({
+				'template' : '.file-row-prototype',
+				'selectors' : ['src','name','type','size','lastMod'],
+				'values' : [src,fName,fType,fSize,fLastMod],
+//				'selectors' : ['name','type','size','lastMod'],
+//				'values' : [fName,fType,fSize,fLastMod],
+				'targets' : '#file-table-body'
+				}
+			);		
 		};
 		reader.readAsDataURL(f);
 	}
