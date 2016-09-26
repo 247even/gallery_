@@ -1141,6 +1141,42 @@ function adminInit() {
 
 	});
 
+	/* Upload Panel */
+	$('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e) {
+		upldr.reset();
+		upldr.set({
+			'target' : "gallery/fileUpload.php",
+			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod){
+				prototype({
+					'template' : '.file-row-prototype',
+					'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],
+					'values' : [src, fName, fType, fSize, fLastMod],
+					'targets' : '#file-table-body'
+				});
+			},
+			'cbOnloadend' : function(){
+				//upldr.reset();
+			}
+		});		
+		
+		/*
+		upldr({
+			'target' : "gallery/fileUpload.php",
+			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod){
+				prototype({
+					'template' : '.file-row-prototype',
+					'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],
+					'values' : [src, fName, fType, fSize, fLastMod],
+					'targets' : '#file-table-body'
+				});
+			},
+			'cbOnloadend' : function(){
+				reset();
+			}
+		});
+		*/
+	});
+
 	/* Raw Panel */
 	$('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 
@@ -1254,17 +1290,6 @@ function resizeStore(folder, file, sizes, force) {
 		//console.log(data);
 	}).fail(function(data) {
 		console.log("fail!");
-		//console.log(data);
-	})
-};
-
-function backup() {
-
-	return $.ajax({
-		type : "GET",
-		url : "gallery/backup.php",
-		data : "backup=true"
-	}).done(function(data) {
 		//console.log(data);
 	})
 };
