@@ -21,18 +21,22 @@ var _upldr = function(){
 	
 	var files = [];
 	var request;
-	var form = document.getElementById('image-upload-form');
-	var inputFile = document.getElementById('input-file');
-	var dropZone = document.querySelector('.drop-zone');
-	var progressBar = document.getElementById("upload-progress-bar");
-	var submitBtn = document.getElementById('submit-upload-button');
-	var resetBtn = document.getElementById('reset-upload-button');
-	var abortBtn = document.getElementById('abort-upload-button');
+	var form = document.getElementById('upldr-form');
+	var inputFile = document.getElementById('upldr-input-file');
+	var progressBar = document.getElementById('upldr-progress-bar');
+	var submitBtn = document.getElementById('upldr-submit-btn');
+	var resetBtn = document.getElementById('upldr-reset-btn');
+	var abortBtn = document.getElementById('upldr-abort-btn');
 	submitBtn.disabled = true;
 	resetBtn.disabled = true;
 	abortBtn.disabled = true;
 	
 	var submitBtnInitText = submitBtn.innerHTML;
+	
+	var dropZone = document.querySelectorAll('.upldr-dropzone');
+	if(dropZone.length < 1){
+		dropZone = document.body;
+	}
 
 
 	function fileSelect(evt) {

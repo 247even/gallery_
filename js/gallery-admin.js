@@ -1143,7 +1143,6 @@ function adminInit() {
 
 	/* Upload Panel */
 	$('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e) {
-		upldr.reset();
 		upldr.set({
 			'target' : "gallery/fileUpload.php",
 			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod){
