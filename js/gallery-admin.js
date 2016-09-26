@@ -853,10 +853,9 @@ function adminInit() {
 	$('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e) {
 
 		var blurIntensity = 5;
-		
+
 		document.getElementById('blur-slider').value = blurIntensity;
 		document.getElementById('blur-input').value = blurIntensity;
-		
 
 		function fullScreen(img) {
 			var ef = document.getElementById("effect-fullscreen");
@@ -876,7 +875,7 @@ function adminInit() {
 			var imgSrcSplit = imgSrc.split("/");
 			var imgSrc_720 = imgSrc.replace("_respi", "_720");
 			var imgSrc_720_blur = imgSrc_720.replace("gallery", "gallery/blur");
-			
+
 			//document.querySelector("#blur-status").innerHTML = "Static blur image not found.";
 
 			$("#blurImageFrame img").attr('src', imgSrc_720).imagesLoaded().always(function() {
@@ -887,29 +886,29 @@ function adminInit() {
 				blur('#effect-fullscreen', blurIntensity);
 			});
 
-/*
-			$("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + Date.now()).imagesLoaded().always(function(instance) {
-				//console.log('blur image request');
-			}).done(function(instance) {
-				document.querySelector("#blur-status").innerHTML = "Static blur image found.";
-				fullScreen(imgSrc_720_blur);
-				//console.log("blur image loaded");
-			}).fail(function() {
-				console.log('image failure');
-				document.querySelector("#blur-status").innerHTML = "Static blur image not found.";
+			/*
+			 $("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + Date.now()).imagesLoaded().always(function(instance) {
+			 //console.log('blur image request');
+			 }).done(function(instance) {
+			 document.querySelector("#blur-status").innerHTML = "Static blur image found.";
+			 fullScreen(imgSrc_720_blur);
+			 //console.log("blur image loaded");
+			 }).fail(function() {
+			 console.log('image failure');
+			 document.querySelector("#blur-status").innerHTML = "Static blur image not found.";
 
-				$("#blurImageFrame img").attr('src', imgSrc_720).imagesLoaded().always(function() {
-					console.log("blur image not loaded");
-				}).done(function() {
-					blur('#effect-preview-image', blurIntensity);
-					fullScreen(imgSrc_720);
-					blur('#effect-fullscreen', blurIntensity);
-				});
-				
-			});
-		*/
-		
-		};		
+			 $("#blurImageFrame img").attr('src', imgSrc_720).imagesLoaded().always(function() {
+			 console.log("blur image not loaded");
+			 }).done(function() {
+			 blur('#effect-preview-image', blurIntensity);
+			 fullScreen(imgSrc_720);
+			 blur('#effect-fullscreen', blurIntensity);
+			 });
+
+			 });
+			 */
+
+		};
 
 		$("#blur-slider").rangeslider({
 			polyfill : false,
@@ -927,14 +926,12 @@ function adminInit() {
 			}
 		});
 
-
 		$("#blur-input").on("change", function() {
 			var bsval = document.getElementById("blur-slider").value;
-			if(bsval != this.val){
+			if (bsval != this.val) {
 				$("#blur-slider").val(this.value).change();
 			}
 		});
-
 
 		$("#blur-submit").click(function(e) {
 			e.preventDefault();
@@ -951,7 +948,7 @@ function adminInit() {
 					}
 				}
 			})
-		});		
+		});
 
 		$(".gallery-row .selected-image").removeClass("selected-image");
 		//	$('.sortable').sortable('destroy');
@@ -1079,7 +1076,7 @@ function adminInit() {
 		});
 
 		$(".gallery-row .gallery-item").off("click").on("click", function(e) {
-			
+
 			e.preventDefault();
 			e.stopPropagation();
 
@@ -1105,12 +1102,12 @@ function adminInit() {
 
 			// set same height for chrome
 			var el = document.querySelector("#sliderSortable .gallery-item");
-			proportion([el],1,1);
-			$("#sliderSortable .gallery-item").css('height', Math.round(el.offsetHeight));			
+			proportion([el], 1, 1);
+			$("#sliderSortable .gallery-item").css('height', Math.round(el.offsetHeight));
 
 			sortable('.sortable');
 
-			loadBlur();			
+			loadBlur();
 
 			var selected_ids = selectedIds();
 			var prop = (selected_ids.length >= 2) ? false : true;
@@ -1143,9 +1140,25 @@ function adminInit() {
 
 	/* Upload Panel */
 	$('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e) {
+
+		for (var i = 0; gJ.folders.length > i; i++) {
+			var folder = gJ.folders[i];
+			prototype({
+				'template' : '#bs-dd-prototype',
+				'selectors' : ['folder'],
+				'values' : [folder],
+				'targets' : '.folder-select .dropdown-menu'
+			});
+		}
+		
+		
+		ddSelect('onselect', function(val){
+			console.log(val);
+		});
+
 		upldr.set({
 			'target' : "gallery/fileUpload.php",
-			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod){
+			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod) {
 				prototype({
 					'template' : '.file-row-prototype',
 					'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],
@@ -1153,27 +1166,29 @@ function adminInit() {
 					'targets' : '#file-table-body'
 				});
 			},
-			'cbOnloadend' : function(){
-				//upldr.reset();
-			}
-		});		
-		
-		/*
-		upldr({
-			'target' : "gallery/fileUpload.php",
-			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod){
-				prototype({
-					'template' : '.file-row-prototype',
-					'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],
-					'values' : [src, fName, fType, fSize, fLastMod],
-					'targets' : '#file-table-body'
-				});
-			},
-			'cbOnloadend' : function(){
-				reset();
+			'cbOnloadend' : function() {
+				setTimeout(function() {
+					upldr.reset();
+				}, 3000);
 			}
 		});
-		*/
+
+		/*
+		 upldr({
+		 'target' : "gallery/fileUpload.php",
+		 'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod){
+		 prototype({
+		 'template' : '.file-row-prototype',
+		 'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],
+		 'values' : [src, fName, fType, fSize, fLastMod],
+		 'targets' : '#file-table-body'
+		 });
+		 },
+		 'cbOnloadend' : function(){
+		 reset();
+		 }
+		 });
+		 */
 	});
 
 	/* Raw Panel */

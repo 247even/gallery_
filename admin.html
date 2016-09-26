@@ -297,10 +297,10 @@
 									<div id="upload-panel" role="tabpanel" class="tab-pane scroll-wrapper">
 										<form id="upldr-form" enctype="multipart/form-data" action="gallery/fileUpload.php" method="POST">
 
-										<div class="drop-zone">
-											Drop files here
-										</div>
-										<div>
+											<div class="drop-zone">
+												Drop files here
+											</div>
+											<div>
 												<span id="upldr-input-button" class="btn btn-success btn-file"> <i class="glyphicon glyphicon-plus"></i> <span>Add files...</span>
 													<input id="upldr-input-file" type="file" name="files[]" multiple accept="image/x-png, image/gif, image/jpeg, image/jpg"/>
 												</span>
@@ -316,34 +316,42 @@
 													<i class="glyphicon glyphicon-ban-circle"></i>
 													<span>Reset</span>
 												</button>
-											
-										</div>
 
-										<div class="progress">
-											<div id="upldr-progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-												0%
 											</div>
-										</div>
-										
+
+											<div class="progress">
+												<div id="upldr-progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+													0%
+												</div>
+											</div>
+
+											<div class="dropdown bs-dd-select folder-select">
+												<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+													Dropdown Example <span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+
+												</ul>
+											</div>
+
+											<div id="file-output">
+												<table id="file-table" class="table">
+													<thead>
+														<tr>
+															<th>Thumb</th>
+															<th>name</th>
+															<th>type</th>
+															<th>size</th>
+															<th>modified</th>
+														</tr>
+													</thead>
+													<tbody id="file-table-body">
+
+													</tbody>
+												</table>
+											</div>
+											<div id="file-thumbs"></div>
 										</form>
-
-										<div id="file-output">
-											<table id="file-table" class="table">
-												<thead>
-													<tr>
-														<th>Thumb</th>
-														<th>name</th>
-														<th>type</th>
-														<th>size</th>
-														<th>modified</th>
-													</tr>
-												</thead>
-												<tbody id="file-table-body">
-
-												</tbody>
-											</table>
-										</div>
-										<div id="file-thumbs"></div>
 
 									</div><!-- end upload-panel -->
 
@@ -413,6 +421,12 @@
 				</tr>
 			</table>
 
+			<div id="bs-dd-prototype">
+				<li data-value={{folder}}>
+					<a href="#">{{folder}}</a>
+				</li>
+			</div>
+
 		</div>
 
 		<!-- Latest compiled and minified bootstrap JavaScript -->
@@ -420,6 +434,7 @@
 		<script src="js/bootstrap-select.min.js"></script>
 		<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
 		<script src="js/relative-fade.min.js"></script>
+		<script src="js/bs-dd-select.js"></script>
 		<script src="js/imgloaded.js"></script>
 		<script src="js/prototype.js"></script>
 		<script src="js/PxLoader.js"></script>
