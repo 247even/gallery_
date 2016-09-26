@@ -21,8 +21,7 @@ function prototype(data) {
 
 		for ( i = 0; i < selectors.length; i++) {
 			var selector = '{{' + selectors[i] + '}}';
-			//ct = ct.replace(selector, values[i]);
-			console.log(ct);
+			ct = ct.replace(selector, values[i]);
 			ct = ct.split(selector).join(values[i])
 		}
 
