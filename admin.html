@@ -300,6 +300,7 @@
 											<div class="drop-zone">
 												Drop files here
 											</div>
+
 											<div>
 												<span id="upldr-input-button" class="btn btn-success btn-file"> <i class="glyphicon glyphicon-plus"></i> <span>Add files...</span>
 													<input id="upldr-input-file" type="file" name="files[]" multiple accept="image/x-png, image/gif, image/jpeg, image/jpg"/>
@@ -316,7 +317,6 @@
 													<i class="glyphicon glyphicon-ban-circle"></i>
 													<span>Reset</span>
 												</button>
-
 											</div>
 
 											<div class="progress">
@@ -325,13 +325,27 @@
 												</div>
 											</div>
 
-											<div class="dropdown bs-dd-select folder-select">
-												<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-													Dropdown Example <span class="caret"></span>
-												</button>
-												<ul class="dropdown-menu">
+											<div class="row">
+												<div class="col-xs-6">
+													<select id="upload-folder-select" class="form-control">
 
-												</ul>
+													</select>
+												</div>
+
+												<div class = "col-lg-6">
+													<div class = "input-group">
+														<input id="new-folder-name" type="text" class="form-control" placeholder="newfolder">
+														<span class="input-group-btn">
+															<button id="new-folder-btn" class = "btn btn-default" type="button">
+																New
+															</button>
+														</span>
+													</div>
+												</div>
+											</div>
+											
+											<div>
+												<input id="upload-tags" type="text" class="form-control" placeholder="tag1, tag2,...">												
 											</div>
 
 											<div id="file-output">
@@ -425,6 +439,10 @@
 				<li data-value={{folder}}>
 					<a href="#">{{folder}}</a>
 				</li>
+			</div>
+
+			<div id="folder-select-prototype">
+				<option value="{{folder}}">{{folder}}</option>
 			</div>
 
 		</div>

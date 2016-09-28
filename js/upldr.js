@@ -75,8 +75,8 @@ var _upldr = function(){
 			var fType = f.type;
 			// file size from bytes to KB:
 			var fSize = (f.size / 1000).toFixed(2);
-			var fLastMod = f.lastModified;
-			//var fLastMod = f.lastModified.toLocaleDateString();
+			//var fLastMod = f.lastModified;
+			var fLastMod = f.lastModifiedDate.toLocaleDateString();
 
 			var reader = new FileReader();
 			reader.onload = function(e) {
@@ -155,9 +155,12 @@ var _upldr = function(){
 				formdata.append('files[]', f);
 			}
 		}
+		
+		if(options.data){
+			formdata.append('data', options.data);
+		}
 
 		request = new XMLHttpRequest();
-
 		request.onreadystatechange = function() {
 			//if (request.readyState == 4) {
 			try {

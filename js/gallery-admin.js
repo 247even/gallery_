@@ -1141,23 +1141,73 @@ function adminInit() {
 	/* Upload Panel */
 	$('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e) {
 
-		for (var i = 0; gJ.folders.length > i; i++) {
-			var folder = gJ.folders[i];
-			prototype({
-				'template' : '#bs-dd-prototype',
-				'selectors' : ['folder'],
-				'values' : [folder],
-				'targets' : '.folder-select .dropdown-menu'
-			});
-		}
+		function folderSelect() {
+			$('#upload-folder-select').html('');
+			for (var i = 0; gJ.folders.length > i; i++) {
+				var folder = gJ.folders[i];
+				prototype({
+					'template' : '#folder-select-prototype',
+					'selectors' : ['folder'],
+					'values' : [folder],
+					'targets' : '#upload-folder-select'
+				});
+			}
+		};
+		folderSelect();
 		
+		function createFolder(path){
+			var data = 'folder='+path;
+			console.log(data);
+			var request = new XMLHttpRequest();
+			request.open('POST', './gallery/createFolder.php', true);
+			request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+			request.onload = function() {
+			  if (request.status >= 200 && request.status < 400) {
+			    var resp = request.responseText;
+			    console.log(resp);
+			  } else {
+			    // We reached our target server, but it returned an error
+			  }
+			};
+			request.send(data);
+		};
 		
-		ddSelect('onselect', function(val){
+		function filesToGJ(f){
+			for(i=0; f.length > i; i++){
+				
+			}
+		};
+
+		$("#new-folder-btn").on('click', function() {
+			var val = $('#new-folder-name').val();
+			if (val) {
+				val = val.trim();
+				createFolder(val);
+			}
+		});
+		
+		var uploadTags;
+		$("#upload-tags").on("change", function() {
+			var value = $(this).val();
+			if(value && value != ' '){
+				value = value.trim();
+				value = value.split(',');
+				for(var i = 0; value.length > i; i++){
+					value[i] = value[i].trim();
+				}
+				value = _.without(value, '', ' ');
+				value = _.uniq(value);
+				uploadTags = value.toString();
+			}
+		});
+
+		ddSelect('onselect', function(val) {
 			console.log(val);
 		});
 
 		upldr.set({
 			'target' : "gallery/fileUpload.php",
+			'data' : 'uploadTags',
 			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod) {
 				prototype({
 					'template' : '.file-row-prototype',
@@ -1166,7 +1216,8 @@ function adminInit() {
 					'targets' : '#file-table-body'
 				});
 			},
-			'cbOnloadend' : function() {
+			'cbOnloadend' : function(res) {
+				console.log(res.target.response);
 				setTimeout(function() {
 					upldr.reset();
 				}, 3000);

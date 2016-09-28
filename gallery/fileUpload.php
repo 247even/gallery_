@@ -4,6 +4,9 @@ foreach ($_FILES["files"] as $file) {
 	echo "hallo";
 	echo json_encode($file).'<br>';
 }
+
+echo json_encode($_POST["data"] ).'<br>';
+
 /*
 foreach ($_FILES["pictures"]["error"] as $key => $error) {
     if ($error == UPLOAD_ERR_OK) {
