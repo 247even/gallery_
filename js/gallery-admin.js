@@ -1141,6 +1141,8 @@ function adminInit() {
 	/* Upload Panel */
 	$('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e) {
 
+		var upldrData = {};
+
 		function folderSelect() {
 			$('#upload-folder-select').html('');
 			for (var i = 0; gJ.folders.length > i; i++) {
@@ -1186,7 +1188,7 @@ function adminInit() {
 			}
 		});
 		
-		var uploadTags;
+		
 		$("#upload-tags").on("change", function() {
 			var value = $(this).val();
 			if(value && value != ' '){
@@ -1197,17 +1199,44 @@ function adminInit() {
 				}
 				value = _.without(value, '', ' ');
 				value = _.uniq(value);
-				uploadTags = value.toString();
+				upldrData.tags = value.toString();
+				upldr.options.data = JSON.stringify(upldrData);
 			}
 		});
 
 		ddSelect('onselect', function(val) {
 			console.log(val);
 		});
+		
+		$('#upload-folder-select').on('change', function(){
+			upldrData.path = $(this).val();
+			upldr.options.data = JSON.stringify(upldrData);
+		});
+
+/*
+		upldr.options = {
+			'target' : "gallery/fileUpload.php",
+			//'data' : JSON.stringify(upldrData),
+			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod) {
+				prototype({
+					'template' : '.file-row-prototype',
+					'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],
+					'values' : [src, fName, fType, fSize, fLastMod],
+					'targets' : '#file-table-body'
+				});
+			},
+			'cbOnloadend' : function(res) {
+				console.log(res.target.response);
+				setTimeout(function() {
+					upldr.reset();
+				}, 3000);
+			}
+		};
+*/
 
 		upldr.set({
 			'target' : "gallery/fileUpload.php",
-			'data' : 'uploadTags',
+			//'data' : JSON.stringify(upldrData),
 			'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod) {
 				prototype({
 					'template' : '.file-row-prototype',
@@ -1224,23 +1253,9 @@ function adminInit() {
 			}
 		});
 
-		/*
-		 upldr({
-		 'target' : "gallery/fileUpload.php",
-		 'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod){
-		 prototype({
-		 'template' : '.file-row-prototype',
-		 'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],
-		 'values' : [src, fName, fType, fSize, fLastMod],
-		 'targets' : '#file-table-body'
-		 });
-		 },
-		 'cbOnloadend' : function(){
-		 reset();
-		 }
-		 });
-		 */
+
 	});
+
 
 	/* Raw Panel */
 	$('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {

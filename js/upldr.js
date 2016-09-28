@@ -1,5 +1,5 @@
 var _upldr = function(){
-	options = {
+	this.options = {
 		'target' : "gallery/fileUpload.php",
 		'typeMatch' : 'image.*',
 		'cbReaderOnload' : function(){
@@ -14,7 +14,7 @@ var _upldr = function(){
 	this.set = function(data){
 		if(data){
 			for (var key in data) {
-	  			options[key] = data[key];
+	  			this.options[key] = data[key];
 			}
 		}		
 	}
@@ -55,7 +55,7 @@ var _upldr = function(){
 
 		for (var i = 0; i < evtFiles.length; i++) {
 			// Only process image files:
-			if (evtFiles[i].type.match(options.typeMatch)) {
+			if (evtFiles[i].type.match(this.options.typeMatch)) {
 				files.push(evtFiles[i]);
 			}
 		}
@@ -83,7 +83,7 @@ var _upldr = function(){
 
 				var src = e.target.result;
 				
-				options.cbReaderOnload(src, fName, fType, fSize, fLastMod);
+				this.options.cbReaderOnload(src, fName, fType, fSize, fLastMod);
 				
 				/*
 				prototype({
@@ -122,8 +122,8 @@ var _upldr = function(){
 		submitBtn.innerHTML = submitBtnInitText;
 		submitBtn.disabled = true;
 		resetBtn.disabled = true;
-		if(options.cbReset){
-			options.cbReset();
+		if(this.options.cbReset){
+			this.options.cbReset();
 		}
 		//document.getElementById('file-table-body').innerHTML = "";
 	};
@@ -151,13 +151,13 @@ var _upldr = function(){
 		var formdata = new FormData();
 		for (var i = 0; i < files.length; i++) {
 			var f = files[i];
-			if (f.type.match(options.typeMatch)) {
+			if (f.type.match(this.options.typeMatch)) {
 				formdata.append('files[]', f);
 			}
 		}
 		
-		if(options.data){
-			formdata.append('data', options.data);
+		if(this.options.data){
+			formdata.append('data', this.options.data);
 		}
 
 		request = new XMLHttpRequest();
@@ -165,26 +165,27 @@ var _upldr = function(){
 			//if (request.readyState == 4) {
 			try {
 				var resp = JSON.parse(request.response);
-				console.log(request.response);
 			} catch (e) {
+				/*
 				var resp = {
 					status : 'error',
 					data : 'Unknown error occurred: [' + request.responseText + ']'
 				};
+				*/
 			}
-			console.log(resp.status + ': ' + resp.data);
+			//console.log(resp.status + ': ' + resp.data);
 			//}
 		};
 
 		request.onloadend = function(e) {
 			console.log(e.target.response);
-			if(options.cbOnloadend){
-				options.cbOnloadend(e);	
+			if(this.options.cbOnloadend){
+				this.options.cbOnloadend(e);	
 			}
 		};
 
 		request.upload.addEventListener("progress", progress, false);
-		request.open("POST", options.target, true);
+		request.open("POST", this.options.target, true);
 		request.send(formdata);
 	};
 
