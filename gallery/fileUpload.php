@@ -9,11 +9,11 @@ if (isset($_POST['data'])) {
 	$data = json_decode($data, true);
 	$path = $data['path'];
 	$tags = $data['tags'];
-	echo json_encode($data);
-	return false;
 }
 
 if ($path) {
+	$path = chop($path);
+	$path = ltrim($path,"..");
 	if (!is_dir($path)) {
 		$oldmask = umask(0);
 		mkdir($path, 0777, true);
@@ -91,19 +91,8 @@ if (isset($_FILES['files'])) {
 	}
 }
 
-$response["data"] = $path;
+$response["data"] = $data;
 
 echo json_encode($response);
 
-/*
- foreach ($_FILES["pictures"]["error"] as $key => $error) {
- if ($error == UPLOAD_ERR_OK) {
- $tmp_name = $_FILES["pictures"]["tmp_name"][$key];
- // basename() may prevent filesystem traversal attacks;
- // further validation/sanitation of the filename may be appropriate
- $name = basename($_FILES["pictures"]["name"][$key]);
- move_uploaded_file($tmp_name, "data/$name");
- }
- }
- */
 ?>

@@ -1,4 +1,5 @@
 var _upldr = function(){
+	
 	this.options = {
 		'target' : "gallery/fileUpload.php",
 		'typeMatch' : 'image.*',
@@ -9,12 +10,13 @@ var _upldr = function(){
 			document.getElementById('file-table-body').innerHTML = "";
 		}	
 	};
-	
+	var options = this.options;
+	console.log(options.typeMatch);
 	
 	this.set = function(data){
 		if(data){
 			for (var key in data) {
-	  			this.options[key] = data[key];
+	  			options[key] = data[key];
 			}
 		}		
 	}
@@ -55,7 +57,7 @@ var _upldr = function(){
 
 		for (var i = 0; i < evtFiles.length; i++) {
 			// Only process image files:
-			if (evtFiles[i].type.match(this.options.typeMatch)) {
+			if (evtFiles[i].type.match(options.typeMatch)) {
 				files.push(evtFiles[i]);
 			}
 		}
@@ -82,19 +84,8 @@ var _upldr = function(){
 			reader.onload = function(e) {
 
 				var src = e.target.result;
+				options.cbReaderOnload(src, fName, fType, fSize, fLastMod);
 				
-				this.options.cbReaderOnload(src, fName, fType, fSize, fLastMod);
-				
-				/*
-				prototype({
-					'template' : '.file-row-prototype',
-					'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],
-					'values' : [src, fName, fType, fSize, fLastMod],
-					//				'selectors' : ['name','type','size','lastMod'],
-					//				'values' : [fName,fType,fSize,fLastMod],
-					'targets' : '#file-table-body'
-				});
-				*/
 			};
 			reader.readAsDataURL(f);
 		}
@@ -122,8 +113,8 @@ var _upldr = function(){
 		submitBtn.innerHTML = submitBtnInitText;
 		submitBtn.disabled = true;
 		resetBtn.disabled = true;
-		if(this.options.cbReset){
-			this.options.cbReset();
+		if(options.cbReset){
+			options.cbReset();
 		}
 		//document.getElementById('file-table-body').innerHTML = "";
 	};
@@ -151,13 +142,13 @@ var _upldr = function(){
 		var formdata = new FormData();
 		for (var i = 0; i < files.length; i++) {
 			var f = files[i];
-			if (f.type.match(this.options.typeMatch)) {
+			if (f.type.match(options.typeMatch)) {
 				formdata.append('files[]', f);
 			}
 		}
 		
-		if(this.options.data){
-			formdata.append('data', this.options.data);
+		if(options.data){
+			formdata.append('data', options.data);
 		}
 
 		request = new XMLHttpRequest();
@@ -178,14 +169,14 @@ var _upldr = function(){
 		};
 
 		request.onloadend = function(e) {
-			console.log(e.target.response);
-			if(this.options.cbOnloadend){
-				this.options.cbOnloadend(e);	
+			//console.log(e.target.response);
+			if(options.cbOnloadend){
+				options.cbOnloadend(e);	
 			}
 		};
 
 		request.upload.addEventListener("progress", progress, false);
-		request.open("POST", this.options.target, true);
+		request.open("POST", options.target, true);
 		request.send(formdata);
 	};
 
