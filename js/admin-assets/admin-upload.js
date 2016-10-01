@@ -114,6 +114,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		'target' : "gallery/fileUpload.php",
 		//'data' : JSON.stringify(upldrData),
 		'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod) {
+				//console.log( getSlug(fName, {'custom' : ['.'] }) );
 			prototype({
 				'template' : '.file-row-prototype',
 				'selectors' : ['src', 'name', 'type', 'size', 'lastMod'],

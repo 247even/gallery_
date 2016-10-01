@@ -72,20 +72,24 @@ var _upldr = function(){
 		ftb.innerHTML = "";
 
 		for (var i = 0; i < files.length; i++) {
-			var f = files[i];
-			var fName = f.name;
-			var fType = f.type;
-			// file size from bytes to KB:
-			var fSize = (f.size / 1000).toFixed(2);
-			//var fLastMod = f.lastModified;
-			var fLastMod = f.lastModifiedDate.toLocaleDateString();
-
 			var reader = new FileReader();
+			
+			var f = files[i];
+			reader.name = f.name;
+			if(getSlug){
+				var str = f.name.split('.');
+				str[0] = getSlug(str[0]);
+				reader.name = str.join('.');
+			}
+			reader.type = f.type;
+			// file size from bytes to KB:
+			reader.size = (f.size / 1000).toFixed(2);
+			//var fLastMod = f.lastModified;
+			reader.lastMod = f.lastModifiedDate.toLocaleDateString();
+			
 			reader.onload = function(e) {
-
 				var src = e.target.result;
-				options.cbReaderOnload(src, fName, fType, fSize, fLastMod);
-				
+				options.cbReaderOnload(src, this.name, this.type, this.size, this.lastMod);
 			};
 			reader.readAsDataURL(f);
 		}

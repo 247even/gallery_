@@ -505,16 +505,15 @@ function adminInit() {
 
 jsLoader({
 	// path to jsLoader.php
-	//'url' : 'jsLoader.php',
 	'url' : 'gallery/jsLoader.php',
 	'path' : '../js/admin-assets/',
 	'outpath' : '/js/',
 	'filter' : '*.{js,json}',
 	'srcpath' : 'js/',
 	'concat' : true,
-	'minify' : true,
+	'minify' : false,
 	'gzip' : true,
-	'cache' : true
+	'cache' : false
 });
 
 function getAllBackups() {
