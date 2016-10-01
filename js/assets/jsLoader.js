@@ -4,6 +4,7 @@ jsLoader = function(od) {
 		//'url' = 'jsLoader.php',
 		'url' : 'gallery/jsLoader.php',
 		'path' : '',
+		'outpath' : '/js/',
 		'filter' :  '*.{js,json,js.gz,json.gz}',
 		'concat' : false,
 		'minify' : false,
@@ -27,14 +28,21 @@ jsLoader = function(od) {
 	request = new XMLHttpRequest();
 	request.onloadend = function(e) {
 		var response = JSON.parse(e.target.responseText);
-		console.log(response);
 		
+		for ( i = 0; response.outfiles.length > i; i++) {
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = options.srcpath+response.outfiles[i];
+			document.body.appendChild(script);
+		}
+		/*
 		for ( i = 0; response.names.length > i; i++) {
 			var script = document.createElement("script");
 			script.type = "text/javascript";
 			script.src = options.srcpath+response.names[i];
 			document.body.appendChild(script);
 		}
+		*/
 	};
 	//var url = options.url+"?path="+path+"&filter="+filter;
 	var jurl = options.url+'?options='+JSON.stringify(options);
