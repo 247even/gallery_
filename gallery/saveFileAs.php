@@ -22,10 +22,12 @@ function saveFileAs($content, $target, $filename, $extension, $overwrite) {
 	}
 
 	//mkdir($target);
+	touch($target);
+	chmod($target, 0777);
 	$fp = fopen($target, 'w');
 	fwrite($fp, $enContent);
 	fclose($fp);
-	echo ">>> File $target saved!<br><br>";
+	echo $target.' saved';
 }
 
 

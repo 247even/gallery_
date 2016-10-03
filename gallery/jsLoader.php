@@ -75,11 +75,23 @@ if ($o['concat']) {
 	if ($o['minify']) {
 		$outFile = $pathName . '.min.' . $fileExtension;
 	}
+
+	if($o['gzip']){
+		if( strpos( $_SERVER["HTTP_ACCEPT_ENCODING"], "gzip" ) !== false ){
+			$outFile = $outFile . '.gz';
+			$fileContent = gzencode($fileContent, 9);
+			
+		} else {
+			// gzip not possible
+		}
+	}
+	
 	//file_put_contents($outpath . $outExt, $fileContent);
 	file_put_contents($o["root"] . $o["outpath"] . $outFile, $fileContent);
 
 	array_push($response['outfiles'], $outFile);
 }
+
 
 //$response['paths'] = $files;
 $response['names'] = $fileNames;

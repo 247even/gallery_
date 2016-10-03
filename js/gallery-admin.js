@@ -6,6 +6,7 @@ function adminInit() {
 	var imagesAddedKeys = [];
 	var imagesModified = [];
 	var imagesNotProcessed = [];
+	var newFolders;
 
 	$('.admin-header a[aria-controls="start-panel"]').on('shown.bs.tab', function(e) {
 
@@ -134,8 +135,6 @@ function adminInit() {
 			};
 
 			function checkImages() {
-
-				console.log(si);
 
 				var statusCt = $("#imageStatus").html();
 				$("#imageStatus").html("").html(statusCt + '0 images unprocessed from "' + folder + '".<br>');
@@ -268,6 +267,8 @@ function adminInit() {
 
 		function processImages() {
 
+			loader();
+
 			$('#allImagesButton').off("click").text("resize " + imagesAdded.length + " image/s").on("click", function() {
 
 				window.ri = 0;
@@ -282,6 +283,7 @@ function adminInit() {
 			});
 
 			processImages();
+			//loader("off");
 
 		};// end function processImages
 
@@ -303,8 +305,6 @@ function adminInit() {
 
 				});
 
-			} else {
-				console.log("resizeStoreSync else");
 			}
 		};
 
@@ -322,7 +322,7 @@ function adminInit() {
 				});
 
 				var folders = _.difference(data, subFolders);
-				var newFolders = _.difference(_.difference(folders, gJ.folders), gJ.ignore);
+				newFolders = _.difference(_.difference(folders, gJ.folders), gJ.ignore);
 				var oldFolders = _.intersection(data, gJ.folders);
 				console.log(newFolders);
 				console.log(oldFolders);
@@ -387,6 +387,9 @@ function adminInit() {
 					$('#processStatus').html(Object.keys(imagesFromFolderData).length + ' image/s found in "' + newFolders[0] + '".');
 
 					$('#allFoldersButton').off("click").text("process Images").on("click", function() {
+
+						loader();
+
 						folder = newFolders[0];
 
 						// the resizeStore function
@@ -402,16 +405,29 @@ function adminInit() {
 								var folder = val.path;
 								var file = val.file;
 								console.log(val);
-
-								resizeStore(folder, file).done(function(data) {
-									i++;
-
+								
+								var resizeStore = new _resizeStore(folder, file);
+								resizeStore.done(function(){
 									// add images to gJ
 									gJ.images[key] = imagesFromFolderData[key];
-
-									console.log(data);
+									i++;
 									resizeStoreSync();
 								});
+/*
+								resizeStore(folder, file).done(function(){
+									console.log("muchachos");
+								});
+							*/
+								
+								/*
+								resizeStore(folder, file).done(function(data) {
+									// add images to gJ
+									gJ.images[key] = imagesFromFolderData[key];
+									i++;
+									resizeStoreSync();
+								});
+								*/
+
 
 								// add folder to known folders
 								if (_.indexOf(gJ.folders, folder) < 0) {
@@ -420,6 +436,9 @@ function adminInit() {
 								$("#tr_" + folder).removeClass("danger");
 
 							} else {
+
+								console.log("i'm done");
+								loader('off');
 
 								if (newFolders.length > 0) {
 									$('#processStatus').html(newFolders.length + ' new folder(s).');
@@ -430,7 +449,7 @@ function adminInit() {
 
 							}
 
-						};// end resizeStoreSync
+						};// <-- end resizeStoreSync
 
 						resizeStoreSync();
 
@@ -439,12 +458,11 @@ function adminInit() {
 						console.log(newFolders);
 
 					});
-					// end all folder button "process images"
+					// <-- end all folder button "process images"
 
 				});
-				// end images from folder function
+				// <-- end images from folder function
 
-				console.log(fnf);
 				fnf++;
 
 			} else {
@@ -459,7 +477,7 @@ function adminInit() {
 				});
 			}
 
-		};// end process first new folder
+		};// <-- end process first new folder
 
 		function allFolders() {
 			return $.ajax({
@@ -469,7 +487,7 @@ function adminInit() {
 				data : "allFolders"
 			}).done(function(data) {
 				//callback(data);
-				console.log(data);
+				//console.log(data);
 			});
 		};
 
@@ -512,7 +530,7 @@ jsLoader({
 	'srcpath' : 'js/',
 	'concat' : true,
 	'minify' : false,
-	'gzip' : true,
+	'gzip' : false,
 	'cache' : false
 });
 
@@ -548,38 +566,10 @@ function saveFileAs(content, target) {
 		data : postdata
 	}).done(function(data) {
 		console.log(data);
-	})
+	});
+	
 };
 
-function resizeStore(folder, file, sizes, force) {
-	if (!folder) {
-		console.log("no folder!")
-		return false;
-	}
-	if (!file) {
-		console.log("no file!")
-		return false;
-	}
-	if (!sizes) {
-		var sizes = gJ.sizes.join();
-	}
-	if (!force) {
-		var force = false;
-	}
-	var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes + '&force=' + force;
-	console.log(postData);
-	return $.ajax({
-		//dataType : "json",
-		url : "gallery/resizeStore.php",
-		type : "GET",
-		data : postData
-	}).always(function(data) {
-		//console.log(data);
-	}).fail(function(data) {
-		console.log("fail!");
-		//console.log(data);
-	})
-};
 
 function saveFileAs(content, target) {
 

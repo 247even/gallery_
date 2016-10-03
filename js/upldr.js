@@ -3,6 +3,7 @@ var _upldr = function(){
 	this.options = {
 		'target' : "gallery/fileUpload.php",
 		'typeMatch' : 'image.*',
+		'slug' : true,
 		'cbReaderOnload' : function(){
 			console.log("cbReaderOnload");
 		},
@@ -76,11 +77,12 @@ var _upldr = function(){
 			
 			var f = files[i];
 			reader.name = f.name;
-			if(getSlug){
+			if(options.slug && getSlug){
 				var str = f.name.split('.');
 				str[0] = getSlug(str[0]);
 				reader.name = str.join('.');
 			}
+			
 			reader.type = f.type;
 			// file size from bytes to KB:
 			reader.size = (f.size / 1000).toFixed(2);
