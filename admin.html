@@ -37,6 +37,31 @@
 
 		<div id="main">
 			<figure id="effect-fullscreen" style="display: none"></figure>
+<!--
+			<div id="folderModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				<div class="modal-dialog modal-sm" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button id="modal-close-button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel">New folder found:</h4>
+						</div>
+						<div class="modal-body">
+							...
+						</div>
+						<div class="modal-footer">
+							<button id="modal-add-button" type="button" class="btn btn-primary">
+								add folder
+							</button>							
+							<button id="modal-ignore-button" type="button" class="btn btn-default">
+								ignore
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+-->			
 			<div id="page3" class="page no-scroll">
 				<div class="container gallery-container">
 					<div class="row height100">
@@ -53,7 +78,7 @@
 								</div>
 
 								<!-- Lightbox -->
-								<div data-app-prevent-settings="" class="lightbox slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false" id="lb-arbeiten">
+								<div  id="lb-arbeiten" data-app-prevent-settings="" class="lightbox slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false">
 									<div class="modal-dialog">
 										<div class="modal-content">
 											<div class="modal-body">
@@ -91,7 +116,7 @@
 						</div><!-- col -->
 
 						<!-- admin-panel: -->
-						<div class="col col-lg-6 col-md-6 admin-panel">
+						<div id="admin-panel" class="col col-lg-6 col-md-6 admin-panel">
 							<div class="admin-header">
 								<!-- Nav tabs -->
 								<ul class="nav nav-tabs" role="tablist">
@@ -121,26 +146,30 @@
 								<div class="tab-content">
 									<div id="start-panel" role="tabpanel" class="tab-pane scroll-wrapper" >
 										<div>
-											<table id="foldersTable" class="table">
+											<table id="foldersTable" class="table table-hover">
 												<thead>
 													<tr>
+														<th> </th>
 														<th>Folder</th>
 														<th>ignore</th>
 														<th>delete</th>
 													</tr>
 												</thead>
-												<tbody>
+												<tbody class="scroll-table">
 
 												</tbody>
 											</table>
 
 										</div>
 										<div id="processStatus"></div>
+										<div id="folderButtons">
+
+										</div>
 										<button id="allFoldersButton" class="btn btn-lg btn-primary btn-block" type="submit">
 											look for folders
 										</button>
 										<div id="imageStatus"></div>
-										<button id="allImagesButton" class="btn btn-lg btn-primary btn-block" type="submit">
+										<button id="allImagesButton" style="display:none" class="btn btn-lg btn-primary btn-block" type="submit">
 											look for images
 										</button>
 									</div><!-- end start-panel -->
@@ -338,14 +367,13 @@
 														<span class="input-group-btn">
 															<button id="new-folder-btn" class = "btn btn-default" type="button">
 																New
-															</button>
-														</span>
+															</button> </span>
 													</div>
 												</div>
 											</div>
-											
+
 											<div>
-												<input id="upload-tags" type="text" class="form-control" placeholder="tag1, tag2,...">												
+												<input id="upload-tags" type="text" class="form-control" placeholder="tag1, tag2,...">
 											</div>
 
 											<div id="file-output">
@@ -445,16 +473,43 @@
 				<option value="{{folder}}">{{folder}}</option>
 			</div>
 
+			<table id="foldersTable-row-prototype">
+				<tr id="tr_{{folder}}" data="{{folder}}" class="{{fclass}}" >
+					<th class="td_index">{{number}}</th>
+					<td>{{folder}}</td>
+					<td class="td_ign">
+					<button type="button" class="btn btn-default btn-xs btn_ign">
+						<span class="glyphicon glyphicon-ban-circle"></span>
+					</button></td>
+					<td class="td_del">
+					<button type="button" class="btn btn-default btn-xs btn_del">
+						<span class="glyphicon glyphicon-remove-circle"></span>
+					</button></td>
+				</tr>
+			</table>
+
+			<div id="folder-button-template">
+				<div>
+					<button data="{{folder}}" class="folder-button-add btn btn-lg btn-primary btn-block" type="submit">
+						add folder {{folder}}
+					</button>
+					<button data="{{folder}}" class="folder-button-ignore btn btn-lg btn-primary btn-block" type="submit">
+						ignore folder {{folder}}
+					</button>
+				</div>
+			</div>
+
 		</div>
 
 		<!-- Latest compiled and minified bootstrap JavaScript -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		<script src="js/bootstrap-select.min.js"></script>
 		<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
-		<script src="js/assets/jsLoader.js"></script>
+		<script src="js/jsLoader.js"></script>
+		<script src="js/gallery-admin.js"></script>
+		<script src="js/jquery.stickytableheaders.min.js"></script>
 		<script src="js/relative-fade.min.js"></script>
 		<script src="js/bs-dd-select.js"></script>
-		<script src="js/resizeStore.js"></script>
 		<script src="js/imgloaded.js"></script>
 		<script src="js/prototype.js"></script>
 		<script src="js/PxLoader.js"></script>
@@ -471,7 +526,6 @@
 		<script src="js/speakingurl.min.js"></script>
 		<script src="js/px.js"></script>
 		<script src="js/gallery.js"></script>
-		<script src="js/gallery-admin.js"></script>
 		<script src="js/func.js"></script>
 		<script src="js/init.js"></script>
 		<!--<script src="js/main.js"></script>-->

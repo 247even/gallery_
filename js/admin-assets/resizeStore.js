@@ -25,8 +25,6 @@ var _resizeStore = function(folder, file, sizes, force) {
 	send();
 
 	function send() {
-		console.log("i: " + i);
-		console.log(sizes.length);
 		if (i < sizes.length) {
 			var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes[i] + '&force=' + force;
 			$.ajax({
@@ -46,19 +44,4 @@ var _resizeStore = function(folder, file, sizes, force) {
 			done();
 		}
 	};
-
-	/*
-	 var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes + '&force=' + force;
-
-	 return $.ajax({
-	 //dataType : "json",
-	 url : "gallery/resizeStore.php",
-	 type : "GET",
-	 data : postData
-	 }).always(function(data) {
-	 //console.log(data);
-	 }).fail(function(data) {
-	 //console.log(data);
-	 });
-	 */
 };

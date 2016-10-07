@@ -11,7 +11,7 @@ jsLoader = function(od) {
 		'gzip' : false,
 		'cache' : false,
 		'srcpath' : '',
-		'async' : true
+		'async' : false
 	};
 
 	this.set = function(od) {
@@ -26,7 +26,7 @@ jsLoader = function(od) {
 		this.set(od);
 	}
 
-	request = new XMLHttpRequest();
+	var request = new XMLHttpRequest();
 	request.onloadend = function(e) {
 		var response = JSON.parse(e.target.responseText);
 

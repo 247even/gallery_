@@ -138,7 +138,8 @@ $('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 
 	getAllBackups().done(function(data) {
 		$("#loadBackupSelect").html("").append("<option>---</option>");
-		var data = JSON.parse(data);
+		//console.log(data);
+		//var data = JSON.parse(data);
 		for (var i = 0; i < data.length; i++) {
 			var split = data[i].split(".");
 			var opt = "<option data-url=" + data[i] + ">" + convertTimestamp(split[1]) + "</option>";
@@ -365,11 +366,12 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 	};
 
 	$("#sliderClear").on("click", function(e) {
+		e.preventDefault();
 		reset();
 	});
 
 	$("#sliderAuto").on("click", function(e) {
-
+		e.preventDefault();
 		reset();
 
 		var sliderNumber = nS.options[nS.selectedIndex].text;
@@ -697,24 +699,6 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	};
 	folderSelect();
 
-	function createFolder(path) {
-		var data = 'folder=' + path;
-		var request = new XMLHttpRequest();
-		request.open('POST', './gallery/createFolder.php', true);
-		request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-		request.onload = function() {
-			if (request.status >= 200 && request.status < 400) {
-				var resp = request.responseText;
-				gJ.folders.push(path);
-				folderSelect();
-				console.log(resp);
-			} else {
-				// We reached our target server, but it returned an error
-			}
-		};
-		request.send(data);
-	};
-
 	function filesToGJ(f) {
 		for ( i = 0; f.length > i; i++) {
 
@@ -722,7 +706,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	};
 
 	$('#new-folder-name').on('keypress', function(event) {
-		var regex = new RegExp("^[a-zA-Z0-9_-]+$");
+		var regex = new RegExp("^[a-zA-Z0-9_-äüö ]+$");
 		var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
 		if (!regex.test(key)) {
 			event.preventDefault();
@@ -734,11 +718,27 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		var val = $('#new-folder-name').val();
 		if (val) {
 			val = val.trim();
-			if ($.inArray(val, gJ.folders) < 0 || $.inArray(val, gJ.ignore)) {
+			
+			if ( _.indexOf( gJ.folders, val ) != -1 && _.indexOf( gJ.ignore, val ) != -1 ) {
 				console.log('folder already present');
 				return false;
 			}
-			createFolder(val);
+			
+			createFolder(val).done(function(data){
+				console.log(data.dir);
+			});
+			
+			/*
+			
+			createFolder(val).done(function(){
+				console.log('cfdone');
+				var resp = request.responseText;
+				gJ.folders.push(val);
+				folderSelect();
+				$('#new-folder-name').val('');
+				console.log(resp);			
+			});
+			*/
 		}
 	});
 
@@ -834,5 +834,268 @@ function processResponse(res) {
 			"tags" : tags
 		};
 		gJ.images[id] = entry;
+	};
+};
+
+
+function getAllImages() {
+	var i = 0;
+	var si = 0;
+
+	function getImages() {
+
+		var folder = gJ.folders[i];
+		var sourceFolder = folder;
+		var allImagesFromServer = [];
+		// all IDs from gJ filtered by folder:
+		var galleryByFolder = _.pickBy(gJ.images, {
+			'path' : folder
+		});
+
+		function getImagesFromServer() {
+			imagesFromFolder(sourceFolder).done(function(tnData) {
+				//console.log(tnData);
+				_.extend(allImagesFromServer, tnData);
+				getImagesFromServerSync();
+			}).fail(function() {
+				console.log("getImagesFromServerFail");
+				getImagesFromServerSync();
+			});
+		};
+
+		function getImagesFromServerSync() {
+			// si = 0 == base folder, without thumbnails
+			if (si == 0) {
+				getNewImages();
+				getRemovedImages();
+			}
+
+			if (si < gJ.sizes.length) {
+
+				sourceFolder = folder + '_' + gJ.sizes[si];
+				si++;
+				//console.log("new sourceFolder: "+sourceFolder);
+				getImagesFromServer();
+			} else {
+				// we now have all images from the server!
+				//console.log(allImagesFromServer);
+				checkImages();
+
+				// Done! Next folder...
+				i++;
+				if (i < gJ.folders.length) {
+					si = 0;
+					//folder = gJ.folders[i];
+
+					console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
+					//getImagesFromServerSync();
+					getImages();
+
+				} else {
+
+					if (_.size(imagesRemoved) > 0) {
+						$('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {
+
+						})
+					} else if (_.size(imagesAdded) > 0) {
+						$('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " images").on("click", function() {
+							addNewImages();
+						})
+					} else if (_.size(imagesNotProcessed) > 0) {
+						$('#allImagesButton').off("click").text("process " + _.size(imagesNotProcessed) + " images").on("click", function() {
+
+						})
+					}
+				}
+			}
+		};
+
+		getImagesFromServer();
+		console.log("getImagesFromServer after");
+	};// <-- end function allImages()
+};
+function processNewFolders(cb) {
+
+		loader();
+		if (stat.newFolders.length <= 0) {
+			return false;
+		}	
+		
+		processNewFolder({
+			'folder' : stat.newFolders[0],
+			'cb' : function() {
+				if (stat.newFolders.length > 0) {
+					// if there are new folders left, do it again...
+					processNewFolders();
+	
+				} else {
+	
+					if (cb) {
+						cb();
+					}
+				}
+			}
+		});
+};
+
+function processNewFolder(d) {
+	//stat.newFolders[0]
+	
+		var folder = d.folder;
+
+	//if (stat.newFolders.length > 0) {
+
+		// read images from first new folder:
+		imagesFromFolder(folder).done(function(imagesFromFolderData) {
+
+			//$('#allFoldersButton').off("click").text("process Images").on("click", function() {
+
+			//folder = stat.newFolders[0];
+
+			var keys = _.keys(imagesFromFolderData);
+			//var keys = Object.keys(imagesFromFolderData);
+
+			var i = 0;
+
+			function resizeStoreSync() {
+
+				if (i < keys.length) {
+					var key = keys[i];
+					var val = imagesFromFolderData[key];
+					var folder = val.path;
+					var file = val.file;
+					console.log(val);
+
+					var resizeStore = new _resizeStore(folder, file);
+					resizeStore.done(function() {
+						// add images to gJ
+						gJ.images[key] = imagesFromFolderData[key];
+						i++;
+						resizeStoreSync();
+					});
+
+					// add folder to known folders
+					if (_.indexOf(gJ.folders, folder) < 0) {
+						gJ.folders.push(folder);
+					}
+					//$("#tr_" + folder).removeClass("danger");
+
+				} else {
+					// all files from folder processed
+
+					if (d.cb) {
+						d.cb();
+					}
+				}
+			};// <-- end resizeStoreSync
+
+			resizeStoreSync();
+
+			// ...and remove from stat.newFolders
+			stat.newFolders = _.without(stat.newFolders, folder);
+
+			//});
+			// <-- end all folder button "process images"
+
+		});
+		// <-- end images from folder function
+
+		fnf++;
+
+/*
+	} else {
+
+		$('#allFoldersButton').off("click").text("go on").on("click", function() {
+			for (var i = 0,
+			    len = stat.newFolders.length; i < len; i++) {
+				request.imagesFromFolder(stat.newFolders[i]).done(function(data) {
+					console.log(data);
+				})
+			}
+		});
+	}
+*/
+};
+var request = true;
+
+var allFolders = function() {
+	return $.post("gallery/allFolders.php", "allFolders", null, 'json');
+};
+
+var createFolder = function(path) {
+	return $.post("gallery/createFolder.php", 'folder=' + path, null, 'json');
+};
+
+var removeFolder = function(f) {
+	return $.post("gallery/removeFolder.php", "folder=" + f, null, 'json');
+};
+
+var imagesFromFolder = function(f) {
+	var data = "folder=" + f + "&ts=" + Date.now();
+	return $.post("gallery/imagesFromFolder.php", data, null, 'json');
+};
+
+var removeImage = function(p) {
+	return $.post("gallery/removeImage.php", "path=" + p, null, 'json');
+};
+
+var getAllBackups = function() {
+	return $.post("gallery/allBackups.php", "allBackups=true&t=" + Date.now(), null, 'json');
+};
+
+var backup = function() {
+	return $.post("gallery/backup.php", "backup=true", null, 'json');
+};
+
+var saveFileAs = function(c, t) {
+	var data = "content=" + c + "&target=" + t;
+	return $.post("gallery/saveFileAs.php", data, null, 'json');
+};
+
+var _resizeStore = function(folder, file, sizes, force) {
+	
+	if (!folder) {
+		console.log("no folder!")
+		return false;
+	}
+	if (!file) {
+		console.log("no file!")
+		return false;
+	}
+	if (!sizes) {
+		//var sizes = gJ.sizes.join();
+		var sizes = gJ.sizes;
+	}
+	if (!force) {
+		var force = false;
+	}
+
+	var done;
+	this.done = function(cb) {
+		done = cb;
+	};
+	
+	var i = 0;
+	send();
+
+	function send() {
+		if (i < sizes.length) {
+			var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes[i] + '&force=' + force;
+			$.ajax({
+				//dataType : "json",
+				url : "gallery/resizeStore.php",
+				type : "GET",
+				data : postData
+			}).done(function(data) {
+				i++;
+				send();
+			}).always(function(data) {
+				//console.log(data);
+			}).fail(function(data) {
+				//console.log(data);
+			});
+		} else {
+			done();
+		}
 	};
 };

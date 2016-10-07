@@ -85,7 +85,8 @@ function buildGalleryItems(filter) {
 				return true
 			};
 		}
-
+		
+		/*
 		document.querySelector("#thumb-prototype .thumb-div").setAttribute('respi-path', respiPath);
 		document.querySelector("#thumb-prototype a").setAttribute('data-slide-to', i);
 		
@@ -93,12 +94,20 @@ function buildGalleryItems(filter) {
 		tpgi.setAttribute('data-time', val.time);
 		tpgi.setAttribute('data-tags', val.tags);
 		document.getElementById("gallery-row").appendChild( tpgi.cloneNode(true) );
+		*/
+
+		prototype({
+		'template' : '#thumb-prototype',
+		'selectors' : ['respi', 'i', 'key','time','tags'],
+		'values' : [respiPath, i, key, val.time, val.tags],
+		'targets' : '.gallery-row'
+		});		
 
 		i++;
 	};
 	
-	var tP = document.getElementById('thumb-prototype');
-	tP.parentNode.removeChild(tP);
+	//var tP = document.getElementById('thumb-prototype');
+	//tP.parentNode.removeChild(tP);
 };
 
 function buildLightbox(init) {
@@ -118,11 +127,22 @@ function buildLightbox(init) {
 	for(var i=0, len=items.length; i < len; i++){
 
 		items[i].getElementsByTagName('a')[0].setAttribute("data-slide-to", i);
-		// Build Carousel
+		
+		// Build Carousel:
 		var _respi_path = items[i].getElementsByClassName('thumb-div')[0].getAttribute("respi-path");
+		/*
 		document.querySelector('.gallery .carousel-inner').insertAdjacentHTML('beforeend',
 			'<div class=\"item\" respi-path="' + _respi_path + '" style=\"background-image:;\"><img alt=\"\" src=\"images/FFF-0.png\"></div>'
 		);
+		*/
+
+		prototype({
+		'template' : '#lightbox-item-prototype',
+		'selectors' : ['respi-path'],
+		'values' : [_respi_path],
+		'targets' : '.gallery .carousel-inner'
+		});	
+		
 	}
 
 	var total = items.length;
@@ -312,7 +332,6 @@ function loadImage(el){
 function initGallery() {
 	console.log("initGallery");
 
-
 	// background zoom function
 	var zel = document.querySelectorAll(".gallery .zoom");
 	for(var i=0,j=zel.length; i<j; i++){
@@ -341,13 +360,17 @@ function initGallery() {
 
 	$('#lb-arbeiten').carousel();	
 	
-	proportion(document.querySelectorAll(".gallery .gallery-item"),gJ.proportion);
+	proportion(document.querySelectorAll(".gallery .gallery-item"), gJ.proportion);
 	$(".gallery .gallery-item").respi(gJ.sizes);
+	$(".gallery-carousel .item").respi();
 	
 	window.addEventListener('resize', debounce(
 		function(e){
 			proportion(document.querySelectorAll(".gallery .gallery-item"),gJ.proportion);
 			proportion(document.querySelectorAll(".gallery .gallery-carousel .item"),gJ.proportion);
+			$(".gallery .gallery-item").respi(gJ.sizes);
+			$(".gallery-carousel .item").respi();
+			console.log("resize");
 		}, 500, false
 	));
 

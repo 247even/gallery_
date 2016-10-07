@@ -317,7 +317,8 @@ a:hover, a:focus {
 }
 
 .modal-content {
-	background-color: transparent; 
+	/*background-color: transparent;*/
+	background-color: #fff; 
 }
 
 .page {

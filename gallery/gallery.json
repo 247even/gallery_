@@ -4,73 +4,143 @@
 			"file": "sparrow-827374_1920.jpg",
 			"path": "birds",
 			"time": 1459435107,
-			"tags": ["birds"]
+			"tags": [
+				"birds"
+			]
 		},
 		"birdssparrow-9950_1280.jpg": {
 			"file": "sparrow-9950_1280.jpg",
 			"path": "birds",
 			"time": 1459435107,
-			"tags": ["birds"]
-		},
-		"shipscruise-114152_1920.jpg": {
-			"file": "cruise-114152_1920.jpg",
-			"path": "ships",
-			"time": 1459435113,
-			"tags": ["ships"]
-		},
-		"shipssailboat-459794_1920.jpg": {
-			"file": "sailboat-459794_1920.jpg",
-			"path": "ships",
-			"time": 1459435113,
-			"tags": ["ships"]
-		},
-		"shipsship-56569.jpg": {
-			"file": "ship-56569.jpg",
-			"path": "ships",
-			"time": 1459435113,
-			"tags": ["ships"]
-		},
-		"shipsship-952292_1920.jpg": {
-			"file": "ship-952292_1920.jpg",
-			"path": "ships",
-			"time": 1459435113,
-			"tags": ["ships"]
+			"tags": [
+				"birds"
+			]
 		},
 		"treesforest-584354_1920.jpg": {
 			"file": "forest-584354_1920.jpg",
 			"path": "trees",
 			"time": 1459435115,
-			"tags": ["trees"]
+			"tags": [
+				"trees"
+			]
 		},
 		"treeslog-258817_1920.jpg": {
 			"file": "log-258817_1920.jpg",
 			"path": "trees",
 			"time": 1459435115,
-			"tags": ["trees"]
+			"tags": [
+				"trees"
+			]
 		},
 		"treestree-439171_1920.jpg": {
 			"file": "tree-439171_1920.jpg",
 			"path": "trees",
 			"time": 1459435116,
-			"tags": ["trees"]
+			"tags": [
+				"trees"
+			]
 		},
 		"treestree-975378_1920.jpg": {
 			"file": "tree-975378_1920.jpg",
 			"path": "trees",
 			"time": 1459435116,
-			"tags": ["trees"]
+			"tags": [
+				"trees"
+			]
 		},
 		"treestrees-251923_1920.jpg": {
 			"file": "trees-251923_1920.jpg",
 			"path": "trees",
 			"time": 1459435116,
-			"tags": ["trees"]
+			"tags": [
+				"trees"
+			]
+		},
+		"cloudsMixed_clouds_over_Santa_Clarita_CA.jpg": {
+			"file": "Mixed_clouds_over_Santa_Clarita_CA.jpg",
+			"path": "clouds",
+			"time": 1469485876,
+			"tags": [
+				"clouds"
+			]
+		},
+		"cloudsclouds-01.jpg": {
+			"file": "clouds-01.jpg",
+			"path": "clouds",
+			"time": 1469485854,
+			"tags": [
+				"clouds"
+			]
+		},
+		"cloudsclouds-20.jpg": {
+			"file": "clouds-20.jpg",
+			"path": "clouds",
+			"time": 1469485867,
+			"tags": [
+				"clouds"
+			]
+		},
+		"cloudsclouds.jpg": {
+			"file": "clouds.jpg",
+			"path": "clouds",
+			"time": 1469485836,
+			"tags": [
+				"clouds"
+			]
+		},
+		"shipscruise-114152_1920.jpg": {
+			"file": "cruise-114152_1920.jpg",
+			"path": "ships",
+			"time": 1459435113,
+			"tags": [
+				"ships"
+			]
+		},
+		"shipssailboat-459794_1920.jpg": {
+			"file": "sailboat-459794_1920.jpg",
+			"path": "ships",
+			"time": 1459435113,
+			"tags": [
+				"ships"
+			]
+		},
+		"shipsship-56569.jpg": {
+			"file": "ship-56569.jpg",
+			"path": "ships",
+			"time": 1459435113,
+			"tags": [
+				"ships"
+			]
+		},
+		"shipsship-952292_1920.jpg": {
+			"file": "ship-952292_1920.jpg",
+			"path": "ships",
+			"time": 1459435113,
+			"tags": [
+				"ships"
+			]
 		}
 	},
 	"md5": "704ea2ff5cf8f6bd937daf9f2ed1c8bd",
-	"folders": ["birds", "ships", "trees"],
-	"ignore": ["blur"],
-	"tags": ["birds", "ships", "trees"],
-	"sizes": [280, 430, 720, 1200],
+	"folders": [
+		"birds",
+		"trees",
+		"clouds",
+		"ships"
+	],
+	"ignore": [
+		"blur"
+	],
+	"tags": [
+		"birds",
+		"ships",
+		"trees"
+	],
+	"sizes": [
+		280,
+		430,
+		720,
+		1200
+	],
 	"sliders": []
 }

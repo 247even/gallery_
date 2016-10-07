@@ -5,7 +5,8 @@ $('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 
 	getAllBackups().done(function(data) {
 		$("#loadBackupSelect").html("").append("<option>---</option>");
-		var data = JSON.parse(data);
+		//console.log(data);
+		//var data = JSON.parse(data);
 		for (var i = 0; i < data.length; i++) {
 			var split = data[i].split(".");
 			var opt = "<option data-url=" + data[i] + ">" + convertTimestamp(split[1]) + "</option>";

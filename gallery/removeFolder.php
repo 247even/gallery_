@@ -1,7 +1,8 @@
 <?php
 if (isset($_GET['folder']) || isset($_POST['folder'])) {
 	global $gForce;
-	$dir = $_GET['folder'];
+	
+	$dir = $_POST['folder'];
 	$dir = explode(",", $dir);
 
 	foreach ($dir as $value) {

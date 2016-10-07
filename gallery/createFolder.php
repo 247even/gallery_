@@ -1,13 +1,18 @@
 <?php
-if (isset($_GET['folder']) || isset($_POST['folder'])) {
+
+if (isset($_POST['folder'])) {
+	
 	$dir = $_POST['folder'];
+	
+	$response['dir'] = $dir;
+	
 	if (is_dir($dir)) {
-		die($dir + ' already exists');
+		$response['error'] = 1;
 	} else {
 		if (!mkdir($dir, 0777, true)) {
-			die('error');
+			$response['error'] = 2;
 		}
 	}
-	echo $dir . ' created';
+	echo json_encode($response);
 }
 ?>

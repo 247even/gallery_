@@ -155,8 +155,7 @@ $(function() {
 	if( $('html').hasClass('mobile') ){
 		// carousel navigation arrows	
 		$('.carousel-control, .control-wrapper').addClass('hidden');
-		$('#filter-select').attr('data-mobile',"true");
-		
+		$('#filter-select').attr('data-mobile',"true");	
 	}
 
 	$(window).on('load resize', (function() {

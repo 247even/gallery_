@@ -17,24 +17,6 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	};
 	folderSelect();
 
-	function createFolder(path) {
-		var data = 'folder=' + path;
-		var request = new XMLHttpRequest();
-		request.open('POST', './gallery/createFolder.php', true);
-		request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-		request.onload = function() {
-			if (request.status >= 200 && request.status < 400) {
-				var resp = request.responseText;
-				gJ.folders.push(path);
-				folderSelect();
-				console.log(resp);
-			} else {
-				// We reached our target server, but it returned an error
-			}
-		};
-		request.send(data);
-	};
-
 	function filesToGJ(f) {
 		for ( i = 0; f.length > i; i++) {
 
@@ -42,7 +24,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	};
 
 	$('#new-folder-name').on('keypress', function(event) {
-		var regex = new RegExp("^[a-zA-Z0-9_-]+$");
+		var regex = new RegExp("^[a-zA-Z0-9_-äüö ]+$");
 		var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
 		if (!regex.test(key)) {
 			event.preventDefault();
@@ -54,11 +36,27 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		var val = $('#new-folder-name').val();
 		if (val) {
 			val = val.trim();
-			if ($.inArray(val, gJ.folders) < 0 || $.inArray(val, gJ.ignore)) {
+			
+			if ( _.indexOf( gJ.folders, val ) != -1 && _.indexOf( gJ.ignore, val ) != -1 ) {
 				console.log('folder already present');
 				return false;
 			}
-			createFolder(val);
+			
+			createFolder(val).done(function(data){
+				console.log(data.dir);
+			});
+			
+			/*
+			
+			createFolder(val).done(function(){
+				console.log('cfdone');
+				var resp = request.responseText;
+				gJ.folders.push(val);
+				folderSelect();
+				$('#new-folder-name').val('');
+				console.log(resp);			
+			});
+			*/
 		}
 	});
 
@@ -156,3 +154,4 @@ function processResponse(res) {
 		gJ.images[id] = entry;
 	};
 };
+

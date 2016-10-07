@@ -185,11 +185,12 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 	};
 
 	$("#sliderClear").on("click", function(e) {
+		e.preventDefault();
 		reset();
 	});
 
 	$("#sliderAuto").on("click", function(e) {
-
+		e.preventDefault();
 		reset();
 
 		var sliderNumber = nS.options[nS.selectedIndex].text;

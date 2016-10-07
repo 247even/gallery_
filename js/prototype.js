@@ -1,11 +1,11 @@
 function prototype(data) {
 
 	// template element to search in for placeholders:
-	var templates;
+	var template;
 	if (data.template) {
-		templates = document.querySelectorAll(data.template);
+		template = document.querySelector(data.template);
 	} else {
-		templates = document.querySelectorAll('body');
+		template = document.querySelector('body');
 	}
 
 	var selectors = data.selectors;
@@ -16,23 +16,23 @@ function prototype(data) {
 		targets = document.querySelectorAll(data.targets);
 	}
 
-	for ( i = 0; i < templates.length; i++) {
-		var ct = templates[i].innerHTML;
+	//for ( i = 0; i < templates.length; i++) {
+	var ct = template.innerHTML;
 
-		for ( i = 0; i < selectors.length; i++) {
-			var selector = '{{' + selectors[i] + '}}';
-			ct = ct.replace(selector, values[i]);
-			ct = ct.split(selector).join(values[i])
-		}
-
+	for ( i = 0; i < selectors.length; i++) {
+		var selector = '{{' + selectors[i] + '}}';
+		ct = ct.replace(selector, values[i]);
+		ct = ct.split(selector).join(values[i]);
 	}
+
+	//}
 
 	if (targets) {
 		for ( i = 0; i < targets.length; i++) {
 			targets[i].insertAdjacentHTML('beforeend', ct);
 		}
 	} else {
-		templates[i].innerHTML = ct;
+		template.innerHTML = ct;
 	}
 };
 
