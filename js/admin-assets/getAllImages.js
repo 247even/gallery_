@@ -15,7 +15,7 @@ function getAllImages() {
 
 		function getImagesFromServer() {
 			imagesFromFolder(sourceFolder).done(function(tnData) {
-				//console.log(tnData);
+				console.log(tnData.length);
 				_.extend(allImagesFromServer, tnData);
 				getImagesFromServerSync();
 			}).fail(function() {

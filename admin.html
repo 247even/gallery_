@@ -26,6 +26,8 @@
 		<link rel="stylesheet" href="css/imafox.css">
 		<link rel="stylesheet" href="css/loader.css">
 
+		<script src="js/jsLoader.js"></script>
+
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 
 		<script src="js/selectize.min.js"></script>
@@ -37,7 +39,7 @@
 
 		<div id="main">
 			<figure id="effect-fullscreen" style="display: none"></figure>
-<!--
+
 			<div id="folderModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 				<div class="modal-dialog modal-sm" role="document">
 					<div class="modal-content">
@@ -53,7 +55,7 @@
 						<div class="modal-footer">
 							<button id="modal-add-button" type="button" class="btn btn-primary">
 								add folder
-							</button>							
+							</button>
 							<button id="modal-ignore-button" type="button" class="btn btn-default">
 								ignore
 							</button>
@@ -61,7 +63,7 @@
 					</div>
 				</div>
 			</div>
--->			
+
 			<div id="page3" class="page no-scroll">
 				<div class="container gallery-container">
 					<div class="row height100">
@@ -413,7 +415,7 @@
 											</button>
 										</section>
 										<pre id="json-output">
-											
+
 										</pre>
 									</div><!-- end raw-panel -->
 
@@ -443,9 +445,12 @@
 
 		<div id="prototypes" style="display: none">
 			<div id="thumb-prototype" style="display:none">
-				<div class="thumbSize gallery-item img-hidden">
-					<div class="thumb-div cover-image" data-src="xxx">
-						<a href="#lb-arbeiten" data-slide-to="i" data-toggle="modal"> <img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"> <span class="glyphicon glyphicon-zoom-in"> </span> </a>
+				<div class="thumbSize gallery-item img-hidden" data-id="{{key}}" data-time="{{time}}" data-tags="{{tags}}">
+					<div class="thumb-div cover-image" data-src="xxx" respi-path="{{respi}}">
+						<a href="#lb-arbeiten" data-slide-to="{{i}}" data-toggle="modal">
+						<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+						<span class="glyphicon glyphicon-zoom-in"> </span>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -499,13 +504,18 @@
 				</div>
 			</div>
 
-		</div>
+			<div id="lightbox-item-prototype">
+				<div class="item" respi-path="{{respi-path}}" style="background-image:;">
+					<img alt="" src="images/FFF-0.png">
+				</div>
+			</div>
+
+		</div> <!-- end prototypes -->
 
 		<!-- Latest compiled and minified bootstrap JavaScript -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		<script src="js/bootstrap-select.min.js"></script>
 		<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
-		<script src="js/jsLoader.js"></script>
 		<script src="js/gallery-admin.js"></script>
 		<script src="js/jquery.stickytableheaders.min.js"></script>
 		<script src="js/relative-fade.min.js"></script>
@@ -529,6 +539,5 @@
 		<script src="js/func.js"></script>
 		<script src="js/init.js"></script>
 		<!--<script src="js/main.js"></script>-->
-
 	</body>
 </html>
