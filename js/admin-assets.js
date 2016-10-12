@@ -1,3 +1,115 @@
+"use strict";
+
+var stat = {
+    'imagesRemoved': [],
+    'imagesAdded': {},
+    'imagesAddedKeys': [],
+    'imagesModified': [],
+    'imagesNotProcessed': [],
+    'workingFolder': '',
+
+    'folderImages' : [],
+
+    '_allImages': {},
+    set allImages(val) {
+        this._allImages = {};
+        if(val){
+            this._allImages = val;
+        }
+        getNewImages();
+        var imgtd = Object.keys(stat.allImages).length;
+        if(stat.newImages.length > 0){
+            imgtd = imgtd+"/"+stat.newImages.length;
+        }
+        $("#tr-"+stat.workingFolder+" .td-img").html(imgtd);
+    },
+    get allImages() {
+        return this._allImages;
+    },
+
+    '_newImages': [],
+    set newImages(val) {
+        this._newImages = val;
+        $('#processStatus').html(this._newImages.length + ' image/s found in "' + stat.newFolders[0] + '".');
+    },
+    get newImages() {
+        return this._newImages;
+    },
+
+    '_allFolders': [],
+    set allFolders(val) {
+        this._allFolders = val;
+        buildFolderTable();
+    },
+    get allFolders() {
+        return this._allFolders;
+    },
+
+    '_newFolders': [],
+    set newFolders(val) {
+        this._newFolders = val;
+        if (stat.newFolders.length > 0) {
+            $('#processStatus').html(stat.newFolders.length + ' new folder(s) found.');
+            $('#allFoldersButton').text('add folder "' + stat.newFolders[0] + '"');
+
+            //for (var i = 0; stat.newFolders.length > i; i++) {
+            $('#folder-modal .modal-body').html('"' + stat.newFolders[0] + '"');
+            $('#folder-modal').attr('data', stat.newFolders[0])
+                .modal('show');
+
+            /*
+            prototype({
+            'template' : '#folder-button-template',
+            'selectors' : ['folder'],
+            'values' : [stat.newFolders[i]],
+            'targets' : '#folderButtons'
+            });
+            */
+            //}
+        }
+        //buildFolderTable();
+    },
+    get newFolders() {
+        return this._newFolders;
+    }
+
+};
+
+function getNewImages() {
+
+    var match = [];
+    stat.newImages = [];
+
+    for (var key in stat.allImages) {
+        if (!gJ.images[key]) {
+            // this image is not in gJ, must be new
+            match[key] = stat.allImages[key];
+        }
+    }
+
+    if (Object.keys(match) > 0) {
+        // we have new images
+        stat.newImages = Object.keys(match);
+    } else {
+        console.log("no new images");
+    }
+};
+
+
+function getRemovedImages() {
+
+  // all IDs from gJ filtered by folder:
+  var galleryByFolder = _.pickBy(gJ.images, {
+      'path': stat.workingFolder
+  });
+
+    for (var key in galleryByFolder) {
+        if (!stat.imagesFromFolder[key]) {
+            // this image is not present anymore
+            stat.imagesRemoved.push(kk);
+        }
+    }
+};
 /* options */
 
 //$('#optionsForm').validator();
@@ -837,83 +949,98 @@ function processResponse(res) {
 	};
 };
 
+function getAllImages(folders, d) {
+		// deep = if true, include thumbnail folders;
 
-function getAllImages() {
-	var i = 0;
-	var si = 0;
+    var i = 0;
+    var si = 0;
+		var deep = d ? d : false;
 
-	function getImages() {
+    function getImages() {
+				//var folder = gJ.folders[i];
+				var folder = folders[i];
+				stat.workingFolder = folder;
+        var sourceFolder = folder;
+        var allImagesFromServer = [];
 
-		var folder = gJ.folders[i];
-		var sourceFolder = folder;
-		var allImagesFromServer = [];
-		// all IDs from gJ filtered by folder:
-		var galleryByFolder = _.pickBy(gJ.images, {
-			'path' : folder
-		});
+        function getImagesFromServer() {
+            imagesFromFolder(sourceFolder).done(function(data) {
+								var ol = 0;
+								if(data){
+									ol = Object.keys(data).length;
+									_.extend(allImagesFromServer, data);
+								}
 
-		function getImagesFromServer() {
-			imagesFromFolder(sourceFolder).done(function(tnData) {
-				console.log(tnData.length);
-				_.extend(allImagesFromServer, tnData);
-				getImagesFromServerSync();
-			}).fail(function() {
-				console.log("getImagesFromServerFail");
-				getImagesFromServerSync();
-			});
-		};
+								//if (!gJ.folders[folder] && !gJ.ignore[folder]) {
+									stat.folderImages[folder] = [ol , 0, 0];
+								//}
 
-		function getImagesFromServerSync() {
-			// si = 0 == base folder, without thumbnails
-			if (si == 0) {
-				getNewImages();
-				getRemovedImages();
-			}
+								getImagesFromServerSync();
 
-			if (si < gJ.sizes.length) {
+            }).fail(function() {
+                console.log("getImagesFromServer fail");
+                getImagesFromServerSync();
+            });
+        };
 
-				sourceFolder = folder + '_' + gJ.sizes[si];
-				si++;
-				//console.log("new sourceFolder: "+sourceFolder);
-				getImagesFromServer();
-			} else {
-				// we now have all images from the server!
-				//console.log(allImagesFromServer);
-				checkImages();
+        function getImagesFromServerSync() {
+            // si = 0 == base folder, without thumbnails
+            if (si == 0) {
+                //getNewImages();
+                //getRemovedImages();
+            }
 
-				// Done! Next folder...
-				i++;
-				if (i < gJ.folders.length) {
-					si = 0;
-					//folder = gJ.folders[i];
+						// deep = true => check thumbnail-folders
+            if (deep && si < gJ.sizes.length) {
 
-					console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
-					//getImagesFromServerSync();
-					getImages();
+                sourceFolder = folder + '_' + gJ.sizes[si];
+                si++;
+                //console.log("new sourceFolder: "+sourceFolder);
+                getImagesFromServer();
+            } else {
+                // we now have all images from the server!
+                //checkImages();
 
-				} else {
+                // Done! Next folder...
+                i++;
 
-					if (_.size(imagesRemoved) > 0) {
-						$('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {
+                //if (i < gJ.folders.length) {
+								if (i < folders.length) {
+                    si = 0;
+                    //folder = gJ.folders[i];
 
-						})
-					} else if (_.size(imagesAdded) > 0) {
-						$('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " images").on("click", function() {
-							addNewImages();
-						})
-					} else if (_.size(imagesNotProcessed) > 0) {
-						$('#allImagesButton').off("click").text("process " + _.size(imagesNotProcessed) + " images").on("click", function() {
+                    console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
+                    //getImagesFromServerSync();
+                    getImages();
 
-						})
-					}
-				}
-			}
-		};
+                } else {
+									console.log(stat.folderImages);
+										/*
+                    if (_.size(imagesRemoved) > 0) {
+                        $('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {
 
-		getImagesFromServer();
-		console.log("getImagesFromServer after");
-	};// <-- end function allImages()
-};
+                        })
+                    } else if (_.size(imagesAdded) > 0) {
+                        $('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " images").on("click", function() {
+                            addNewImages();
+                        })
+                    } else if (_.size(imagesNotProcessed) > 0) {
+                        $('#allImagesButton').off("click").text("process " + _.size(imagesNotProcessed) + " images").on("click", function() {
+
+                        })
+                    }
+										*/
+                }
+            }
+        };
+
+        getImagesFromServer();
+        console.log("getImagesFromServer done");
+    }; // <-- end function getImages()
+
+		getImages();
+
+}; // <-- end function getAllImages()
 function processNewFolders(cb) {
 
     loader();
@@ -1051,7 +1178,9 @@ var removeFolder = function(f) {
 
 var imagesFromFolder = function(f) {
 	var data = "folder=" + f + "&ts=" + Date.now();
-	return $.post("gallery/imagesFromFolder.php", data, null, 'json');
+	return $.post("gallery/imagesFromFolder.php", data, null, 'json').done(function(data){
+		stat.allImages = data;
+	});
 };
 
 var removeImage = function(p) {
@@ -1070,7 +1199,6 @@ var saveFileAs = function(c, t) {
 	var data = "content=" + c + "&target=" + t;
 	return $.post("gallery/saveFileAs.php", data, null, 'json');
 };
-
 var _resizeStore = function(folder, file, sizes, force) {
 	
 	if (!folder) {
@@ -1117,58 +1245,4 @@ var _resizeStore = function(folder, file, sizes, force) {
 			done();
 		}
 	};
-};
-var stat = {
-    'imagesRemoved': [],
-    'imagesAdded': {},
-    'imagesAddedKeys': [],
-    'imagesModified': [],
-    'imagesNotProcessed': [],
-
-    '_newImages': [],
-    set newImages(val) {
-        this._newImages = val;
-        $('#processStatus').html(this._newImages.length + ' image/s found in "' + stat.newFolders[0] + '".');
-    },
-    get newImages() {
-        return this._newImages;
-    },
-
-    '_allFolders': [],
-    set allFolders(val) {
-        this._allFolders = val;
-        buildFolderTable(stat.allFolders);
-    },
-    get allFolders() {
-        return this._allFolders;
-    },
-
-    '_newFolders': [],
-    set newFolders(val) {
-        this._newFolders = val;
-        if (stat.newFolders.length > 0) {
-            $('#processStatus').html(stat.newFolders.length + ' new folder(s) found.');
-            $('#allFoldersButton').text('add folder "' + stat.newFolders[0] + '"');
-
-            //for (var i = 0; stat.newFolders.length > i; i++) {
-            $('#folder-modal .modal-body').html('"' + stat.newFolders[0] + '"');
-            $('#folder-modal').attr('data', stat.newFolders[0])
-                .modal('show');
-
-            /*
-            prototype({
-            'template' : '#folder-button-template',
-            'selectors' : ['folder'],
-            'values' : [stat.newFolders[i]],
-            'targets' : '#folderButtons'
-            });
-            */
-            //}
-        }
-        buildFolderTable(stat.allFolders);
-    },
-    get newFolders() {
-        return this._newFolders;
-    }
-
 };

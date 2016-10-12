@@ -29,8 +29,8 @@ function adminInit() {
 
     // set folder modal
     $('#folder-modal').modal({
-				backdrop: 'static'
-		});
+        backdrop: 'static'
+    });
 
     $("#modal-add-button").on('click', function() {
         processNewFolder({
@@ -69,6 +69,7 @@ function adminInit() {
         });
 
         stat.allFolders = _.difference(data, subFolders);
+        getAllImages(stat.allFolders, false);
         stat.newFolders = _.difference(_.difference(stat.allFolders, gJ.folders), gJ.ignore);
         var oldFolders = _.intersection(data, gJ.folders);
 
@@ -102,18 +103,18 @@ function ignoreFolder(f) {
 
 function setFolderIgnoreButton() {
     // the row ignore button stuff:
-    $("#foldersTable .btn_ign").on("click", function() {
+    $("#foldersTable .btn-ign").on("click", function() {
         ignoreFolder($(this).closest("tr").attr("data"));
     });
 };
 
 function setDeleteFolderButton() {
     // the row delete button stuff:
-    $("#foldersTable .btn_del").on("click", function() {
+    $("#foldersTable .btn-del").on("click", function() {
         var dataFolder = $(this).closest("tr").attr("data");
         removeFolder(dataFolder).done(function(data) {
             console.log("folder removed");
-            $("#tr_" + dataFolder).remove();
+            $("#tr-" + dataFolder).remove();
         });
     });
 };
@@ -226,28 +227,54 @@ function listAllFolders(cb) {
 };
 
 function buildFolderTable(folders) {
+    if(!folders){
+      var folders = stat.allFolders;
+    }
+
     $("#foldersTable tbody").html('');
     for (var i = 0; i < folders.length; i++) {
         var number = i + 1;
+        var folder = folders[i];
         // set table row style for new, known or ignored folders:
         var fclass = "warning";
-        if (_.indexOf(gJ.ignore, folders[i]) == -1) {
+        if (_.indexOf(gJ.ignore, folder) == -1) {
             fclass = "default";
         }
-        if (_.indexOf(stat.newFolders, folders[i]) > -1) {
+        if (_.indexOf(stat.newFolders, folder) > -1) {
             fclass = "danger";
+        }
+
+        var foIm = stat.folderImages[folder];
+        var imgtd = " ";
+        if(foIm){
+            imgtd = foIm[0]+"/"+foIm[1]+"/"+foIm[2];
         }
 
         prototype({
             'template': '#foldersTable-row-prototype',
-            'selectors': ['number', 'folder', 'fclass'],
-            'values': [number, folders[i], fclass],
+            'selectors': ['number', 'imgtd', 'folder', 'fclass'],
+            'values': [number, imgtd, folder, fclass],
             'targets': '#foldersTable tbody'
         });
     };
 
-    setFolderIgnoreButton();
-    setDeleteFolderButton();
+    $("#foldersTable .btn-scn").on("click", function() {
+        stat.workingFolder = $(this).closest("tr").attr("data");
+        imagesFromFolder(stat.workingFolder);
+    });
+
+    //setFolderIgnoreButton();
+    $("#foldersTable .btn-ign").on("click", function() {
+        ignoreFolder($(this).closest("tr").attr("data"));
+    });
+    //setDeleteFolderButton();
+    $("#foldersTable .btn-del").on("click", function() {
+        var dataFolder = $(this).closest("tr").attr("data");
+        removeFolder(dataFolder).done(function(data) {
+            console.log("folder removed");
+            $("#tr-" + dataFolder).remove();
+        });
+    });
 
 };
 
@@ -266,50 +293,11 @@ function resizeStoreSync(data, keys, length, folder) {
             gJ.images[key] = data[key];
 
             resizeStoreSync();
-
         });
-
-    }
-};
-
-function getNewImages() {
-    var ct = $("#imageStatus").html();
-    $("#imageStatus").html(ct + '<br> 0 new images found in "' + folder + '".<br>');
-
-    for (var key in allImagesFromServer) {
-        if (!gJ.images[key]) {
-            // this image is not in gJ, must be new
-            imagesAdded[key] = allImagesFromServer[key];
-            //imagesAdded.push(allImagesFromServer[key]);
-            // bad:
-            //imagesAdded = _.uniq(imagesAdded);
-
-            $("#imageStatus").html("").html(_.size(imagesAdded) + ' new image/s found in "' + folder + '".<br>');
-        }
-    }
-
-    imagesAddedKeys = Object.keys(imagesAdded);
-};
-
-function getRemovedImages() {
-
-    var statusCt = $("#imageStatus").html();
-    $("#imageStatus").html("").html(statusCt + '0 images removed from "' + folder + '".<br>');
-
-    for (var key in galleryByFolder) {
-
-        if (!allImagesFromServer[key]) {
-            // this image is not present anymore
-            imagesRemoved.push(kk);
-            $("#imageStatus").html("").html(statusCt + ' ' + imagesRemoved.length + ' image/s removed from "' + folder + '".<br>');
-        }
     }
 };
 
 function checkImages() {
-
-    var statusCt = $("#imageStatus").html();
-    $("#imageStatus").html("").html(statusCt + '0 images unprocessed from "' + folder + '".<br>');
 
     for (var id in galleryByFolder) {
 

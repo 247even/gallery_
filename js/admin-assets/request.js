@@ -15,7 +15,9 @@ var removeFolder = function(f) {
 
 var imagesFromFolder = function(f) {
 	var data = "folder=" + f + "&ts=" + Date.now();
-	return $.post("gallery/imagesFromFolder.php", data, null, 'json');
+	return $.post("gallery/imagesFromFolder.php", data, null, 'json').done(function(data){
+		stat.allImages = data;
+	});
 };
 
 var removeImage = function(p) {
@@ -34,4 +36,3 @@ var saveFileAs = function(c, t) {
 	var data = "content=" + c + "&target=" + t;
 	return $.post("gallery/saveFileAs.php", data, null, 'json');
 };
-

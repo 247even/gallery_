@@ -1,0 +1,92 @@
+/* admin panel */
+
+.admin-header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	padding-top: 5px;
+	background-color: #000;
+}
+
+.admin-header .nav-tabs {
+	padding-left: 5px;
+	border-color: #292929;
+}
+
+.admin-header .nav-tabs a {
+	color: #ccc;
+}
+
+.admin-header .nav-tabs > li.active > a {
+	color: #eee;
+	background-color: #292929;
+	border-color: #292929;
+}
+
+.admin-header .nav-tabs > li:hover > a {
+	color: #eee;
+	background-color: #292929;
+	border-color: #292929;
+}
+
+.admin-panel {
+	background-color: #292929;
+	color: #eee;
+}
+
+.admin-panel .navbar:before, .admin-panel .navbar__container {
+	height: auto; !important
+}
+
+.selected-image {
+	border: 2px solid red;
+}
+
+#blurImageFrame img {
+	width: 100%;
+}
+
+#effect-fullscreen {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	text-align: center;
+	z-index: 99999;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	overflow: hidden;
+}
+
+#effect-fullscreen-image {
+	width: 100%;
+	height: 100%;
+}
+
+.rangeslider {
+	margin-top: 20px;
+	background: #e6e6e6;
+}
+
+.td-index {
+	width: 50px;
+}
+
+.td-ign, .td-del, .td-scn {
+	width: 60px;
+	text-align: center;
+}
+
+.success {
+	color: #333;
+}
+
+.sortable-placeholder {
+	position: relative;
+	float: left;
+	width: 100px;
+	height: 100px;
+}

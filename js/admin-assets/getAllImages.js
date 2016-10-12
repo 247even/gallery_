@@ -1,77 +1,90 @@
+function getAllImages(folders, d) {
+		// deep = if true, include thumbnail folders;
 
-function getAllImages() {
-	var i = 0;
-	var si = 0;
+    var i = 0;
+    var si = 0;
+		var deep = d ? d : false;
 
-	function getImages() {
+    function getImages() {
+				//var folder = gJ.folders[i];
+				var folder = folders[i];
+				stat.workingFolder = folder;
+        var sourceFolder = folder;
+        var allImagesFromServer = [];
 
-		var folder = gJ.folders[i];
-		var sourceFolder = folder;
-		var allImagesFromServer = [];
-		// all IDs from gJ filtered by folder:
-		var galleryByFolder = _.pickBy(gJ.images, {
-			'path' : folder
-		});
+        function getImagesFromServer() {
+            imagesFromFolder(sourceFolder).done(function(data) {
+								var ol = 0;
+								if(data){
+									ol = Object.keys(data).length;
+									_.extend(allImagesFromServer, data);
+								}
 
-		function getImagesFromServer() {
-			imagesFromFolder(sourceFolder).done(function(tnData) {
-				console.log(tnData.length);
-				_.extend(allImagesFromServer, tnData);
-				getImagesFromServerSync();
-			}).fail(function() {
-				console.log("getImagesFromServerFail");
-				getImagesFromServerSync();
-			});
-		};
+								stat.folderImages[folder] = [ol , 0, 0];
 
-		function getImagesFromServerSync() {
-			// si = 0 == base folder, without thumbnails
-			if (si == 0) {
-				getNewImages();
-				getRemovedImages();
-			}
+								getImagesFromServerSync();
 
-			if (si < gJ.sizes.length) {
+            }).fail(function() {
+                console.log("getImagesFromServer fail");
+                getImagesFromServerSync();
+            });
+        };
 
-				sourceFolder = folder + '_' + gJ.sizes[si];
-				si++;
-				//console.log("new sourceFolder: "+sourceFolder);
-				getImagesFromServer();
-			} else {
-				// we now have all images from the server!
-				//console.log(allImagesFromServer);
-				checkImages();
+        function getImagesFromServerSync() {
+            // si = 0 == base folder, without thumbnails
+            if (si == 0) {
+                //getNewImages();
+                //getRemovedImages();
+            }
 
-				// Done! Next folder...
-				i++;
-				if (i < gJ.folders.length) {
-					si = 0;
-					//folder = gJ.folders[i];
+						// deep = true => check thumbnail-folders
+            if (deep && si < gJ.sizes.length) {
 
-					console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
-					//getImagesFromServerSync();
-					getImages();
+                sourceFolder = folder + '_' + gJ.sizes[si];
+                si++;
+                //console.log("new sourceFolder: "+sourceFolder);
+                getImagesFromServer();
+            } else {
+                // we now have all images from the folder!
+                //checkImages();
 
-				} else {
+                // Done! Next folder...
+                i++;
 
-					if (_.size(imagesRemoved) > 0) {
-						$('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {
+                //if (i < gJ.folders.length) {
+								if (i < folders.length) {
+                    si = 0;
+                    //folder = gJ.folders[i];
 
-						})
-					} else if (_.size(imagesAdded) > 0) {
-						$('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " images").on("click", function() {
-							addNewImages();
-						})
-					} else if (_.size(imagesNotProcessed) > 0) {
-						$('#allImagesButton').off("click").text("process " + _.size(imagesNotProcessed) + " images").on("click", function() {
+                    console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
+                    //getImagesFromServerSync();
+                    getImages();
 
-						})
-					}
-				}
-			}
-		};
+                } else {
+									console.log(stat.folderImages);
+										/*
+                    if (_.size(imagesRemoved) > 0) {
+                        $('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {
 
-		getImagesFromServer();
-		console.log("getImagesFromServer after");
-	};// <-- end function allImages()
-};
+                        })
+                    } else if (_.size(imagesAdded) > 0) {
+                        $('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " images").on("click", function() {
+                            addNewImages();
+                        })
+                    } else if (_.size(imagesNotProcessed) > 0) {
+                        $('#allImagesButton').off("click").text("process " + _.size(imagesNotProcessed) + " images").on("click", function() {
+
+                        })
+                    }
+										*/
+                }
+            }
+        };
+
+        getImagesFromServer();
+        console.log("getImagesFromServer done");
+    }; // <-- end function getImages()
+
+		getImages();
+
+}; // <-- end function getAllImages()
