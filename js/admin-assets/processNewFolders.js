@@ -33,22 +33,27 @@ function processNewFolder(d) {
 
     // read images from first new folder:
     imagesFromFolder(folder).done(function(imagesFromFolderData) {
+        // error:
+        var er = false;
 
-				if(!imagesFromFolderData){
-					console.log("no image data");
-				}
+        if (imagesFromFolderData) {
+					//var keys = _.keys(imagesFromFolderData);
+            var keys = Object.keys(imagesFromFolderData);
+            var kLength = keys.length;
+        } else {
+            er = true;
+        }
 
-				var keys = Object.keys(imagesFromFolderData);
-        //var keys = _.keys(imagesFromFolderData);
-				var kLength = keys.length;
-
-				if(kLength < 1){
-					console.log("no images");
-					if (d.cb) {
-							d.cb();
-					}
-					return false;
-				}
+        if (er || kLength < 1) {
+            console.log("no images");
+						// callback:
+            if (d.cb) {
+                d.cb();
+            }
+						stat.newImages = [];
+            stat.newFolders = _.without(stat.newFolders, folder);
+            return false;
+        }
 
         var i = 0;
 
@@ -67,6 +72,10 @@ function processNewFolder(d) {
                     gJ.images[key] = imagesFromFolderData[key];
                     i++;
                     resizeStoreSync();
+                }).fail(function(){
+                    i++;
+                    resizeStoreSync();
+                    console.log("resizeStore error");
                 });
 
                 // add folder to known folders
@@ -87,6 +96,9 @@ function processNewFolder(d) {
         // ...and remove from stat.newFolders
         stat.newFolders = _.without(stat.newFolders, folder);
 
+    }).fail(function(){
+        stat.newFolders = _.without(stat.newFolders, folder);
+        console.log("images from folder error");
     });
     // <-- end images from folder function
 

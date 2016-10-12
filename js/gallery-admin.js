@@ -11,61 +11,6 @@ jsLoader({
     'cache': false
 });
 
-var stat = {
-    'imagesRemoved': [],
-    'imagesAdded': {},
-    'imagesAddedKeys': [],
-    'imagesModified': [],
-    'imagesNotProcessed': [],
-
-    '_newImages': [],
-    set newImages(val) {
-        this._newImages = val;
-        $('#processStatus').html(this._newImages.length + ' image/s found in "' + stat.newFolders[0] + '".');
-    },
-    get newImages() {
-        return this._newImages;
-    },
-
-    '_allFolders': [],
-    set allFolders(val) {
-        this._allFolders = val;
-        buildFolderTable(stat.allFolders);
-    },
-    get allFolders() {
-        return this._allFolders;
-    },
-
-    '_newFolders': [],
-    set newFolders(val) {
-        this._newFolders = val;
-        if (stat.newFolders.length > 0) {
-            $('#processStatus').html(stat.newFolders.length + ' new folder(s) found.');
-            $('#allFoldersButton').text('add folder "' + stat.newFolders[0] + '"');
-
-            //for (var i = 0; stat.newFolders.length > i; i++) {
-            $('#folderModal .modal-body').html('"' + stat.newFolders[0] + '"');
-            $('#folderModal').attr('data', stat.newFolders[0])
-            .modal('show');
-
-            /*
-            prototype({
-            'template' : '#folder-button-template',
-            'selectors' : ['folder'],
-            'values' : [stat.newFolders[i]],
-            'targets' : '#folderButtons'
-            });
-            */
-            //}
-        }
-        buildFolderTable(stat.allFolders);
-    },
-    get newFolders() {
-        return this._newFolders;
-    }
-
-};
-
 var fnf = 0;
 
 function adminInit() {
@@ -83,56 +28,37 @@ function adminInit() {
     }
 
     // set folder modal
-    $('#folderModal').modal({
+    $('#folder-modal').modal({
 				backdrop: 'static'
 		});
 
     $("#modal-add-button").on('click', function() {
         processNewFolder({
-            'folder': $('#folderModal').attr('data')
+            'folder': $('#folder-modal').attr('data')
         });
-        $('#folderModal').modal('hide');
+        $('#folder-modal').modal('hide');
     });
 
     $("#modal-ignore-button, #modal-close-button").on('click', function() {
-        var folder = $('#folderModal').attr('data');
+        var folder = $('#folder-modal').attr('data');
         ignoreFolder(folder);
-        $('#folderModal').modal('hide').on('hidden.bs.modal', function(e) {
+        $('#folder-modal').modal('hide').on('hidden.bs.modal', function(e) {
             stat.newFolders = _.without(stat.newFolders, folder);
         });
     });
 
     $("#modal-close-button").on('click', function() {
-        var folder = $('#folderModal').attr('data');
+        var folder = $('#folder-modal').attr('data');
         for (var i = 0, len = stat.newFolders.length; len > i; i++) {
             ignoreFolder(stat.newFolders[i]);
         }
         stat.newFolders = [];
-        $('#folderModal').modal('hide');
+        $('#folder-modal').modal('hide');
     });
-
-    // look for folders:
-    /*
-    listAllFolders().done(function() {
-
-        if (stat.newFolders.length > 0) {
-
-            $('#allFoldersButton').on("click", function() {
-                processNewFolders(function() {
-                    loader("off");
-                    console.log("all new folders processed!");
-                });
-            });
-
-        }
-
-        loader("off");
-    });
-    */
 
     allFolders().done(function(data) {
         //var data = data.sort();
-    
+
         // get thumbnail folders:
         var subFolders = _.filter(data, function(v, k) {
             for (var i = 0, len = gJ.sizes.length; i < len; i++) {
