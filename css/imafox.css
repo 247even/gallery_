@@ -8,7 +8,7 @@ html, body {
 	-webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none;	
+    user-select: none;
 }
 
 .no-scroll {
@@ -152,14 +152,14 @@ a:hover, a:focus {
 	display: none;
 }
 
-.slider .carousel-indicators li, 
-.slider .carousel-indicators .active 
+.slider .carousel-indicators li,
+.slider .carousel-indicators .active
 	border: 0;
 }
 
 .slider .carousel-control {
 	border: 0;
-	
+
 }
 
 .carousel-indicators li{
@@ -222,7 +222,7 @@ a:hover, a:focus {
 }
 
 .navbar {
-	z-index: 9999;
+	z-index: 10;
 }
 
 .hero {
@@ -244,7 +244,7 @@ a:hover, a:focus {
 
 .logobox {
     height: 70px;
-    width: 70px;	
+    width: 70px;
 }
 
 .navbar--short .logobox{
@@ -253,10 +253,10 @@ a:hover, a:focus {
 }
 
 /*
-#page3 .modal-dialog, 
-#page3 .modal-content, 
-#page3 .modal-body, 
-#page3 .carousel-inner, 
+#page3 .modal-dialog,
+#page3 .modal-content,
+#page3 .modal-body,
+#page3 .carousel-inner,
 #page3 .item {
 	width: 100%;
 	height: 100%;
@@ -286,7 +286,7 @@ a:hover, a:focus {
 		height: 48px;
 		width: 48px;
 	}
-	
+
 	.hero {
 		padding: 110px 0 60px 0;
 	}
@@ -318,7 +318,7 @@ a:hover, a:focus {
 
 .modal-content {
 	/*background-color: transparent;*/
-	background-color: #fff; 
+	background-color: #fff;
 }
 
 .page {
@@ -348,7 +348,7 @@ a:hover, a:focus {
 }
 
 .height100 {
-	height: 100%; !important
+	height: 100% !important;
 	overflow: hidden;
 }
 #page2 {
@@ -400,13 +400,13 @@ a:hover, a:focus {
 	height: 64px;
 }
 
-#page2 .navbar__container, 
+#page2 .navbar__container,
 #page2 .after-navbar:before {
 	height: 0px !important;
 }
 
 .box--stretched {
-	height: 100vH !important;	
+	height: 100vH !important;
 }
 
 .img-inactive {
@@ -427,11 +427,11 @@ a:hover, a:focus {
 	height: 35px;
 }
 
-.btn-danger.active, 
-.btn-danger.focus, 
+.btn-danger.active,
+.btn-danger.focus,
 .btn-danger:active,
-.btn-danger:focus, 
-.btn-danger:hover, 
+.btn-danger:focus,
+.btn-danger:hover,
 .open>.dropdown-toggle.btn-danger {
     color: #252525;
     background-color: rgba(255, 255, 255, 1);
@@ -466,7 +466,7 @@ a:hover, a:focus {
 	.contact-map {
 
 	}
-	
-	
-	
+
+
+
 }

@@ -4,6 +4,7 @@ function getAllImages(folders, d) {
     var i = 0;
     var si = 0;
 		var deep = d ? d : false;
+    var tmpFolderImages = [];
 
     function getImages() {
 				//var folder = gJ.folders[i];
@@ -20,7 +21,8 @@ function getAllImages(folders, d) {
 									_.extend(allImagesFromServer, data);
 								}
 
-								stat.folderImages[folder] = [ol , 0, 0];
+                tmpFolderImages[folder] = [ol , 0, 0];
+                //stat.folderImages = tmpFolderImages;
 
 								getImagesFromServerSync();
 
@@ -56,12 +58,14 @@ function getAllImages(folders, d) {
                     si = 0;
                     //folder = gJ.folders[i];
 
-                    console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
+                    //console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
                     //getImagesFromServerSync();
                     getImages();
 
                 } else {
-									console.log(stat.folderImages);
+
+                  stat.folderImages = tmpFolderImages;
+									//console.log(stat.folderImages);
 										/*
                     if (_.size(imagesRemoved) > 0) {
                         $('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {

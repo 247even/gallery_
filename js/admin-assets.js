@@ -8,20 +8,32 @@ var stat = {
     'imagesNotProcessed': [],
     'workingFolder': '',
 
-    'folderImages' : [],
+    '_folderImages': [],
+    set folderImages(val) {
+        this._folderImages = val;
+        console.log("folderImages buildFolderTable()");
+        buildFolderTable();
+    },
+    get folderImages() {
+        return this._folderImages;
+    },
 
     '_allImages': {},
     set allImages(val) {
         this._allImages = {};
-        if(val){
+        if (val) {
             this._allImages = val;
         }
         getNewImages();
+        //console.log("allImages buildFolderTable()");
+        //buildFolderTable();
+        /*
         var imgtd = Object.keys(stat.allImages).length;
         if(stat.newImages.length > 0){
             imgtd = imgtd+"/"+stat.newImages.length;
         }
         $("#tr-"+stat.workingFolder+" .td-img").html(imgtd);
+        */
     },
     get allImages() {
         return this._allImages;
@@ -39,7 +51,8 @@ var stat = {
     '_allFolders': [],
     set allFolders(val) {
         this._allFolders = val;
-        buildFolderTable();
+        console.log("stat.allFolders buildFolderTable:");
+        //buildFolderTable();
     },
     get allFolders() {
         return this._allFolders;
@@ -98,10 +111,10 @@ function getNewImages() {
 
 function getRemovedImages() {
 
-  // all IDs from gJ filtered by folder:
-  var galleryByFolder = _.pickBy(gJ.images, {
-      'path': stat.workingFolder
-  });
+    // all IDs from gJ filtered by folder:
+    var galleryByFolder = _.pickBy(gJ.images, {
+        'path': stat.workingFolder
+    });
 
     for (var key in galleryByFolder) {
         if (!stat.imagesFromFolder[key]) {
@@ -955,6 +968,7 @@ function getAllImages(folders, d) {
     var i = 0;
     var si = 0;
 		var deep = d ? d : false;
+    var tmpFolderImages = [];
 
     function getImages() {
 				//var folder = gJ.folders[i];
@@ -971,9 +985,8 @@ function getAllImages(folders, d) {
 									_.extend(allImagesFromServer, data);
 								}
 
-								//if (!gJ.folders[folder] && !gJ.ignore[folder]) {
-									stat.folderImages[folder] = [ol , 0, 0];
-								//}
+                tmpFolderImages[folder] = [ol , 0, 0];
+                //stat.folderImages = tmpFolderImages;
 
 								getImagesFromServerSync();
 
@@ -998,7 +1011,7 @@ function getAllImages(folders, d) {
                 //console.log("new sourceFolder: "+sourceFolder);
                 getImagesFromServer();
             } else {
-                // we now have all images from the server!
+                // we now have all images from the folder!
                 //checkImages();
 
                 // Done! Next folder...
@@ -1009,12 +1022,14 @@ function getAllImages(folders, d) {
                     si = 0;
                     //folder = gJ.folders[i];
 
-                    console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
+                    //console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
                     //getImagesFromServerSync();
                     getImages();
 
                 } else {
-									console.log(stat.folderImages);
+
+                  stat.folderImages = tmpFolderImages;
+									//console.log(stat.folderImages);
 										/*
                     if (_.size(imagesRemoved) > 0) {
                         $('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {

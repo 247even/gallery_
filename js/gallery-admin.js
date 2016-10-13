@@ -16,6 +16,14 @@ var fnf = 0;
 function adminInit() {
     console.log("adminInit");
 
+    initLogin();
+    //console.log(checkLoggedin());
+    console.log(loggedin());
+    if(loggedin() == false){
+      return false;
+    }
+    $('#login-screen').hide();
+
     loader();
     fnf = 0;
 
@@ -39,7 +47,7 @@ function adminInit() {
         $('#folder-modal').modal('hide');
     });
 
-    $("#modal-ignore-button, #modal-close-button").on('click', function() {
+    $("#modal-ignore-button").on('click', function() {
         var folder = $('#folder-modal').attr('data');
         ignoreFolder(folder);
         $('#folder-modal').modal('hide').on('hidden.bs.modal', function(e) {
@@ -48,7 +56,6 @@ function adminInit() {
     });
 
     $("#modal-close-button").on('click', function() {
-        var folder = $('#folder-modal').attr('data');
         for (var i = 0, len = stat.newFolders.length; len > i; i++) {
             ignoreFolder(stat.newFolders[i]);
         }
@@ -87,7 +94,7 @@ function adminInit() {
     });
     // <-- end start panel
 
-    $('.admin-header a[aria-controls="start-panel"').trigger("click");
+    $('.admin-header a[aria-controls="start-panel"]').trigger("click");
 };
 
 function ignoreFolder(f) {
@@ -98,6 +105,7 @@ function ignoreFolder(f) {
     } else {
         gJ.ignore = _.without(gJ.ignore, f);
         tr.removeClass().addClass("success");
+        console.log(f);
     }
 };
 
@@ -201,6 +209,7 @@ function processImages() {
 
 }; // end function processImages
 
+/*
 function listAllFolders(cb) {
 
     return allFolders().done(function(data) {
@@ -225,6 +234,7 @@ function listAllFolders(cb) {
 
     });
 };
+*/
 
 function buildFolderTable(folders) {
     if(!folders){
@@ -244,10 +254,13 @@ function buildFolderTable(folders) {
             fclass = "danger";
         }
 
-        var foIm = stat.folderImages[folder];
         var imgtd = " ";
-        if(foIm){
-            imgtd = foIm[0]+"/"+foIm[1]+"/"+foIm[2];
+        if(stat.folderImages[folder] != null){
+            var foIm = stat.folderImages[folder];
+            imgtd = foIm[0];
+            if(foIm[1] != 0 && foIm[2] != 0){
+                imgtd = imgtd+"/"+foIm[1]+"/"+foIm[2];
+            }
         }
 
         prototype({

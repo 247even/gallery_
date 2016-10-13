@@ -7,19 +7,12 @@ $loggedin = false;
 
 function checkCookie($login_md5) {
 	if (isset($_COOKIE['login'])) {
-
-		$cookie_md5 = $_COOKIE['login'];
-
-		if ($cookie_md5 == $login_md5) {
+		if ($login_md5 == $_COOKIE['login']) {
 			return true;
-		} else {
-			return false;
 		}
-		
-	} else {
-		return false;
 	}
-}
+	return false;
+};
 
 function checkPostdata($user,$pass,$login_md5) {
 
@@ -28,14 +21,14 @@ function checkPostdata($user,$pass,$login_md5) {
 		$post_user = $_POST['username'];
 		$post_pass = $_POST['password'];
 		//$post_md5 = $_POST['md5'];
-		
-		//echo "post_user: " . $post_user . " post_pass: " . $post_pass . "<br>";	
+
+		//echo "post_user: " . $post_user . " post_pass: " . $post_pass . "<br>";
 		/*if($post_md5 == $login_md5){
 			return true;
 		}*/
-		
+
 		if (($post_user == $user) && ($post_pass == $pass)) {
-				
+
 			//echo "user & pass correct";
 			//$post_md5 = md5($post_user . $post_pass);
 
@@ -48,16 +41,16 @@ function checkPostdata($user,$pass,$login_md5) {
 			}
 			header("Cache-Control: no-cache");
 			setcookie('login', $login_md5, $expire);
-			//echo "loggedin";
+			echo "loggedin";
 			return true;
 
 		} else {
-			//echo 'Username/Password Invalid';
+			echo 'Username/Password Invalid';
 			return false;
 		}
 
 	} else {
-		//echo 'You must supply a username and password.';
+		echo 'no username and/or password';
 		return false;
 	}
 };
@@ -66,15 +59,15 @@ $loggedin = checkCookie($login_md5);
 if(!$loggedin){
 	$loggedin = checkPostdata($user,$pass,$login_md5);
 }
-echo $loggedin;
-return false;
+//echo $loggedin;
+if($loggedin){
+	echo "loggedin";
+}
 ?>
 
 <!--
 <script>
-	var loggedin = <?php echo $loggedin; ?>;
+	var loggedin = <?php //echo $loggedin; ?>;
 	console.log('loggedin: '+loggedin);
 </script>
-
-
 -->

@@ -5,7 +5,7 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	z-index: 9999999;
+	z-index: 99;
 	text-align: center;
 }
 
@@ -28,9 +28,9 @@
 
 @keyframes loader-rotate {
 	0% {
-		transform: rotate(0); 
+		transform: rotate(0);
 	}
 	100% {
 		transform: rotate(360deg);
-	} 
+	}
 }

@@ -8,20 +8,32 @@ var stat = {
     'imagesNotProcessed': [],
     'workingFolder': '',
 
-    'folderImages' : [],
+    '_folderImages': [],
+    set folderImages(val) {
+        this._folderImages = val;
+        console.log("folderImages buildFolderTable()");
+        buildFolderTable();
+    },
+    get folderImages() {
+        return this._folderImages;
+    },
 
     '_allImages': {},
     set allImages(val) {
         this._allImages = {};
-        if(val){
+        if (val) {
             this._allImages = val;
         }
         getNewImages();
+        //console.log("allImages buildFolderTable()");
+        //buildFolderTable();
+        /*
         var imgtd = Object.keys(stat.allImages).length;
         if(stat.newImages.length > 0){
             imgtd = imgtd+"/"+stat.newImages.length;
         }
         $("#tr-"+stat.workingFolder+" .td-img").html(imgtd);
+        */
     },
     get allImages() {
         return this._allImages;
@@ -39,7 +51,8 @@ var stat = {
     '_allFolders': [],
     set allFolders(val) {
         this._allFolders = val;
-        buildFolderTable();
+        console.log("stat.allFolders buildFolderTable:");
+        //buildFolderTable();
     },
     get allFolders() {
         return this._allFolders;
@@ -98,10 +111,10 @@ function getNewImages() {
 
 function getRemovedImages() {
 
-  // all IDs from gJ filtered by folder:
-  var galleryByFolder = _.pickBy(gJ.images, {
-      'path': stat.workingFolder
-  });
+    // all IDs from gJ filtered by folder:
+    var galleryByFolder = _.pickBy(gJ.images, {
+        'path': stat.workingFolder
+    });
 
     for (var key in galleryByFolder) {
         if (!stat.imagesFromFolder[key]) {

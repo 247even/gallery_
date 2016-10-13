@@ -39,10 +39,25 @@
 </head>
 
 <body>
-
+	<div id="login-screen">
+		<form id="loginForm" class="form-signin">
+			<h2 class="form-signin-heading">Please sign in</h2>
+			<label for="inputUsername" class="sr-only">Username</label>
+			<input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
+			<label for="inputPassword" class="sr-only">Password</label>
+			<input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+			<div id="loginCheckbox" class="checkbox">
+				<label>
+									<input id="inputRememberme" name="rememberme" type="checkbox" checked>
+									Remember me </label>
+			</div>
+			<button id="loginSubmit" class="btn btn-lg btn-primary btn-block" type="submit">
+								Sign in
+							</button>
+		</form>
+	</div>
 	<div id="main">
 		<figure id="effect-fullscreen" style="display: none"></figure>
-
 		<div id="folder-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 			<div class="modal-dialog modal-sm" role="document">
 				<div class="modal-content">
@@ -66,7 +81,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div id="page3" class="page no-scroll">
 			<div class="container gallery-container">
 				<div class="row height100">
@@ -184,11 +198,7 @@
 								<!-- end start-panel -->
 
 								<div id="options-panel" role="tabpanel" class="tab-pane scroll-wrapper">
-
-									options
-
 									<div>
-
 										<form id="optionsForm">
 											<table class="table">
 												<thead>
@@ -253,25 +263,10 @@
 											</table>
 											<button id="configReset" type="reset" class="btn btn-default">
 													Reset
-												</button>
+											</button>
 
 										</form>
 									</div>
-									<form id="loginForm" class="form-signin">
-										<h2 class="form-signin-heading">Please sign in</h2>
-										<label for="inputUsername" class="sr-only">Username</label>
-										<input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
-										<label for="inputPassword" class="sr-only">Password</label>
-										<input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
-										<div id="loginCheckbox" class="checkbox">
-											<label>
-													<input id="inputRememberme" name="rememberme" type="checkbox" checked>
-													Remember me </label>
-										</div>
-										<button id="loginSubmit" class="btn btn-lg btn-primary btn-block" type="submit">
-												Sign in
-											</button>
-									</form>
 								</div>
 								<!-- end options panel -->
 
@@ -513,7 +508,7 @@
 				<th class="td-index">{{number}}</th>
 				<td>{{folder}}</td>
 				<td class="td-img">
-						{{imgtr}}
+					{{imgtd}}
 				</td>
 				<td class="td-scn">
 					<button type="button" class="btn btn-default btn-xs btn-scn">
@@ -557,6 +552,7 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	<script src="js/bootstrap-select.min.js"></script>
 	<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
+	<script src="js/login.js"></script>
 	<script src="js/gallery-admin.js"></script>
 	<script src="js/jquery.stickytableheaders.min.js"></script>
 	<script src="js/relative-fade.min.js"></script>
@@ -571,7 +567,6 @@
 	<script src="js/bootstrap-carousel-swipe.js"></script>
 	<script src="js/rangeslider.min.js"></script>
 	<script src="js/validator.min.js"></script>
-	<script src="js/login.js"></script>
 	<script src="js/html.sortable.min.js"></script>
 	<script src="js/upldr.js"></script>
 	<script src="js/speakingurl.min.js"></script>
