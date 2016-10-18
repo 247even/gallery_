@@ -1,30 +1,32 @@
-function getAllImages(folders, d) {
-		// deep = if true, include thumbnail folders;
+function getAllImages(folders, d, cb) {
+    // deep = if true, include thumbnail folders;
 
     var i = 0;
     var si = 0;
-		var deep = d ? d : false;
+    var deep = d ? d : false;
     var tmpFolderImages = [];
 
     function getImages() {
-				//var folder = gJ.folders[i];
-				var folder = folders[i];
-				stat.workingFolder = folder;
+        //var folder = folders[i];
+        var folder = stat.allFolders[i];
+        console.log("getImages init folder: "+folder);
+        stat.workingFolder = folder;
         var sourceFolder = folder;
+        console.log("getImages sourceFolder: "+folder);
         var allImagesFromServer = [];
 
         function getImagesFromServer() {
             imagesFromFolder(sourceFolder).done(function(data) {
-								var ol = 0;
-								if(data){
-									ol = Object.keys(data).length;
-									_.extend(allImagesFromServer, data);
-								}
 
-                tmpFolderImages[folder] = [ol , 0, 0];
-                //stat.folderImages = tmpFolderImages;
+                var ol = 0;
+                if (data) {
+                    ol = Object.keys(data).length;
+                    _.extend(allImagesFromServer, data);
+                }
 
-								getImagesFromServerSync();
+                tmpFolderImages[folder] = [ol, 0, 0];
+
+                getImagesFromServerSync();
 
             }).fail(function() {
                 console.log("getImagesFromServer fail");
@@ -39,7 +41,7 @@ function getAllImages(folders, d) {
                 //getRemovedImages();
             }
 
-						// deep = true => check thumbnail-folders
+            // deep = true => check thumbnail-folders
             if (deep && si < gJ.sizes.length) {
 
                 sourceFolder = folder + '_' + gJ.sizes[si];
@@ -54,7 +56,7 @@ function getAllImages(folders, d) {
                 i++;
 
                 //if (i < gJ.folders.length) {
-								if (i < folders.length) {
+                if (i < stat.allFolders.length) {
                     si = 0;
                     //folder = gJ.folders[i];
 
@@ -64,31 +66,19 @@ function getAllImages(folders, d) {
 
                 } else {
 
-                  stat.folderImages = tmpFolderImages;
-									//console.log(stat.folderImages);
-										/*
-                    if (_.size(imagesRemoved) > 0) {
-                        $('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {
+                    stat.folderImages = tmpFolderImages;
+                    //console.log(stat.folderImages);
 
-                        })
-                    } else if (_.size(imagesAdded) > 0) {
-                        $('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " images").on("click", function() {
-                            addNewImages();
-                        })
-                    } else if (_.size(imagesNotProcessed) > 0) {
-                        $('#allImagesButton').off("click").text("process " + _.size(imagesNotProcessed) + " images").on("click", function() {
-
-                        })
+                    if (cb) {
+                        cb();
                     }
-										*/
                 }
             }
         };
 
         getImagesFromServer();
-        console.log("getImagesFromServer done");
     }; // <-- end function getImages()
 
-		getImages();
+    getImages();
 
 }; // <-- end function getAllImages()

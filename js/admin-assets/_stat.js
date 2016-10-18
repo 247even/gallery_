@@ -8,11 +8,30 @@ var stat = {
     'imagesNotProcessed': [],
     'workingFolder': '',
 
+    '_workingImage': '',
+    set workingImage(val) {
+        this._workingImage = val;
+        console.log("workingImage: "+this._workingImage);
+    },
+    get workingImage() {
+        return this._workingImage;
+    },
+
+    '_workingSize': '',
+    set workingSize(val) {
+        this._workingSize = val;
+        console.log("workingSize: "+this._workingSize);
+    },
+    get workingSize() {
+        return this._workingSize;
+    },
+
     '_folderImages': [],
     set folderImages(val) {
         this._folderImages = val;
         console.log("folderImages buildFolderTable()");
         buildFolderTable();
+        //getNewImages();
     },
     get folderImages() {
         return this._folderImages;
@@ -24,7 +43,7 @@ var stat = {
         if (val) {
             this._allImages = val;
         }
-        getNewImages();
+        //getNewImages();
         //console.log("allImages buildFolderTable()");
         //buildFolderTable();
         /*
@@ -42,7 +61,12 @@ var stat = {
     '_newImages': [],
     set newImages(val) {
         this._newImages = val;
-        $('#processStatus').html(this._newImages.length + ' image/s found in "' + stat.newFolders[0] + '".');
+        console.log("stat.newImages: "+stat.newImages.length);
+        console.log(stat.folderImages);
+        $('#folder-modal .modal-body .status-div').html(stat.newImages.length);
+        if(stat.newImages.length > 0){
+
+        }
     },
     get newImages() {
         return this._newImages;
@@ -51,7 +75,7 @@ var stat = {
     '_allFolders': [],
     set allFolders(val) {
         this._allFolders = val;
-        console.log("stat.allFolders buildFolderTable:");
+        //console.log("stat.allFolders buildFolderTable:");
         //buildFolderTable();
     },
     get allFolders() {
@@ -62,12 +86,12 @@ var stat = {
     set newFolders(val) {
         this._newFolders = val;
         if (stat.newFolders.length > 0) {
-            $('#processStatus').html(stat.newFolders.length + ' new folder(s) found.');
-            $('#allFoldersButton').text('add folder "' + stat.newFolders[0] + '"');
+            var fo = stat.newFolders[0];
+            stat.workingFolder = fo;
+            console.log(stat.folderImages);
+            $('#folder-modal .modal-body .folder-name').html('"' + fo + '" (' + stat.folderImages[fo][0] + ')');
 
-            //for (var i = 0; stat.newFolders.length > i; i++) {
-            $('#folder-modal .modal-body').html('"' + stat.newFolders[0] + '"');
-            $('#folder-modal').attr('data', stat.newFolders[0])
+            $('#folder-modal').attr('data', fo)
                 .modal('show');
 
             /*

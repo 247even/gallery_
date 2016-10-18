@@ -1,5 +1,5 @@
-var _resizeStore = function(folder, file, sizes, force) {
-	
+var _resizeStoreSizes = function(folder, file, sizes, force) {
+
 	if (!folder) {
 		console.log("no folder!")
 		return false;
@@ -20,12 +20,24 @@ var _resizeStore = function(folder, file, sizes, force) {
 	this.done = function(cb) {
 		done = cb;
 	};
-	
+
 	var i = 0;
 	send();
 
 	function send() {
 		if (i < sizes.length) {
+
+			stat.workingSize = sizes[i];
+
+			resizeStore(folder, file, sizes[i], false).done(function(){
+					i++;
+					send();
+				}
+			).fail(function(){
+					console.log("resizeStore fail");
+			});
+
+/*
 			var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes[i] + '&force=' + force;
 			$.ajax({
 				//dataType : "json",
@@ -40,6 +52,8 @@ var _resizeStore = function(folder, file, sizes, force) {
 			}).fail(function(data) {
 				//console.log(data);
 			});
+	*/
+
 		} else {
 			done();
 		}

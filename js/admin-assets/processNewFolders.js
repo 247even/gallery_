@@ -1,6 +1,7 @@
 function processNewFolders(cb) {
 
     loader();
+
     if (stat.newFolders.length <= 0) {
         return false;
     }
@@ -24,14 +25,17 @@ function processNewFolders(cb) {
 
 function processNewFolder(d) {
 
-    if (!d) {
-        console.log("something's missing");
-        return false;
+    console.log("processNewFolder()");
+
+    var folder = stat.workingFolder;
+
+    if (d) {
+        var folder = d.folder;
+        // is this necessary?:
+        // stat.workingFolder = d.folder;
     }
 
-    var folder = d.folder;
-
-    // read images from first new folder:
+    // read images from folder:
     imagesFromFolder(folder).done(function(imagesFromFolderData) {
         // error:
         var er = false;
@@ -41,6 +45,7 @@ function processNewFolder(d) {
             var keys = Object.keys(imagesFromFolderData);
             var kLength = keys.length;
         } else {
+            // somethings wron with the response, so error = true
             er = true;
         }
 
@@ -55,27 +60,28 @@ function processNewFolder(d) {
             return false;
         }
 
+        stat.newImages = keys;
+
         var i = 0;
 
         function resizeStoreSync() {
 
             if (i < kLength) {
-                var key = keys[i];
+                //var key = keys[i];
+                var key = stat.newImages[0];
                 var val = imagesFromFolderData[key];
                 var folder = val.path;
                 var file = val.file;
-                console.log(val);
 
-                var resizeStore = new _resizeStore(folder, file);
-                resizeStore.done(function() {
+                stat.workingImage = file;
+
+                var resizeStoreSizes = new _resizeStoreSizes(folder, file);
+                resizeStoreSizes.done(function() {
                     // add images to gJ
+                    stat.newImages = _.without(stat.newImages, key);
                     gJ.images[key] = imagesFromFolderData[key];
                     i++;
                     resizeStoreSync();
-                }).fail(function(){
-                    i++;
-                    resizeStoreSync();
-                    console.log("resizeStore error");
                 });
 
                 // add folder to known folders

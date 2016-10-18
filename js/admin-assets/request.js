@@ -20,6 +20,11 @@ var imagesFromFolder = function(f) {
 	});
 };
 
+var resizeStore = function(folder, file, size, force) {
+	var postdata = 'folder=' + folder + '&file=' + file + '&sizes=' + size + '&force=' + force;
+	return $.post("gallery/resizeStore.php", postdata, 'json');
+};
+
 var removeImage = function(p) {
 	return $.post("gallery/removeImage.php", "path=" + p, null, 'json');
 };

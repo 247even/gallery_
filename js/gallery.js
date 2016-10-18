@@ -3,6 +3,8 @@ var gJ; // = ex galleryJSON
 
 function loadJSON() {
 
+	console.log("loadJSON");
+
 	var req = new XMLHttpRequest();
 	req.open('GET', 'gallery/gallery.json', true);
 
@@ -310,6 +312,7 @@ function galleryFilter(fil) {
 
 		fi++;
 	})
+
 	if ( typeof portfolioLoad !== 'undefined') {
 		portfolioLoad.update();
 	}
@@ -390,15 +393,30 @@ function initGallery() {
 
 	// load admin-functions, if available
 	try {
-	    adminInit();
+		return jsCheckLoaded( 'adminAssets', function(){
+			adminInit();
+			console.log("admin init");
+		});
 	}
 	catch(err) {
-	    console.log(err);
+	    //console.log(err);
 	}
-
 
 };
 
 $(function() {
-	loadJSON();
+	// wait for js to be loaded
+	return jsCheckLoaded( 'assets', function(){
+		loadJSON();
+	});
+	/*
+	if (typeof adminAssets == 'undefined' || !adminAssets) {
+			setTimeout(function() {
+					adminInit();
+			}, 1000);
+			return false;
+	}
+	*/
+	console.log("after js check load");
+	//loadJSON();
 });

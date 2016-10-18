@@ -1,0 +1,1 @@
+var adminAssets = true;

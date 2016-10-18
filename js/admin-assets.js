@@ -1,3 +1,4 @@
+var adminAssets = true;
 "use strict";
 
 var stat = {
@@ -8,11 +9,30 @@ var stat = {
     'imagesNotProcessed': [],
     'workingFolder': '',
 
+    '_workingImage': '',
+    set workingImage(val) {
+        this._workingImage = val;
+        console.log("workingImage: "+this._workingImage);
+    },
+    get workingImage() {
+        return this._workingImage;
+    },
+
+    '_workingSize': '',
+    set workingSize(val) {
+        this._workingSize = val;
+        console.log("workingSize: "+this._workingSize);
+    },
+    get workingSize() {
+        return this._workingSize;
+    },
+
     '_folderImages': [],
     set folderImages(val) {
         this._folderImages = val;
         console.log("folderImages buildFolderTable()");
         buildFolderTable();
+        //getNewImages();
     },
     get folderImages() {
         return this._folderImages;
@@ -24,7 +44,7 @@ var stat = {
         if (val) {
             this._allImages = val;
         }
-        getNewImages();
+        //getNewImages();
         //console.log("allImages buildFolderTable()");
         //buildFolderTable();
         /*
@@ -42,7 +62,12 @@ var stat = {
     '_newImages': [],
     set newImages(val) {
         this._newImages = val;
-        $('#processStatus').html(this._newImages.length + ' image/s found in "' + stat.newFolders[0] + '".');
+        console.log("stat.newImages: "+stat.newImages.length);
+        console.log(stat.folderImages);
+        $('#folder-modal .modal-body .status-div').html(stat.newImages.length);
+        if(stat.newImages.length > 0){
+
+        }
     },
     get newImages() {
         return this._newImages;
@@ -51,7 +76,7 @@ var stat = {
     '_allFolders': [],
     set allFolders(val) {
         this._allFolders = val;
-        console.log("stat.allFolders buildFolderTable:");
+        //console.log("stat.allFolders buildFolderTable:");
         //buildFolderTable();
     },
     get allFolders() {
@@ -62,12 +87,12 @@ var stat = {
     set newFolders(val) {
         this._newFolders = val;
         if (stat.newFolders.length > 0) {
-            $('#processStatus').html(stat.newFolders.length + ' new folder(s) found.');
-            $('#allFoldersButton').text('add folder "' + stat.newFolders[0] + '"');
+            var fo = stat.newFolders[0];
+            stat.workingFolder = fo;
+            console.log(stat.folderImages);
+            $('#folder-modal .modal-body .folder-name').html('"' + fo + '" (' + stat.folderImages[fo][0] + ')');
 
-            //for (var i = 0; stat.newFolders.length > i; i++) {
-            $('#folder-modal .modal-body').html('"' + stat.newFolders[0] + '"');
-            $('#folder-modal').attr('data', stat.newFolders[0])
+            $('#folder-modal').attr('data', fo)
                 .modal('show');
 
             /*
@@ -122,6 +147,133 @@ function getRemovedImages() {
             stat.imagesRemoved.push(kk);
         }
     }
+};
+function ignoreFolder(f) {
+    var tr = $("#foldersTable tr[data='" + f + "']");
+    if (_.indexOf(gJ.ignore, f) == -1) {
+        gJ.ignore.push(f);
+        tr.removeClass().addClass("warning");
+    } else {
+        gJ.ignore = _.without(gJ.ignore, f);
+        tr.removeClass().addClass("success");
+        console.log(f);
+    }
+};
+
+function processImages() {
+
+    loader();
+
+    $('#allImagesButton').off("click").text("resize " + imagesAdded.length + " image/s").on("click", function() {
+
+        window.ri = 0;
+        var data = imagesFromFolderData;
+        var keys = imagesAdded;
+        var length = 0;
+        if (keys) {
+            var length = keys.length;
+        }
+        resizeStoreSync(data, keys, length, folder);
+
+    });
+
+    processImages();
+    //loader("off");
+
+}; // end function processImages
+
+function addNewImages() {
+    var ani = 0;
+
+    function addImages() {
+
+        var length = imagesAddedKeys.length;
+
+        if (length <= 0) {
+            return false;
+        }
+
+        if (ani < length) {
+            var key = imagesAddedKeys[ani];
+            var file = imagesAdded[key].file;
+            var folder = imagesAdded[key].path;
+            console.log(file);
+
+            resizeStore(folder, file).done(function() {
+                gJ.images[key] = imagesAdded[key];
+                ani++;
+                addImages()
+            });
+        } else {
+            console.log("all images added");
+            buildGallery(gJ);
+            saveStatus(true);
+        }
+
+    };
+};
+
+function resizeStoreSync(data, keys, length, folder) {
+
+    if (window.ri < length) {
+        var key = keys[window.ri];
+        var val = data[key];
+        var folder = val.path;
+        var file = val.file;
+
+        resizeStore(folder, file).done(function(resizeData) {
+            window.ri++;
+
+            // add images to gJ
+            gJ.images[key] = data[key];
+
+            resizeStoreSync();
+        });
+    }
+};
+
+function checkImages() {
+
+    for (var id in galleryByFolder) {
+
+        if (!allImagesFromServer[id]) {
+            // this image was deleted, as it is not in gallery.json
+        }
+
+        // search for unprocessed images:
+        for (var sz in gJ.sizes) {
+            var idkey = folder + '_' + gJ.sizes[sz] + galleryByFolder[id].file;
+            //console.log(allImagesFromServer[idkey]);
+            if (!allImagesFromServer[idkey]) {
+                stat.imagesNotProcessed.push(id);
+                stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+            }
+        }
+    }
+};
+
+var saving = false;
+function saveJSON() {
+    //saveStatus(false);
+    saving = true;
+    $("#saveButton").prop('disabled', true).text("saving");
+    backup().done(function() {
+        var content = JSON.stringify(gJ);
+        var target = "gallery.json";
+        saveFileAs(content, target).done(function() {
+            //saveStatus(true);
+            $("#saveButton").prop('disabled', false).text("Save");
+            saving = false;
+        });
+    });
+};
+
+function saveStatus(state) {
+    var st = (state) ? false : true;
+    if (saving) {
+        st = true
+    }
+    $("#saveButton").prop('disabled', st);
 };
 /* options */
 
@@ -962,33 +1114,35 @@ function processResponse(res) {
 	};
 };
 
-function getAllImages(folders, d) {
-		// deep = if true, include thumbnail folders;
+function getAllImages(folders, d, cb) {
+    // deep = if true, include thumbnail folders;
 
     var i = 0;
     var si = 0;
-		var deep = d ? d : false;
+    var deep = d ? d : false;
     var tmpFolderImages = [];
 
     function getImages() {
-				//var folder = gJ.folders[i];
-				var folder = folders[i];
-				stat.workingFolder = folder;
+        //var folder = folders[i];
+        var folder = stat.allFolders[i];
+        console.log("getImages init folder: "+folder);
+        stat.workingFolder = folder;
         var sourceFolder = folder;
+        console.log("getImages sourceFolder: "+folder);
         var allImagesFromServer = [];
 
         function getImagesFromServer() {
             imagesFromFolder(sourceFolder).done(function(data) {
-								var ol = 0;
-								if(data){
-									ol = Object.keys(data).length;
-									_.extend(allImagesFromServer, data);
-								}
 
-                tmpFolderImages[folder] = [ol , 0, 0];
-                //stat.folderImages = tmpFolderImages;
+                var ol = 0;
+                if (data) {
+                    ol = Object.keys(data).length;
+                    _.extend(allImagesFromServer, data);
+                }
 
-								getImagesFromServerSync();
+                tmpFolderImages[folder] = [ol, 0, 0];
+
+                getImagesFromServerSync();
 
             }).fail(function() {
                 console.log("getImagesFromServer fail");
@@ -1003,7 +1157,7 @@ function getAllImages(folders, d) {
                 //getRemovedImages();
             }
 
-						// deep = true => check thumbnail-folders
+            // deep = true => check thumbnail-folders
             if (deep && si < gJ.sizes.length) {
 
                 sourceFolder = folder + '_' + gJ.sizes[si];
@@ -1018,7 +1172,7 @@ function getAllImages(folders, d) {
                 i++;
 
                 //if (i < gJ.folders.length) {
-								if (i < folders.length) {
+                if (i < stat.allFolders.length) {
                     si = 0;
                     //folder = gJ.folders[i];
 
@@ -1028,37 +1182,107 @@ function getAllImages(folders, d) {
 
                 } else {
 
-                  stat.folderImages = tmpFolderImages;
-									//console.log(stat.folderImages);
-										/*
-                    if (_.size(imagesRemoved) > 0) {
-                        $('#allImagesButton').off("click").text("remove " + _.size(imagesRemoved) + " images").on("click", function() {
+                    stat.folderImages = tmpFolderImages;
+                    //console.log(stat.folderImages);
 
-                        })
-                    } else if (_.size(imagesAdded) > 0) {
-                        $('#allImagesButton').off("click").text("add " + _.size(imagesAdded) + " images").on("click", function() {
-                            addNewImages();
-                        })
-                    } else if (_.size(imagesNotProcessed) > 0) {
-                        $('#allImagesButton').off("click").text("process " + _.size(imagesNotProcessed) + " images").on("click", function() {
-
-                        })
+                    if (cb) {
+                        cb();
                     }
-										*/
                 }
             }
         };
 
         getImagesFromServer();
-        console.log("getImagesFromServer done");
     }; // <-- end function getImages()
 
-		getImages();
+    getImages();
 
 }; // <-- end function getAllImages()
+
+var loggedin = function() {
+    var loginCookie = document.cookie.split('=')[1];
+    return (loginCookie) ? true : false;
+};
+
+function checkLoggedin() {
+    if (!loggedin) {
+
+    }
+};
+
+function requestLogin(postdata) {
+    var request = new XMLHttpRequest();
+    request.open('POST', 'login.php', true);
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    request.onload = function(data) {
+        if (request.status >= 200 && request.status < 400) {
+            loggedin = data;
+            console.log(data);
+            if (loggedin) {
+                // tba
+            }
+        } else {
+            console.log("nope");
+        }
+    };
+
+    request.onerror = function() {
+        console.log("connection error");
+    };
+
+    request.send(postdata);
+};
+
+//console.log(checkLoggedin());
+
+/*
+document.getElementById('inputRememberme').onclick = function(e) {
+	e.stopImmediatePropagation();
+	var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
+	var checked = (element.checked) ? false : true;
+	element.checked = (checked) ? false : checked.toString();
+};
+*/
+
+function initLogin() {
+    // Attach a submit handler to the form
+    document.getElementById('loginSubmit').onclick = function(e) {
+
+        console.log("submit");
+        // Stop form from submitting normally
+        e.preventDefault();
+
+        var username = document.getElementById('inputUsername').value;
+        var password = document.getElementById('inputPassword').value;
+        var rememberme = 'off';
+        if (document.getElementById('inputRememberme').checked) {
+            rememberme = 'on';
+        }
+
+        var postdata = "username=" + username + "&password=" + password + "&rememberme=" + rememberme;
+        //username=&password=&rememberme=on&depth=5
+        console.log("postdata: " + postdata);
+
+        // Send the data using post
+        requestLogin(postdata)
+
+        /*
+        $.ajax({
+            type: "POST",
+            url: "login.php",
+            data: postdata,
+            success: function(data) {
+                console.log("data: " + data);
+            }
+        })
+        */
+    };
+}
 function processNewFolders(cb) {
 
     loader();
+
     if (stat.newFolders.length <= 0) {
         return false;
     }
@@ -1082,14 +1306,17 @@ function processNewFolders(cb) {
 
 function processNewFolder(d) {
 
-    if (!d) {
-        console.log("something's missing");
-        return false;
+    console.log("processNewFolder()");
+
+    var folder = stat.workingFolder;
+
+    if (d) {
+        var folder = d.folder;
+        // is this necessary?:
+        // stat.workingFolder = d.folder;
     }
 
-    var folder = d.folder;
-
-    // read images from first new folder:
+    // read images from folder:
     imagesFromFolder(folder).done(function(imagesFromFolderData) {
         // error:
         var er = false;
@@ -1099,6 +1326,7 @@ function processNewFolder(d) {
             var keys = Object.keys(imagesFromFolderData);
             var kLength = keys.length;
         } else {
+            // somethings wron with the response, so error = true
             er = true;
         }
 
@@ -1113,27 +1341,28 @@ function processNewFolder(d) {
             return false;
         }
 
+        stat.newImages = keys;
+
         var i = 0;
 
         function resizeStoreSync() {
 
             if (i < kLength) {
-                var key = keys[i];
+                //var key = keys[i];
+                var key = stat.newImages[0];
                 var val = imagesFromFolderData[key];
                 var folder = val.path;
                 var file = val.file;
-                console.log(val);
 
-                var resizeStore = new _resizeStore(folder, file);
-                resizeStore.done(function() {
+                stat.workingImage = file;
+
+                var resizeStoreSizes = new _resizeStoreSizes(folder, file);
+                resizeStoreSizes.done(function() {
                     // add images to gJ
+                    stat.newImages = _.without(stat.newImages, key);
                     gJ.images[key] = imagesFromFolderData[key];
                     i++;
                     resizeStoreSync();
-                }).fail(function(){
-                    i++;
-                    resizeStoreSync();
-                    console.log("resizeStore error");
                 });
 
                 // add folder to known folders
@@ -1198,6 +1427,11 @@ var imagesFromFolder = function(f) {
 	});
 };
 
+var resizeStore = function(folder, file, size, force) {
+	var postdata = 'folder=' + folder + '&file=' + file + '&sizes=' + size + '&force=' + force;
+	return $.post("gallery/resizeStore.php", postdata, 'json');
+};
+
 var removeImage = function(p) {
 	return $.post("gallery/removeImage.php", "path=" + p, null, 'json');
 };
@@ -1214,8 +1448,8 @@ var saveFileAs = function(c, t) {
 	var data = "content=" + c + "&target=" + t;
 	return $.post("gallery/saveFileAs.php", data, null, 'json');
 };
-var _resizeStore = function(folder, file, sizes, force) {
-	
+var _resizeStoreSizes = function(folder, file, sizes, force) {
+
 	if (!folder) {
 		console.log("no folder!")
 		return false;
@@ -1236,12 +1470,24 @@ var _resizeStore = function(folder, file, sizes, force) {
 	this.done = function(cb) {
 		done = cb;
 	};
-	
+
 	var i = 0;
 	send();
 
 	function send() {
 		if (i < sizes.length) {
+
+			stat.workingSize = sizes[i];
+
+			resizeStore(folder, file, sizes[i], false).done(function(){
+					i++;
+					send();
+				}
+			).fail(function(){
+					console.log("resizeStore fail");
+			});
+
+/*
 			var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes[i] + '&force=' + force;
 			$.ajax({
 				//dataType : "json",
@@ -1256,6 +1502,8 @@ var _resizeStore = function(folder, file, sizes, force) {
 			}).fail(function(data) {
 				//console.log(data);
 			});
+	*/
+
 		} else {
 			done();
 		}
