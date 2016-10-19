@@ -2,10 +2,10 @@ function ignoreFolder(f) {
     var tr = $("#foldersTable tr[data='" + f + "']");
     if (_.indexOf(gJ.ignore, f) == -1) {
         gJ.ignore.push(f);
-        tr.removeClass().addClass("warning");
+        tr.removeClass().addClass('warning');
     } else {
         gJ.ignore = _.without(gJ.ignore, f);
-        tr.removeClass().addClass("success");
+        tr.removeClass().addClass('success');
         console.log(f);
     }
 };
@@ -14,7 +14,7 @@ function processImages() {
 
     loader();
 
-    $('#allImagesButton').off("click").text("resize " + imagesAdded.length + " image/s").on("click", function() {
+    $('#allImagesButton').off('click').text('resize ' + imagesAdded.length + ' image/s').on('click', function() {
 
         window.ri = 0;
         var data = imagesFromFolderData;
@@ -28,7 +28,7 @@ function processImages() {
     });
 
     processImages();
-    //loader("off");
+    //loader('off');
 
 }; // end function processImages
 
@@ -55,7 +55,7 @@ function addNewImages() {
                 addImages()
             });
         } else {
-            console.log("all images added");
+            console.log('all images added');
             buildGallery(gJ);
             saveStatus(true);
         }
@@ -82,37 +82,119 @@ function resizeStoreSync(data, keys, length, folder) {
     }
 };
 
-function checkImages() {
+function checkImageSizes(images, deep) {
 
-    for (var id in galleryByFolder) {
+    var images = (images) ? images : gjFilteredByFolder();
+    var gsl = gJ.sizes.length;
+    var deep = (deep) ? true : false;
+    deep = true;
 
-        if (!allImagesFromServer[id]) {
-            // this image was deleted, as it is not in gallery.json
-        }
+    for (var id in images) {
+        var i = 1;
+        var image = images[id];
+        var folder = image.path;
+        console.log('checkImageSizeFolder: ' + folder);
 
         // search for unprocessed images:
         for (var sz in gJ.sizes) {
-            var idkey = folder + '_' + gJ.sizes[sz] + galleryByFolder[id].file;
-            //console.log(allImagesFromServer[idkey]);
-            if (!allImagesFromServer[idkey]) {
+            var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
+            var path = 'gallery/' + folder + '_' + gJ.sizes[sz] + '/' + image.file;
+
+            if (!stat.allImages[sizeId]) {
+                console.log(sizeId + ' does not exist');
                 stat.imagesNotProcessed.push(id);
                 stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+            }
+
+            if (deep) {
+                fileExists(path)
+                    .done(function() {
+                        console.log(path + ' does deep exist');
+                    })
+                    .fail(function() {
+                        console.log(path + ' does not deep exist');
+                        stat.imagesNotProcessed.push(id);
+                        stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                    })
+                    .always(function(){
+                      if (i === gsl) {
+                        console.log(i +' / '+ gsl);
+                      }
+                      i++;
+                    })
             }
         }
     }
 };
 
+function getNewImages(images) {
+
+    if (!images) {
+        var images = stat.allImages;
+    }
+
+    var match = [];
+    stat.newImages = [];
+
+    for (var key in images) {
+        if (!gJ.images[key]) {
+            // this image is not in gJ, must be new
+            //match[key] = images[key];
+            match.push(key);
+        }
+    }
+
+    if (match.length > 0) {
+        // we have new images
+        console.log('we have ' + match.length + ' new images');
+    }
+    stat.newImages = match;
+    return match;
+
+
+    /*
+        var matchKeys = Object.keys(match);
+        if (matchKeys.length > 0) {
+            // we have new images
+            console.log('we have '+matchKeys.length+' new images');
+            stat.newImages = matchKeys;
+            return matchKeys;
+        }
+        return false;
+        */
+};
+
+function gjFilteredByFolder(fo) {
+    var folder = (fo) ? fo : stat.workingFolder;
+
+    // all IDs from gJ filtered by folder:
+    return _.pickBy(gJ.images, {
+        'path': folder
+    });
+};
+
+function getRemovedImages(folder) {
+    var galleryByFolder = gjFilteredByFolder(folder);
+    for (var key in galleryByFolder) {
+        if (!stat.imagesFromFolder[key]) {
+            // this image is not present anymore
+            stat.imagesRemoved.push(kk);
+        }
+    }
+};
+
 var saving = false;
+
 function saveJSON() {
     //saveStatus(false);
     saving = true;
-    $("#saveButton").prop('disabled', true).text("saving");
+    $('#saveButton').prop('disabled', true).text('saving');
     backup().done(function() {
         var content = JSON.stringify(gJ);
-        var target = "gallery.json";
+        var target = 'gallery.json';
         saveFileAs(content, target).done(function() {
             //saveStatus(true);
-            $("#saveButton").prop('disabled', false).text("Save");
+            $('#saveButton').prop('disabled', false).text('Save');
             saving = false;
         });
     });
@@ -123,5 +205,5 @@ function saveStatus(state) {
     if (saving) {
         st = true
     }
-    $("#saveButton").prop('disabled', st);
+    $('#saveButton').prop('disabled', st);
 };

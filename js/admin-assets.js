@@ -1,5 +1,5 @@
 var adminAssets = true;
-"use strict";
+'use strict';
 
 var stat = {
     'imagesRemoved': [],
@@ -12,7 +12,7 @@ var stat = {
     '_workingImage': '',
     set workingImage(val) {
         this._workingImage = val;
-        console.log("workingImage: "+this._workingImage);
+        console.log('workingImage: '+this._workingImage);
     },
     get workingImage() {
         return this._workingImage;
@@ -21,7 +21,7 @@ var stat = {
     '_workingSize': '',
     set workingSize(val) {
         this._workingSize = val;
-        console.log("workingSize: "+this._workingSize);
+        console.log('workingSize: '+this._workingSize);
     },
     get workingSize() {
         return this._workingSize;
@@ -30,7 +30,7 @@ var stat = {
     '_folderImages': [],
     set folderImages(val) {
         this._folderImages = val;
-        console.log("folderImages buildFolderTable()");
+        console.log('folderImages buildFolderTable()');
         buildFolderTable();
         //getNewImages();
     },
@@ -45,7 +45,7 @@ var stat = {
             this._allImages = val;
         }
         //getNewImages();
-        //console.log("allImages buildFolderTable()");
+        //console.log('allImages buildFolderTable()');
         //buildFolderTable();
         /*
         var imgtd = Object.keys(stat.allImages).length;
@@ -62,7 +62,7 @@ var stat = {
     '_newImages': [],
     set newImages(val) {
         this._newImages = val;
-        console.log("stat.newImages: "+stat.newImages.length);
+        console.log('stat.newImages: '+stat.newImages.length);
         console.log(stat.folderImages);
         $('#folder-modal .modal-body .status-div').html(stat.newImages.length);
         if(stat.newImages.length > 0){
@@ -76,7 +76,7 @@ var stat = {
     '_allFolders': [],
     set allFolders(val) {
         this._allFolders = val;
-        //console.log("stat.allFolders buildFolderTable:");
+        //console.log('stat.allFolders buildFolderTable:');
         //buildFolderTable();
     },
     get allFolders() {
@@ -112,50 +112,14 @@ var stat = {
     }
 
 };
-
-function getNewImages() {
-
-    var match = [];
-    stat.newImages = [];
-
-    for (var key in stat.allImages) {
-        if (!gJ.images[key]) {
-            // this image is not in gJ, must be new
-            match[key] = stat.allImages[key];
-        }
-    }
-
-    if (Object.keys(match) > 0) {
-        // we have new images
-        stat.newImages = Object.keys(match);
-    } else {
-        console.log("no new images");
-    }
-};
-
-
-function getRemovedImages() {
-
-    // all IDs from gJ filtered by folder:
-    var galleryByFolder = _.pickBy(gJ.images, {
-        'path': stat.workingFolder
-    });
-
-    for (var key in galleryByFolder) {
-        if (!stat.imagesFromFolder[key]) {
-            // this image is not present anymore
-            stat.imagesRemoved.push(kk);
-        }
-    }
-};
 function ignoreFolder(f) {
     var tr = $("#foldersTable tr[data='" + f + "']");
     if (_.indexOf(gJ.ignore, f) == -1) {
         gJ.ignore.push(f);
-        tr.removeClass().addClass("warning");
+        tr.removeClass().addClass('warning');
     } else {
         gJ.ignore = _.without(gJ.ignore, f);
-        tr.removeClass().addClass("success");
+        tr.removeClass().addClass('success');
         console.log(f);
     }
 };
@@ -164,7 +128,7 @@ function processImages() {
 
     loader();
 
-    $('#allImagesButton').off("click").text("resize " + imagesAdded.length + " image/s").on("click", function() {
+    $('#allImagesButton').off('click').text('resize ' + imagesAdded.length + ' image/s').on('click', function() {
 
         window.ri = 0;
         var data = imagesFromFolderData;
@@ -178,7 +142,7 @@ function processImages() {
     });
 
     processImages();
-    //loader("off");
+    //loader('off');
 
 }; // end function processImages
 
@@ -205,7 +169,7 @@ function addNewImages() {
                 addImages()
             });
         } else {
-            console.log("all images added");
+            console.log('all images added');
             buildGallery(gJ);
             saveStatus(true);
         }
@@ -232,37 +196,119 @@ function resizeStoreSync(data, keys, length, folder) {
     }
 };
 
-function checkImages() {
+function checkImageSizes(images, deep) {
 
-    for (var id in galleryByFolder) {
+    var images = (images) ? images : gjFilteredByFolder();
+    var gsl = gJ.sizes.length;
+    var deep = (deep) ? true : false;
+    deep = true;
 
-        if (!allImagesFromServer[id]) {
-            // this image was deleted, as it is not in gallery.json
-        }
+    for (var id in images) {
+        var i = 1;
+        var image = images[id];
+        var folder = image.path;
+        console.log('checkImageSizeFolder: ' + folder);
 
         // search for unprocessed images:
         for (var sz in gJ.sizes) {
-            var idkey = folder + '_' + gJ.sizes[sz] + galleryByFolder[id].file;
-            //console.log(allImagesFromServer[idkey]);
-            if (!allImagesFromServer[idkey]) {
+            var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
+            var path = 'gallery/' + folder + '_' + gJ.sizes[sz] + '/' + image.file;
+
+            if (!stat.allImages[sizeId]) {
+                console.log(sizeId + ' does not exist');
                 stat.imagesNotProcessed.push(id);
                 stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+            }
+
+            if (deep) {
+                fileExists(path)
+                    .done(function() {
+                        console.log(path + ' does deep exist');
+                    })
+                    .fail(function() {
+                        console.log(path + ' does not deep exist');
+                        stat.imagesNotProcessed.push(id);
+                        stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                    })
+                    .always(function(){
+                      if (i === gsl) {
+                        console.log(i +' / '+ gsl);
+                      }
+                      i++;
+                    })
             }
         }
     }
 };
 
+function getNewImages(images) {
+
+    if (!images) {
+        var images = stat.allImages;
+    }
+
+    var match = [];
+    stat.newImages = [];
+
+    for (var key in images) {
+        if (!gJ.images[key]) {
+            // this image is not in gJ, must be new
+            //match[key] = images[key];
+            match.push(key);
+        }
+    }
+
+    if (match.length > 0) {
+        // we have new images
+        console.log('we have ' + match.length + ' new images');
+    }
+    stat.newImages = match;
+    return match;
+
+
+    /*
+        var matchKeys = Object.keys(match);
+        if (matchKeys.length > 0) {
+            // we have new images
+            console.log('we have '+matchKeys.length+' new images');
+            stat.newImages = matchKeys;
+            return matchKeys;
+        }
+        return false;
+        */
+};
+
+function gjFilteredByFolder(fo) {
+    var folder = (fo) ? fo : stat.workingFolder;
+
+    // all IDs from gJ filtered by folder:
+    return _.pickBy(gJ.images, {
+        'path': folder
+    });
+};
+
+function getRemovedImages(folder) {
+    var galleryByFolder = gjFilteredByFolder(folder);
+    for (var key in galleryByFolder) {
+        if (!stat.imagesFromFolder[key]) {
+            // this image is not present anymore
+            stat.imagesRemoved.push(kk);
+        }
+    }
+};
+
 var saving = false;
+
 function saveJSON() {
     //saveStatus(false);
     saving = true;
-    $("#saveButton").prop('disabled', true).text("saving");
+    $('#saveButton').prop('disabled', true).text('saving');
     backup().done(function() {
         var content = JSON.stringify(gJ);
-        var target = "gallery.json";
+        var target = 'gallery.json';
         saveFileAs(content, target).done(function() {
             //saveStatus(true);
-            $("#saveButton").prop('disabled', false).text("Save");
+            $('#saveButton').prop('disabled', false).text('Save');
             saving = false;
         });
     });
@@ -273,7 +319,7 @@ function saveStatus(state) {
     if (saving) {
         st = true
     }
-    $("#saveButton").prop('disabled', st);
+    $('#saveButton').prop('disabled', st);
 };
 /* options */
 
@@ -1117,73 +1163,70 @@ function processResponse(res) {
 function getAllImages(folders, d, cb) {
     // deep = if true, include thumbnail folders;
 
-    var i = 0;
-    var si = 0;
-    var deep = d ? d : false;
-    var tmpFolderImages = [];
+    var i = 0
+    var si = 0
+    var deep = d ? d : false
+    var tmpFolderImages = []
 
     function getImages() {
-        //var folder = folders[i];
-        var folder = stat.allFolders[i];
-        console.log("getImages init folder: "+folder);
-        stat.workingFolder = folder;
-        var sourceFolder = folder;
-        console.log("getImages sourceFolder: "+folder);
-        var allImagesFromServer = [];
+        // var folder = folders[i];
+        var folder = stat.allFolders[i]
+        console.log('getImages init folder: ' + folder)
+        stat.workingFolder = folder
+        var sourceFolder = folder
+        console.log('getImages sourceFolder: ' + folder)
+        var allImagesFromServer = []
 
         function getImagesFromServer() {
             imagesFromFolder(sourceFolder).done(function(data) {
-
-                var ol = 0;
+                var ol = 0
                 if (data) {
-                    ol = Object.keys(data).length;
-                    _.extend(allImagesFromServer, data);
+                    ol = Object.keys(data).length
+                    console.log('images found: ' + ol)
+                    _.extend(allImagesFromServer, data)
                 }
-
-                tmpFolderImages[folder] = [ol, 0, 0];
-
-                getImagesFromServerSync();
-
+                tmpFolderImages[folder] = [ol, 0, 0]
+                getImagesFromServerSync()
             }).fail(function() {
-                console.log("getImagesFromServer fail");
-                getImagesFromServerSync();
-            });
+                console.log('getImagesFromServer fail')
+                getImagesFromServerSync()
+            })
         };
 
         function getImagesFromServerSync() {
             // si = 0 == base folder, without thumbnails
-            if (si == 0) {
-                //getNewImages();
-                //getRemovedImages();
+            if (si === 0) {
+                // getNewImages();
+                // getRemovedImages();
             }
 
             // deep = true => check thumbnail-folders
             if (deep && si < gJ.sizes.length) {
-
-                sourceFolder = folder + '_' + gJ.sizes[si];
-                si++;
-                //console.log("new sourceFolder: "+sourceFolder);
-                getImagesFromServer();
+                sourceFolder = folder + '_' + gJ.sizes[si]
+                si++
+                // console.log('new sourceFolder: '+sourceFolder);
+                getImagesFromServer()
             } else {
-                // we now have all images from the folder!
-                //checkImages();
+                // we now have all images from this folder
+                //checkImageSizes();
 
                 // Done! Next folder...
-                i++;
+                i++
 
-                //if (i < gJ.folders.length) {
+                // if (i < gJ.folders.length) {
                 if (i < stat.allFolders.length) {
-                    si = 0;
-                    //folder = gJ.folders[i];
+                    si = 0
+                        // folder = gJ.folders[i];
 
-                    //console.log("i: " + i + ", gJ.folders.length: " + gJ.folders.length);
-                    //getImagesFromServerSync();
+                    // console.log('i: ' + i + ', gJ.folders.length: ' + gJ.folders.length);
+                    // getImagesFromServerSync();
                     getImages();
-
                 } else {
-
                     stat.folderImages = tmpFolderImages;
-                    //console.log(stat.folderImages);
+                        // console.log(stat.folderImages);
+
+                    console.log(stat);
+                    console.log(allImagesFromServer);
 
                     if (cb) {
                         cb();
@@ -1196,7 +1239,6 @@ function getAllImages(folders, d, cb) {
     }; // <-- end function getImages()
 
     getImages();
-
 }; // <-- end function getAllImages()
 
 var loggedin = function() {
@@ -1405,48 +1447,55 @@ function processNewFolder(d) {
     	}
     */
 };
-
 var request = true;
 
 var allFolders = function() {
-	return $.post("gallery/allFolders.php", "allFolders", null, 'json');
+    return $.post("gallery/allFolders.php", "allFolders", null, 'json');
 };
 
 var createFolder = function(path) {
-	return $.post("gallery/createFolder.php", 'folder=' + path, null, 'json');
+    return $.post("gallery/createFolder.php", 'folder=' + path, null, 'json');
 };
 
 var removeFolder = function(f) {
-	return $.post("gallery/removeFolder.php", "folder=" + f, null, 'json');
+    return $.post("gallery/removeFolder.php", "folder=" + f, null, 'json');
 };
 
 var imagesFromFolder = function(f) {
-	var data = "folder=" + f + "&ts=" + Date.now();
-	return $.post("gallery/imagesFromFolder.php", data, null, 'json').done(function(data){
-		stat.allImages = data;
-	});
+    var data = "folder=" + f + "&ts=" + Date.now();
+    return $.post("gallery/imagesFromFolder.php", data, null, 'json').done(function(data) {
+        stat.allImages = data;
+    });
 };
 
 var resizeStore = function(folder, file, size, force) {
-	var postdata = 'folder=' + folder + '&file=' + file + '&sizes=' + size + '&force=' + force;
-	return $.post("gallery/resizeStore.php", postdata, 'json');
+    var postdata = 'folder=' + folder + '&file=' + file + '&sizes=' + size + '&force=' + force;
+    return $.post("gallery/resizeStore.php", postdata, 'json');
 };
 
 var removeImage = function(p) {
-	return $.post("gallery/removeImage.php", "path=" + p, null, 'json');
+    return $.post("gallery/removeImage.php", "path=" + p, null, 'json');
 };
 
 var getAllBackups = function() {
-	return $.post("gallery/allBackups.php", "allBackups=true&t=" + Date.now(), null, 'json');
+    return $.post("gallery/allBackups.php", "allBackups=true&t=" + Date.now(), null, 'json');
 };
 
 var backup = function() {
-	return $.post("gallery/backup.php", "backup=true", null, 'json');
+    return $.post("gallery/backup.php", "backup=true", null, 'json');
+};
+
+var fileExists = function(file) {
+    return $.ajax({
+        url: file,
+        type: 'HEAD',
+				async : true
+    });
 };
 
 var saveFileAs = function(c, t) {
-	var data = "content=" + c + "&target=" + t;
-	return $.post("gallery/saveFileAs.php", data, null, 'json');
+    var data = "content=" + c + "&target=" + t;
+    return $.post("gallery/saveFileAs.php", data, null, 'json');
 };
 var _resizeStoreSizes = function(folder, file, sizes, force) {
 

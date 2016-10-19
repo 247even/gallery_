@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var stat = {
     'imagesRemoved': [],
@@ -11,7 +11,7 @@ var stat = {
     '_workingImage': '',
     set workingImage(val) {
         this._workingImage = val;
-        console.log("workingImage: "+this._workingImage);
+        console.log('workingImage: '+this._workingImage);
     },
     get workingImage() {
         return this._workingImage;
@@ -20,7 +20,7 @@ var stat = {
     '_workingSize': '',
     set workingSize(val) {
         this._workingSize = val;
-        console.log("workingSize: "+this._workingSize);
+        console.log('workingSize: '+this._workingSize);
     },
     get workingSize() {
         return this._workingSize;
@@ -29,7 +29,7 @@ var stat = {
     '_folderImages': [],
     set folderImages(val) {
         this._folderImages = val;
-        console.log("folderImages buildFolderTable()");
+        console.log('folderImages buildFolderTable()');
         buildFolderTable();
         //getNewImages();
     },
@@ -44,7 +44,7 @@ var stat = {
             this._allImages = val;
         }
         //getNewImages();
-        //console.log("allImages buildFolderTable()");
+        //console.log('allImages buildFolderTable()');
         //buildFolderTable();
         /*
         var imgtd = Object.keys(stat.allImages).length;
@@ -61,7 +61,7 @@ var stat = {
     '_newImages': [],
     set newImages(val) {
         this._newImages = val;
-        console.log("stat.newImages: "+stat.newImages.length);
+        console.log('stat.newImages: '+stat.newImages.length);
         console.log(stat.folderImages);
         $('#folder-modal .modal-body .status-div').html(stat.newImages.length);
         if(stat.newImages.length > 0){
@@ -75,7 +75,7 @@ var stat = {
     '_allFolders': [],
     set allFolders(val) {
         this._allFolders = val;
-        //console.log("stat.allFolders buildFolderTable:");
+        //console.log('stat.allFolders buildFolderTable:');
         //buildFolderTable();
     },
     get allFolders() {
@@ -110,40 +110,4 @@ var stat = {
         return this._newFolders;
     }
 
-};
-
-function getNewImages() {
-
-    var match = [];
-    stat.newImages = [];
-
-    for (var key in stat.allImages) {
-        if (!gJ.images[key]) {
-            // this image is not in gJ, must be new
-            match[key] = stat.allImages[key];
-        }
-    }
-
-    if (Object.keys(match) > 0) {
-        // we have new images
-        stat.newImages = Object.keys(match);
-    } else {
-        console.log("no new images");
-    }
-};
-
-
-function getRemovedImages() {
-
-    // all IDs from gJ filtered by folder:
-    var galleryByFolder = _.pickBy(gJ.images, {
-        'path': stat.workingFolder
-    });
-
-    for (var key in galleryByFolder) {
-        if (!stat.imagesFromFolder[key]) {
-            // this image is not present anymore
-            stat.imagesRemoved.push(kk);
-        }
-    }
 };
