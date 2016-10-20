@@ -257,22 +257,28 @@ function buildFolderTable(folders) {
         imagesFromFolder(stat.workingFolder);
     });
 
-    //setFolderIgnoreButton();
     $('#foldersTable .btn-ign').on('click', function() {
         ignoreFolder($(this).closest('tr').attr('data'));
     });
-    //setDeleteFolderButton();
+
     $('#foldersTable .btn-del').on('click', function() {
         var dataFolder = $(this).closest('tr').attr('data');
-        removeFolder(dataFolder).done(function(data) {
-            console.log('folder removed');
+        deleteFolderRelations(dataFolder, function(){
             $('#tr-' + dataFolder).remove();
         });
+        /*
+        removeFolder(dataFolder)
+            .done( function(d) {
+                console.log('folder removed');
+                $('#tr-' + dataFolder).remove();
+            })
+            .fail( function(d) {
+                console.log('folder remove fail');
+            });
+          */
     });
 
 };
-
-
 
 
 $('#saveButton').on('click', function() {

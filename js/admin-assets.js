@@ -196,50 +196,78 @@ function resizeStoreSync(data, keys, length, folder) {
     }
 };
 
-function checkImageSizes(images, deep) {
+function checkImageSizes(images, deep, cb) {
+    console.log('checkImageSizes');
 
-    var images = (images) ? images : gjFilteredByFolder();
-    var gsl = gJ.sizes.length;
+    var images = (images) ? images : gJ.images;
+    var imagesLength = images.length;
+    // if 'images' is not an array, but an object:
+    if (!imagesLength) {
+        var imageKeys = Object.keys(images);
+        imagesLength = imageKeys.length;
+    };
+    var sizesLength = gJ.sizes.length;
     var deep = (deep) ? true : false;
     deep = true;
+    var id = 0;
+    var sz = 0;
 
-    for (var id in images) {
-        var i = 1;
-        var image = images[id];
-        var folder = image.path;
-        console.log('checkImageSizeFolder: ' + folder);
+    function checkImage() {
+        console.log('checkImage');
+        if (id < imagesLength) {
+            var image = images[imageKeys[id]];
+            var folder = image.path;
+            console.log('checkImageSizeFolder: ' + folder);
 
-        // search for unprocessed images:
-        for (var sz in gJ.sizes) {
-            var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
-            var path = 'gallery/' + folder + '_' + gJ.sizes[sz] + '/' + image.file;
+            if (sz < sizesLength) {
+                var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
+                var path = 'gallery/' + folder + '_' + gJ.sizes[sz] + '/' + image.file;
 
-            if (!stat.allImages[sizeId]) {
-                console.log(sizeId + ' does not exist');
-                stat.imagesNotProcessed.push(id);
-                stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                // deep: request each image from server
+                if (deep) {
+                    fileExists(path)
+                        .done(function() {
+                            console.log(path + ' does deep exist');
+                        })
+                        .fail(function() {
+                            console.log(path + ' does not deep exist');
+                            stat.imagesNotProcessed.push(id);
+                            stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                        })
+                        .always(function() {
+                            sz++;
+                            checkImage();
+                        });
+
+                    return false;
+                }
+
+                // quick check against all images in stat.allImages:
+                if (!stat.allImages[sizeId]) {
+                    console.log(sizeId + ' does not exist');
+                    stat.imagesNotProcessed.push(id);
+                    stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                }
+                sz++;
+                checkImage();
+
+            } else {
+                sz = 0;
+                id++;
+                checkImage();
             }
-
-            if (deep) {
-                fileExists(path)
-                    .done(function() {
-                        console.log(path + ' does deep exist');
-                    })
-                    .fail(function() {
-                        console.log(path + ' does not deep exist');
-                        stat.imagesNotProcessed.push(id);
-                        stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
-                    })
-                    .always(function(){
-                      if (i === gsl) {
-                        console.log(i +' / '+ gsl);
-                      }
-                      i++;
-                    })
+        } else {
+            console.log("check image done");
+            if (cb) {
+                cb();
             }
         }
-    }
+    };
+
+    // initial call:
+    checkImage();
 };
+
 
 function getNewImages(images) {
 
@@ -285,6 +313,47 @@ function gjFilteredByFolder(fo) {
     return _.pickBy(gJ.images, {
         'path': folder
     });
+};
+
+function deleteFolderRelations(folder, cb) {
+    var folders = [folder];
+    var sizesLength = gJ.sizes.length;
+    var i = 0;
+
+    //check if folder is in 'ignore' and remove it
+    var ignoreKey = gJ.ignore.indexOf(folder);
+    if (ignoreKey > -1) {
+        gJ.ignore.splice(ignoreKey, 1);
+    } else {
+        // remove images from galleryJSON:
+        _.omitBy(gJ.images, {
+            'path': folder
+        });
+    }
+
+    for (var l = 0; l < sizesLength; l++) {
+        folders.push(folder + '_' + gJ.sizes[l]);
+    }
+
+    function deleteFolder() {
+        if (i < folders.length) {
+            removeFolder(folders[i])
+                .done(function() {
+
+                })
+                .always(function() {
+                    i++
+                    deleteFolder();
+                });
+        } else {
+            console.log('deleteFolder done');
+            if (cb) {
+                cb();
+            }
+        }
+    }
+
+    deleteFolder();
 };
 
 function getRemovedImages(folder) {
@@ -1457,8 +1526,8 @@ var createFolder = function(path) {
     return $.post("gallery/createFolder.php", 'folder=' + path, null, 'json');
 };
 
-var removeFolder = function(f) {
-    return $.post("gallery/removeFolder.php", "folder=" + f, null, 'json');
+var removeFolder = function(folder) {
+    return $.post("gallery/removeFolder.php", "folder=" + folder, null);
 };
 
 var imagesFromFolder = function(f) {

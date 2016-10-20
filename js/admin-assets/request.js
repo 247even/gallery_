@@ -8,8 +8,8 @@ var createFolder = function(path) {
     return $.post("gallery/createFolder.php", 'folder=' + path, null, 'json');
 };
 
-var removeFolder = function(f) {
-    return $.post("gallery/removeFolder.php", "folder=" + f, null, 'json');
+var removeFolder = function(folder) {
+    return $.post("gallery/removeFolder.php", "folder=" + folder, null);
 };
 
 var imagesFromFolder = function(f) {
