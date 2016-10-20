@@ -14,6 +14,7 @@ var fnf = 0;
 var autoprocess = false;
 
 function adminInit() {
+
     console.log('adminInit');
 
     // check login
@@ -28,15 +29,6 @@ function adminInit() {
     loader();
     fnf = 0;
 
-    // wait for js to be loaded
-    /*
-    if (typeof adminAssets == 'undefined' || !adminAssets) {
-        setTimeout(function() {
-            adminInit();
-        }, 1000);
-        return false;
-    }
-    */
     //jsCheckLoad( 'adminAssets', adminInit() );
 
     // set folder modal
@@ -189,33 +181,6 @@ function removeImages() {
     var pl = paths.length;
     removeImageSync();
 };
-
-/*
-function listAllFolders(cb) {
-
-    return allFolders().done(function(data) {
-        //var data = data.sort();
-
-        // remove thumbnail folders:
-        var subFolders = _.filter(data, function(v, k) {
-            for (var i = 0, len = gJ.sizes.length; i < len; i++) {
-                if (v.indexOf(gJ.sizes[i]) > -1) {
-                    return v;
-                }
-            }
-        });
-
-        stat.allFolders = _.difference(data, subFolders);
-        stat.newFolders = _.difference(_.difference(stat.allFolders, gJ.folders), gJ.ignore);
-        var oldFolders = _.intersection(data, gJ.folders);
-
-        if (cb) {
-            cb();
-        }
-
-    });
-};
-*/
 
 function buildFolderTable(folders) {
     if (!folders) {

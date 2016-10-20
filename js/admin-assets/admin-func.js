@@ -1,12 +1,14 @@
+// admin-func.js
+
 function ignoreFolder(f) {
     var tr = $("#foldersTable tr[data='" + f + "']");
-    if (_.indexOf(gJ.ignore, f) == -1) {
+    console.log(gJ.ignore.indexOf(f));
+    if (gJ.ignore.indexOf(f) == -1) {
         gJ.ignore.push(f);
         tr.removeClass().addClass('warning');
     } else {
-        gJ.ignore = _.without(gJ.ignore, f);
-        tr.removeClass().addClass('success');
-        console.log(f);
+        gJ.ignore.splice(gJ.ignore.indexOf(f), 1);
+        tr.removeClass().addClass('default');
     }
 };
 
@@ -118,7 +120,8 @@ function checkImageSizes(images, deep, cb) {
                         .fail(function() {
                             console.log(path + ' does not deep exist');
                             stat.imagesNotProcessed.push(id);
-                            stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                            //stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                            stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
                         })
                         .always(function() {
                             sz++;
@@ -132,7 +135,8 @@ function checkImageSizes(images, deep, cb) {
                 if (!stat.allImages[sizeId]) {
                     console.log(sizeId + ' does not exist');
                     stat.imagesNotProcessed.push(id);
-                    stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                    //stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
+                    stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
                 }
                 sz++;
                 checkImage();
@@ -194,11 +198,18 @@ function getNewImages(images) {
 
 function gjFilteredByFolder(fo) {
     var folder = (fo) ? fo : stat.workingFolder;
+    var result = {};
+    var keys = Object.keys(gJ.images);
+    var klength = keys.length;
 
-    // all IDs from gJ filtered by folder:
-    return _.pickBy(gJ.images, {
-        'path': folder
-    });
+    for (var i = 0; klength > i; i++) {
+        var image = gJ.images[keys[i]];
+        if (image.path === folder) {
+            result[keys[i]] = image;
+        }
+    }
+
+    return result;
 };
 
 function deleteFolderRelations(folder, cb) {
@@ -212,9 +223,18 @@ function deleteFolderRelations(folder, cb) {
         gJ.ignore.splice(ignoreKey, 1);
     } else {
         // remove images from galleryJSON:
+        var imageKeys = Object.keys(gJ.images);
+        var imagesLength = imageKeys.length;
+        for (var i = 0; i < imagesLength; i++) {
+            if (gJ.images[imageKeys[i]].path == folder) {
+                delete gJ.images[imageKeys[i]];
+            }
+        }
+        /*
         _.omitBy(gJ.images, {
             'path': folder
         });
+        */
     }
 
     for (var l = 0; l < sizesLength; l++) {
