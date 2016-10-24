@@ -1,4 +1,14 @@
-.gallery-container, .gallery-container .col, .gallery-container .admin-panel, .gallery .modal-dialog, .gallery .modal-content, .gallery .modal-body, .gallery .carousel-inner, .gallery .item, .tab-content, .thumb-div {
+.gallery-container,
+.gallery-container .col,
+.gallery-container .admin-panel,
+.gallery-lightbox,
+.gallery-lightbox .modal-dialog,
+.gallery-lightbox .modal-content,
+.gallery-lightbox .modal-body,
+.gallery-lightbox .carousel-inner,
+.gallery-lightbox .item,
+.tab-content,
+.thumb-div {
 	height: 100%;
 }
 
@@ -11,12 +21,16 @@
 	margin-bottom: -65px;
 }
 
-.gallery .modal-dialog, .gallery .modal-content, .gallery .modal-body, .gallery .carousel-inner, .gallery .item {
+.gallery-lightbox .modal-dialog,
+.gallery-lightbox .modal-content,
+.gallery-lightbox .modal-body,
+.gallery-lightbox .carousel-inner,
+.gallery-lightbox .item {
 	width: 100%;
 	margin: 0;
 }
 
-.gallery .item {
+.gallery-lightbox .item {
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: contain;
@@ -93,19 +107,28 @@
  */
 
 /* lightbox */
-.gallery .modal {
+.gallery-lightbox {
 	position: fixed;
 	overflow: hidden;
 	padding-right: 0 !important;
 }
-.gallery .modal-body {
+.gallery-lightbox,
+.gallery-lightbox .modal-content,
+.gallery-lightbox .modal-body {
+	padding: 0;
+	border-radius: 0;
+}
+.gallery-lightbox .modal-body {
 	padding: 0;
 }
-.gallery .modal-body img {
+.gallery-lightbox .modal-body img {
 	width: 100%;
 }
 
-.gallery .modal .close, .gallery .modal .zoom, .slider .carousel-control, .hamburger {
+.gallery-lightbox .close,
+.gallery-lightbox .zoom,
+.slider .carousel-control,
+.hamburger {
 	background-image: none;
 	background-color: rgba(255, 255, 255, 0.5);
 	font-size: 18px;
@@ -123,16 +146,17 @@
 	transition: all 0.2s ease-in-out 0s;
 }
 
-.gallery .modal .close, .gallery .modal .zoom {
+.gallery-lightbox .close,
+.gallery-lightbox .zoom {
 	position: absolute;
 	top: 20px;
 }
 
-.gallery .modal .zoom {
+.gallery-lightbox .zoom {
 	right: 69px;
 }
 
-.gallery .modal .close {
+.gallery-lightbox .close {
 	right: 20px;
 }
 
@@ -141,12 +165,15 @@
 	/*text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.8);*/
 }
 
-.gallery .modal .close:hover .glyphicon, .gallery .modal .zoom:hover .glyphicon {
+.gallery-lightbox .close:hover .glyphicon,
+.gallery-lightbox .zoom:hover .glyphicon {
 	text-shadow: none;
 	color: #292929;
 }
 
-.gallery .modal .close:hover, .gallery .modal .zoom:hover, .hamburger:hover {
+.gallery-lightbox .close:hover,
+.gallery-lightbox .zoom:hover,
+.hamburger:hover {
 	background-color: rgba(255, 255, 255, 1);
 	color: #000;
 }
@@ -181,38 +208,45 @@
 }
 
 @media (max-width: 768px) {
-	.gallery .modal-dialog {
+	.gallery-lightbox .modal-dialog {
 		margin: 10px auto;
 	}
 
-	.gallery .carousel-indicators, .gallery .carousel-control, .gallery .modal .close {
+	.gallery-lightbox .carousel-indicators,
+	.gallery-lightbox .carousel-control,
+	.gallery-lightbox .close {
 		position: fixed;
 	}
 }
 
 /* fix fade in effect */
-.gallery .modal.fade .modal-dialog {
+.gallery-lightbox .modal.fade .modal-dialog {
 	margin-top: -100px;
 	-webkit-transition: margin-top 0.3s ease-out;
 	-moz-transition: margin-top 0.3s ease-out;
 	-o-transition: margin-top 0.3s ease-out;
 	transition: margin-top 0.3s ease-out;
 }
-.gallery .modal.in .modal-dialog, .gallery .modal.fade .modal-dialog {
+.gallery-lightbox .modal.in .modal-dialog,
+.gallery-lightbox .modal.fade .modal-dialog {
 	-webkit-transform: none;
 	-ms-transform: none;
 	-o-transform: none;
 	transform: none;
 }
-.gallery .modal.in .modal-dialog {
+.gallery-lightbox .modal.in .modal-dialog {
 	margin-top: 30px;
 }
 
-.gallery-item, .contain-image, .cover-image, .contain-image {
+.gallery-item, .contain-image,
+.cover-image, .contain-image {
 	overflow: hidden;
 }
 
-.contain-image, .contain-image img, .cover-image, .cover-image img {
+.contain-image,
+.contain-image img,
+.cover-image,
+.cover-image img {
 	background-image: url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");
 	background-repeat: no-repeat;
 	background-position: center;
@@ -226,7 +260,7 @@
 	background-size: cover !important;
 }
 
-.gallery .gallery-item > a {
+.gallery-lightbox .gallery-item > a {
 	background: transparent !important;
 }
 

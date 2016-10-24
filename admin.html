@@ -58,32 +58,6 @@
 		</form>
 	</div>
 
-	<div id="folder-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-		<div class="modal-dialog modal-sm" role="document">
-			<div class="modal-content modal-folder">
-				<div class="modal-header">
-					<button id="modal-close-button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					<h4 class="modal-title" id="myModalLabel">New folder found:</h4>
-				</div>
-				<div class="modal-body">
-					<div class="folder-name"> </div>
-					<div class="status-div"> </div>
-				</div>
-				<div class="modal-footer">
-					<button id="modal-add-button" type="button" class="btn btn-primary">
-							add folder
-						</button>
-					<button id="modal-ignore-button" type="button" class="btn btn-default">
-							ignore
-						</button>
-				</div>
-			</div>
-
-		</div>
-	</div>
-
 	<div id="image-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="imageLabel">
 		<div class="modal-dialog modal-sm" role="document">
 			<div class="modal-content">
@@ -100,9 +74,9 @@
 		</div>
 	</div>
 
-	<div id="main">
-		<figure id="effect-fullscreen" style="display: none"></figure>
+	<figure id="effect-fullscreen" style="display: none"></figure>
 
+	<div id="main">
 		<div id="page3" class="page no-scroll">
 			<div class="container gallery-container">
 				<div class="row height100">
@@ -118,28 +92,6 @@
 								<div class="clearfix footer-spacer"></div>
 							</div>
 
-							<!-- Lightbox -->
-							<div id="lb-arbeiten" data-app-prevent-settings="" class="lightbox slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false">
-								<div class="modal-dialog">
-									<div class="modal-content">
-										<div class="modal-body">
-											<ol class="gallery-carousel carousel-indicators hidden">
-
-											</ol>
-											<div class="gallery-carousel carousel-inner">
-
-											</div>
-											<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"> </span> <span class="sr-only">Previous</span> </a>
-											<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#lb-arbeiten"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"> </span> <span class="sr-only">Next</span> </a>
-
-											<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
-											<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
-
-											<span id="indicator-text" class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>
-										</div>
-									</div>
-								</div>
-							</div>
 						</section>
 
 						<!-- Nav -->
@@ -188,21 +140,21 @@
 							<div class="tab-content">
 								<div id="start-panel" role="tabpanel" class="tab-pane scroll-wrapper">
 
-										<table id="foldersTable" class="table table-hover">
-											<thead>
-												<tr>
-													<th> </th>
-													<th>Folder</th>
-													<th></th>
-													<th>scan</th>
-													<th>ignore</th>
-													<th>delete</th>
-												</tr>
-											</thead>
-											<tbody class="scroll-table">
+									<table id="foldersTable" class="table table-hover">
+										<thead>
+											<tr>
+												<th> </th>
+												<th>Folder</th>
+												<th></th>
+												<th>scan</th>
+												<th>ignore</th>
+												<th>delete</th>
+											</tr>
+										</thead>
+										<tbody class="scroll-table">
 
-											</tbody>
-										</table>
+										</tbody>
+									</table>
 
 									<!--
 									<div id="processStatus"></div>
@@ -492,10 +444,11 @@
 	<!-- main -->
 
 	<div id="prototypes" style="display: none">
+
 		<div id="thumb-prototype" style="display:none">
 			<div class="thumbSize gallery-item img-hidden" data-id="{{key}}" data-time="{{time}}" data-tags="{{tags}}">
 				<div class="thumb-div cover-image" data-src="xxx" respi-path="{{respi}}">
-					<a href="#lb-arbeiten" data-slide-to="{{i}}" data-toggle="modal">
+					<a href="#gallery-lightbox" data-slide-to="{{i}}" data-toggle="modal">
 						<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
 						<span class="glyphicon glyphicon-zoom-in"> </span>
 					</a>
@@ -563,6 +516,31 @@
 			</div>
 		</div>
 
+		<div id="lightbox-prototype">
+			<!-- Lightbox -->
+			<div id="gallery-lightbox" class="lightbox gallery-lightbox slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-body">
+							<ol class="gallery-carousel carousel-indicators hidden">
+
+							</ol>
+							<div class="gallery-carousel carousel-inner">
+
+							</div>
+							<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#gallery-lightbox"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"> </span> <span class="sr-only">Previous</span> </a>
+							<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#gallery-lightbox"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"> </span> <span class="sr-only">Next</span> </a>
+
+							<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
+							<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
+
+							<span id="indicator-text" class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div id="lightbox-item-prototype">
 			<div class="item" respi-path="{{respi-path}}" style="background-image:;">
 				<img alt="" src="images/FFF-0.png">
@@ -580,6 +558,7 @@
 	<script src="js/jquery.stickytableheaders.min.js"></script>
 	<script src="js/relative-fade.min.js"></script>
 	<script src="js/imgloaded.js"></script>
+	<script src="js/bootbox.min.js"></script>
 
 	<script src="js/PxLoader.js"></script>
 	<script src="js/pxloader-images.min.js"></script>
@@ -600,7 +579,6 @@
 	<script src="js/func.js"></script>
 -->
 	<script src="js/px.js"></script>
-	<!--<script src="js/bootbox.min.js"></script>-->
 	<script src="js/gallery.js"></script>
 
 	<script src="js/init.js"></script>

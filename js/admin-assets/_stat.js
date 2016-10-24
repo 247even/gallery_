@@ -86,13 +86,52 @@ var stat = {
     set newFolders(val) {
         this._newFolders = val;
         if (stat.newFolders.length > 0) {
-            var fo = stat.newFolders[0];
-            stat.workingFolder = fo;
+            var folder = stat.newFolders[0];
+            stat.workingFolder = folder;
             console.log(stat.folderImages);
+
+            var msg = '"' + folder + '" (' + stat.folderImages[folder][0] + ')';
+
+            bootbox.confirm({
+                size: 'small',
+                title: 'New folder found:',
+                message: msg,
+                buttons: {
+                    confirm: {
+                        label: 'Add folder',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Do not...',
+                        className: 'btn-default'
+                    }
+                },
+                callback: function(result) {
+                    console.log(result);
+                    if (result) {
+                      // add folder:
+                      processNewFolder({
+                          'folder': folder,
+                          'cb': function() {
+                              stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
+                          }
+                      });
+
+                      return false;
+                    }
+
+                    // ignore folder:
+                    ignoreFolder(folder);
+                    stat.newFolders = _.without(stat.newFolders, folder);
+                }
+            });
+
+            /*
             $('#folder-modal .modal-body .folder-name').html('"' + fo + '" (' + stat.folderImages[fo][0] + ')');
 
             $('#folder-modal').attr('data', fo)
                 .modal('show');
+            */
 
             /*
             prototype({

@@ -2,14 +2,14 @@ function pageFunction(t) {
 
 	if (t == "page1") {
 
-		history.pushState( { 
-			target: "page1" 
+		history.pushState( {
+			target: "page1"
 		}, null, "/start");
-		
+
 		$('.control-wrapper').each(function() {
 			$(this).center().fadeIn();
 		});
-		
+
 		// init carousel
 		setTimeout(function(){ $('#slider-1').carousel(); }, 2000);
 		return false;
@@ -17,12 +17,12 @@ function pageFunction(t) {
 
 	if (t == "page2") {
 
-		history.pushState( { 
-			target: "page2" 
+		history.pushState( {
+			target: "page2"
 		}, null, "/leistungen");
 
 		$('.mbr-navbar').removeClass('mbr-navbar--transparent');
-		
+
 		// https://github.com/verlok/lazyload
 		var leistungenLoad = new LazyLoad({
 		    threshold: 400,
@@ -33,35 +33,35 @@ function pageFunction(t) {
 		    data_srcset: "srcset",
 		    show_while_loading: false,
 		    callback_set: function() { /* ... */ }
-		});	
-		
+		});
+
 		return false;
 	}
 
 	if (t == "page3") {
 
-		history.pushState( { 
-			target: "page3" 
-		}, null, "/portfolio");		
-		
+		history.pushState( {
+			target: "page3"
+		}, null, "/portfolio");
+
 		$('.mbr-navbar').removeClass('mbr-navbar--transparent');
-		$('#lb-arbeiten').carousel();
-		
+		$('#gallery-lightbox').carousel();
+
 		// background zoom function
 		$('.mbr-gallery .zoom').on('click', function(e){
 			//e.preventDefault();
 			$('.gallery-carousel .item').toggleClass('bg-cover');
 		});
-		
+
 		// logo on top position
-	    $('#lb-arbeiten').on('show.bs.modal', function () {
+	    $('#gallery-lightbox').on('show.bs.modal', function () {
 			$('#logobox2').clonePosition('#logobox');
 		}).on('shown.bs.modal', function () {
-			
+
 		}).on('hidden.bs.modal', function () {
-	
+
 		});
-		
+
 		// https://github.com/verlok/lazyload
 		var portfolioLoad = new LazyLoad({
 		    threshold: 600,
@@ -73,14 +73,14 @@ function pageFunction(t) {
 		    data_srcset: "srcset",
 		    show_while_loading: false,
 		    callback_set: function() { /* ... */ }
-		});		
+		});
 		return false;
 	}
 
 	if (t == "page4") {
 
-		history.pushState( { 
-			target: "page4" 
+		history.pushState( {
+			target: "page4"
 		}, null, "/kontakt");
 
 		$('.mbr-navbar').removeClass('mbr-navbar--transparent');
@@ -92,7 +92,7 @@ function pageFunction(t) {
 
 function navigation() {
 
-	$('#lb-arbeiten').on('show.bs.modal', function(e) {
+	$('#gallery-lightbox').on('show.bs.modal', function(e) {
 		console.log(e.relatedTarget);
 	});
 	// clickoutside for navbars
@@ -109,7 +109,7 @@ function navigation() {
 	// start
 	$('.p1').on('click', function(e) {
 		e.preventDefault();
-		
+
 		target = "page1";
 		pageTransition(target);
 		$('.mbr-navbar').addClass('mbr-navbar--transparent');
@@ -117,7 +117,7 @@ function navigation() {
 
 	// leistungen
 	$('.p2').on('click', function(e) {
-		
+
 		e.preventDefault();
 		$('#slider-1').carousel('pause');
 		target = "page2";
@@ -184,14 +184,14 @@ var galleryPath = "./gallery/";
 var JSONurl = "gallery/gallery.json";
 
 $(function() {
-	
+
 	bluur.config('gallery/blur.php');
-	
+
 	intro();
 	loadJSON();
 	navigation();
 	init();
-	
+
 	window.onpopstate = function(event) {
 		$('.modal').modal('hide');
 		pageTransition(event.state.target);
@@ -201,19 +201,19 @@ $(function() {
 	$('.selectpicker').selectpicker({
 	  style: 'btn-danger'
 	});
-	
+
 	$('#fb-link').on('click', function(){
-		window.open(this.href, '_blank', ''); 
+		window.open(this.href, '_blank', '');
 		return false;
 	});
 
 	// init stuff
-	// mobile 
+	// mobile
 	if($('html').hasClass('mobile')){
-		// carousel navigation arrows	
+		// carousel navigation arrows
 		$('.carousel-control, .control-wrapper').addClass('hidden');
 		$('#filter-select').attr('data-mobile',"true");
-		
+
 	}
 
 	$('#ext_menu-19 .mbr-navbar__column').on('click', function(e){
@@ -221,10 +221,10 @@ $(function() {
 		console.log('click');
 		$('#ext_menu-19 .mbr-navbar__hamburger').trigger('click');
 	});
-	
+
 	$('#logobox2').clonePosition('#logobox');
 
-	
+
 	$(window).resize(function () {
 	    waitForFinalEvent(function(){
 			$('#logobox2').clonePosition('#logobox');
@@ -236,17 +236,17 @@ $(function() {
 			$(this).center();
 		});
 	}));
-	
+
 	$(window).on('mousemove', debounce(
 		function(){
 			//console.log("boing")
 		}, 500, false)
 	);
-	
+
 	//$(window).on('resize load', function(e){console.log(e)});
 	//$(window).on('resize load', function(){$('#logobox2').clonePosition('#logobox');});
 	//$('#logobox2').clonePosition('#logobox');
-	
+
 
 /*
 	var timeout;
@@ -261,4 +261,3 @@ $(function() {
 	$(window).on('slid.bs.carousel', fitLBtimeout);
 */
 });
-

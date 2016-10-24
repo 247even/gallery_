@@ -31,41 +31,10 @@ function adminInit() {
 
     //jsCheckLoad( 'adminAssets', adminInit() );
 
-    // set folder modal
-    $('#folder-modal').modal({
-        backdrop: 'static'
-    });
-
-    $('#modal-add-button').on('click', function() {
-        processNewFolder({
-            'folder': $('#folder-modal').attr('data'),
-            'cb': function() {
-                stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
-            }
-        });
-        //$('#folder-modal').modal('hide');
-    });
-
     $('#modal-process-button').on('click', function() {
         processNewFolder({
             'folder': $('#folder-modal').attr('data')
         });
-        $('#folder-modal').modal('hide');
-    });
-
-    $('#modal-ignore-button').on('click', function() {
-        var folder = $('#folder-modal').attr('data');
-        ignoreFolder(folder);
-        $('#folder-modal').modal('hide').on('hidden.bs.modal', function(e) {
-            stat.newFolders = _.without(stat.newFolders, folder);
-        });
-    });
-
-    $('#modal-close-button').on('click', function() {
-        for (var i = 0, len = stat.newFolders.length; len > i; i++) {
-            ignoreFolder(stat.newFolders[i]);
-        }
-        stat.newFolders = [];
         $('#folder-modal').modal('hide');
     });
 
@@ -223,13 +192,35 @@ function buildFolderTable(folders) {
     });
 
     $('#foldersTable .btn-ign').on('click', function() {
-        ignoreFolder($(this).closest('tr').attr('data'));
+        var folder = $(this).closest('tr').attr('data');
+        var msg = 'Ignore folder "' + folder + '"?';
+        if (gJ.ignore.indexOf(folder) > -1) {
+            var msg = 'Add folder "' + folder + '"?';
+        }
+        bootbox.confirm({
+            size: 'small',
+            message: msg,
+            callback: function(result) {
+                if (result) {
+                    ignoreFolder(folder);
+                }
+            }
+        });
     });
 
     $('#foldersTable .btn-del').on('click', function() {
-        var dataFolder = $(this).closest('tr').attr('data');
-        deleteFolderRelations(dataFolder, function(){
-            $('#tr-' + dataFolder).remove();
+        var folder = $(this).closest('tr').attr('data');
+        var msg = 'Delete folder "' + folder + '"?'
+        bootbox.confirm({
+            size: 'small',
+            message: msg,
+            callback: function(result) {
+                if (result) {
+                    deleteFolderRelations(folder, function() {
+                        $('#tr-' + folder).remove();
+                    });
+                }
+            }
         });
         /*
         removeFolder(dataFolder)

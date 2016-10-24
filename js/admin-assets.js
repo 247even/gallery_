@@ -87,13 +87,52 @@ var stat = {
     set newFolders(val) {
         this._newFolders = val;
         if (stat.newFolders.length > 0) {
-            var fo = stat.newFolders[0];
-            stat.workingFolder = fo;
+            var folder = stat.newFolders[0];
+            stat.workingFolder = folder;
             console.log(stat.folderImages);
+
+            var msg = '"' + folder + '" (' + stat.folderImages[folder][0] + ')';
+
+            bootbox.confirm({
+                size: 'small',
+                title: 'New folder found:',
+                message: msg,
+                buttons: {
+                    confirm: {
+                        label: 'Add folder',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Do not...',
+                        className: 'btn-default'
+                    }
+                },
+                callback: function(result) {
+                    console.log(result);
+                    if (result) {
+                      // add folder:
+                      processNewFolder({
+                          'folder': folder,
+                          'cb': function() {
+                              stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
+                          }
+                      });
+
+                      return false;
+                    }
+
+                    // ignore folder:
+                    ignoreFolder(folder);
+                    stat.newFolders = _.without(stat.newFolders, folder);
+                }
+            });
+
+            /*
             $('#folder-modal .modal-body .folder-name').html('"' + fo + '" (' + stat.folderImages[fo][0] + ')');
 
             $('#folder-modal').attr('data', fo)
                 .modal('show');
+            */
 
             /*
             prototype({
@@ -116,13 +155,11 @@ var stat = {
 
 function ignoreFolder(f) {
     var tr = $("#foldersTable tr[data='" + f + "']");
-    //if (_.indexOf(gJ.ignore, f) == -1) {
     console.log(gJ.ignore.indexOf(f));
     if (gJ.ignore.indexOf(f) == -1) {
         gJ.ignore.push(f);
         tr.removeClass().addClass('warning');
     } else {
-        //gJ.ignore = _.without(gJ.ignore, f);
         gJ.ignore.splice(gJ.ignore.indexOf(f), 1);
         tr.removeClass().addClass('default');
     }
@@ -339,9 +376,18 @@ function deleteFolderRelations(folder, cb) {
         gJ.ignore.splice(ignoreKey, 1);
     } else {
         // remove images from galleryJSON:
+        var imageKeys = Object.keys(gJ.images);
+        var imagesLength = imageKeys.length;
+        for (var i = 0; i < imagesLength; i++) {
+            if (gJ.images[imageKeys[i]].path == folder) {
+                delete gJ.images[imageKeys[i]];
+            }
+        }
+        /*
         _.omitBy(gJ.images, {
             'path': folder
         });
+        */
     }
 
     for (var l = 0; l < sizesLength; l++) {

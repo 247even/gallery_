@@ -162,40 +162,45 @@ console.log($(narray).nearest(13));
 $(narray).nearest(19);
 */function prototype(data) {
 
-	// template element to search in for placeholders:
-	var template;
-	if (data.template) {
-		template = document.querySelector(data.template);
-	} else {
-		template = document.querySelector('body');
-	}
+    // template element to search in for placeholders:
+    var template;
+    if (data.template) {
+        template = document.querySelector(data.template);
+    } else {
+        template = document.querySelector('body');
+    }
 
-	var selectors = data.selectors;
-	var values = data.values;
+    var selectors = data.selectors;
+    var values = data.values;
 
-	var targets;
-	if (data.targets) {
-		targets = document.querySelectorAll(data.targets);
-	}
+    var targets;
+    if (data.targets) {
+        targets = document.querySelectorAll(data.targets);
+    }
 
-	//for ( i = 0; i < templates.length; i++) {
-	var ct = template.innerHTML;
+    //for ( i = 0; i < templates.length; i++) {
+    var ct = template.innerHTML;
 
-	for ( i = 0; i < selectors.length; i++) {
-		var selector = '{{' + selectors[i] + '}}';
-		ct = ct.replace(selector, values[i]);
-		ct = ct.split(selector).join(values[i]);
-	}
+    if (selectors) {
+        for (i = 0; i < selectors.length; i++) {
+            var selector = '{{' + selectors[i] + '}}';
+            ct = ct.replace(selector, values[i]);
+            ct = ct.split(selector).join(values[i]);
+        }
+    }
+    //}
 
-	//}
+    if (targets) {
+        for (i = 0; i < targets.length; i++) {
+            targets[i].insertAdjacentHTML('beforeend', ct);
+        }
+    } else {
+        template.innerHTML = ct;
+    }
 
-	if (targets) {
-		for ( i = 0; i < targets.length; i++) {
-			targets[i].insertAdjacentHTML('beforeend', ct);
+		if (data.cut) {
+				template.innerHTML = '';
 		}
-	} else {
-		template.innerHTML = ct;
-	}
 };
 
 
@@ -208,7 +213,6 @@ prototype({
 	'targets' : '#file-table-body'
 });
 */
-
 (function($) {
 	$.fn.respi = function(arr) {
 		var res;
