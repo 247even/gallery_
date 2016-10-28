@@ -113,10 +113,15 @@ var debounce = function(func, threshold, execAsap) {
 })(jQuery);
 
 function proportion(el, a, b) {
+    var r = !r ? false : true;
     var a = !a ? 0 : a;
     var b = !b ? 0 : b;
     for (i = 0; i < el.length; i++) {
-        el[i].style.height = el[i].offsetWidth * b / a + 'px';
+        var width = el[i].offsetWidth;
+        if (el[i].style.width) {
+              width = el[i].style.width;
+        }
+        el[i].style.height =  width * ( b / a ) + 'px';
     }
 };
 

@@ -26,6 +26,7 @@
 	text-align: center;
 	max-height: 500px;
 	background-size: 128px;
+	cursor: pointer;
 }
 
 .placeholder-item {
@@ -47,6 +48,11 @@
 	background-position: center;
 	background-size: cover;
 	overflow: hidden;
+	cursor: pointer;
+}
+
+.selected-image {
+	border: 2px solid red;
 }
 
 #file-table {
@@ -101,23 +107,12 @@
 	height: auto !important;
 }
 
-.selected-image {
-	border: 2px solid red;
-}
-
 .tab-content {
 	margin: 0;
 	padding-bottom: 50px
 }
 .tab-content, .overflow-auto {
 	overflow: auto !important;
-}
-
-.sortable-placeholder {
-	position: relative;
-	float: left;
-	width: 100px;
-	height: 100px;
 }
 
 /* login */
@@ -197,6 +192,10 @@
 
 #slider-sortable {
 	min-height: 89px;
+}
+
+#slider-sortable .thumb-div {
+	cursor: pointer;
 }
 
 .sortable-placeholder {

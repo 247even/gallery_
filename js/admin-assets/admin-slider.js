@@ -2,13 +2,19 @@
 
 $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e) {
 
+    if ( !$('#slider-sortable .sortable-item').length ) {
+        for (var i = 0; i < 2; i++) {
+          prototype({
+            'template' : '#placeholder-item-prototype',
+            'targets' : '#slider-sortable'
+          });
+        }
 
-    for (var i = 0; i < 2; i++) {
-      prototype({
-        'template' : '#placeholder-item-prototype',
-        'targets' : '#slider-sortable'
-      });
+        var phel = document.querySelectorAll('#slider-sortable .placeholder-item');
+        proportion(phel, 1, 1);
+        //$('#slider-sortable .placeholder-item').proportion(1,1);
     }
+
 
     var blurIntensity = 5;
 
@@ -286,6 +292,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
             $(this).clone().off().removeClass().addClass(cl).appendTo("#slider-sortable").on("click", function() {
                 $("#slider-sortable .gallery-item").removeClass("selected-image");
                 $(this).addClass("selected-image");
+                loadBlur();
             });
 
             $("#slider-sortable .gallery-item a").remove();
@@ -319,6 +326,9 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
               'targets' : '#slider-sortable'
             });
           }
+          var phel = document.querySelectorAll('#slider-sortable .placeholder-item');
+          proportion(phel, 1, 1);
+          //$('#slider-sortable .placeholder-item').proportion(1,1);
           document.getElementById('effect-preview-image').src ='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
         }
 
@@ -331,6 +341,9 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
             'template' : '#placeholder-item-prototype',
             'targets' : '#slider-sortable'
           });
+          var phel = document.querySelectorAll('#slider-sortable .placeholder-item');
+          proportion(phel, 1, 1);
+          //$('#slider-sortable .placeholder-item').proportion(1,1);
         }
 
         if (selLength >= 2 ) {
