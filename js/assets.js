@@ -170,8 +170,15 @@ $(narray).nearest(19);
         template = document.querySelector('body');
     }
 
-    var selectors = data.selectors;
-    var values = data.values;
+    var selectors;
+    if (data.selectors) {
+      selectors = data.selectors;
+    };
+
+    var values;
+    if (data.values) {
+      values = data.values;      
+    }
 
     var targets;
     if (data.targets) {
@@ -182,7 +189,8 @@ $(narray).nearest(19);
     var ct = template.innerHTML;
 
     if (selectors) {
-        for (i = 0; i < selectors.length; i++) {
+        var sLength = selectors.length;
+        for (i = 0; i < sLength; i++) {
             var selector = '{{' + selectors[i] + '}}';
             ct = ct.replace(selector, values[i]);
             ct = ct.split(selector).join(values[i]);
@@ -191,16 +199,17 @@ $(narray).nearest(19);
     //}
 
     if (targets) {
-        for (i = 0; i < targets.length; i++) {
+        var tLength = targets.length;
+        for (i = 0; i < tLength; i++) {
             targets[i].insertAdjacentHTML('beforeend', ct);
         }
     } else {
         template.innerHTML = ct;
     }
 
-		if (data.cut) {
-				template.innerHTML = '';
-		}
+    if (data.cut) {
+        template.innerHTML = '';
+    }
 };
 
 

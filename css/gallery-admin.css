@@ -14,10 +14,22 @@
 	height: 100%;
 }
 
+#blur-image-frame,
+.placeholder-item {
+	background-color: #444;
+	background-image: url('placeholder.svg');
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
 #blur-image-frame {
-	background-color: #333;
 	text-align: center;
 	max-height: 500px;
+	background-size: 128px;
+}
+
+.placeholder-item {
+	background-size: 64px;
 }
 
 #blur-image-frame img {
