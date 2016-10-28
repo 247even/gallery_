@@ -21,4 +21,8 @@ var ddSelect = function(evt, cb) {
 	});
 };
 
-
+/*
+ddSelect('onselect', function(val) {
+	console.log(val);
+});
+*/

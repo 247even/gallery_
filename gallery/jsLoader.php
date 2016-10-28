@@ -1,8 +1,5 @@
 <?php
-
 require 'Minifier.php';
-
-//$o = array("path" => "", "filter" => '*.{js,json}', "outpath" => '', "concat" => false, "minify" => false, "gzip" => false, "cache" => false);
 
 $o["path"] = "";
 $o["filter"] = '*.{js,json}';
@@ -39,7 +36,7 @@ foreach ($files as $file) {
 	$baseName = $pathParts['basename'];
 	$fileExtension = $pathParts['extension'];
 	$fileName = $pathParts['filename'];
-	
+
 	if($o['skipmin']){
 		if (strpos($fileName, '.min') !== false) {
 			continue;
@@ -65,7 +62,7 @@ foreach ($files as $file) {
 			file_put_contents($outpath . $outFile, $fileContent);
 			array_push($response['outfiles'], $outFile);
 		}
-		
+
 	}
 }
 
@@ -80,12 +77,12 @@ if ($o['concat']) {
 		if( strpos( $_SERVER["HTTP_ACCEPT_ENCODING"], "gzip" ) !== false ){
 			$outFile = $outFile . '.gz';
 			$fileContent = gzencode($fileContent, 9);
-			
+
 		} else {
 			// gzip not possible
 		}
 	}
-	
+
 	//file_put_contents($outpath . $outExt, $fileContent);
 	file_put_contents($o["root"] . $o["outpath"] . $outFile, $fileContent);
 

@@ -78,7 +78,7 @@ a:hover, a:focus {
 	display: table !important;
 }
 
-.navbar__hamburger {
+.navbar-hamburger {
     display: none;
     margin-top: -18px;
     position: absolute;
@@ -106,7 +106,7 @@ a:hover, a:focus {
 }
 
 @media (max-width: 768px){
-	.gallery-footer .navbar__item {
+	.gallery-footer .navbar-item {
 		float: none;
 	}
 }
@@ -143,12 +143,12 @@ a:hover, a:focus {
 	display: none;
 }
 
-.modal-open .navbar__section {
+.modal-open .navbar-section {
 	background: transparent;
 }
 
-.modal-open .navbar__hamburger,
-.modal-open .navbar__menu {
+.modal-open .navbar-hamburger,
+.modal-open .navbar-menu {
 	display: none;
 }
 
@@ -390,18 +390,19 @@ a:hover, a:focus {
 }
 
 .gallery-footer, .navbar-fixed-bottom {
+	position: inherit;
 	background-color: rgb(239, 239, 239);
 }
 
-.gallery-footer .navbar:before, .navbar__container {
+.gallery-footer .navbar:before, .navbar-container {
 	height: 0;
 }
 
-.navbar__container, .after-navbar:before {
+.navbar-container, .after-navbar:before {
 	height: 64px;
 }
 
-#page2 .navbar__container,
+#page2 .navbar-container,
 #page2 .after-navbar:before {
 	height: 0px !important;
 }

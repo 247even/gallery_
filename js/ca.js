@@ -176,12 +176,7 @@ function navigation() {
 		});
 	}
 
-var imagesPreLoaded;
 var blurredImageloaded = null;
-var imagesJSON;
-var animrunning = false;
-var galleryPath = "./gallery/";
-var JSONurl = "gallery/gallery.json";
 
 $(function() {
 

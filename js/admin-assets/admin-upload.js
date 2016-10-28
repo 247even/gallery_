@@ -24,7 +24,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	};
 
 	$('#new-folder-name').on('keypress', function(event) {
-		var regex = new RegExp("^[a-zA-Z0-9_-äüö ]+$");
+		var regex = new RegExp('^[a-zA-Z0-9_-äüö ]+$');
 		var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
 		if (!regex.test(key)) {
 			event.preventDefault();
@@ -32,35 +32,35 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		}
 	});
 
-	$("#new-folder-btn").on('click', function() {
+	$('#new-folder-btn').on('click', function() {
 		var val = $('#new-folder-name').val();
 		if (val) {
 			val = val.trim();
-			
+
 			if ( _.indexOf( gJ.folders, val ) != -1 && _.indexOf( gJ.ignore, val ) != -1 ) {
 				console.log('folder already present');
 				return false;
 			}
-			
+
 			createFolder(val).done(function(data){
 				console.log(data.dir);
 			});
-			
+
 			/*
-			
+
 			createFolder(val).done(function(){
 				console.log('cfdone');
 				var resp = request.responseText;
 				gJ.folders.push(val);
 				folderSelect();
 				$('#new-folder-name').val('');
-				console.log(resp);			
+				console.log(resp);
 			});
 			*/
 		}
 	});
 
-	$("#upload-tags").on("change", function() {
+	$('#upload-tags').on('change', function() {
 		var value = $(this).val();
 		if (value && value != ' ') {
 			value = value.trim();
@@ -75,21 +75,17 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		}
 	});
 
-	ddSelect('onselect', function(val) {
-		console.log(val);
-	});
-
 	$('#upload-folder-select').on('change', function() {
 		upldrData.path = $(this).val();
 		upldr.options.data = JSON.stringify(upldrData);
 	});
 	upldrData.path = $('#upload-folder-select').val();
 	upldr.options.data = JSON.stringify(upldrData);
-	//$('#upload-folder-select').trigger( "change" );
+	//$('#upload-folder-select').trigger( 'change' );
 
 	/*
 	 upldr.options = {
-	 'target' : "gallery/fileUpload.php",
+	 'target' : 'gallery/fileUpload.php',
 	 //'data' : JSON.stringify(upldrData),
 	 'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod) {
 	 prototype({
@@ -109,7 +105,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	 */
 
 	upldr.set({
-		'target' : "gallery/fileUpload.php",
+		'target' : 'gallery/fileUpload.php',
 		//'data' : JSON.stringify(upldrData),
 		'cbReaderOnload' : function(src, fName, fType, fSize, fLastMod) {
 				//console.log( getSlug(fName, {'custom' : ['.'] }) );
@@ -146,12 +142,11 @@ function processResponse(res) {
 		var encname = encodeURI(images[i]);
 		var id = path + encname;
 		var entry = {
-			"file" : name,
-			"path" : path,
-			"time" : n,
-			"tags" : tags
+			'file' : name,
+			'path' : path,
+			'time' : n,
+			'tags' : tags
 		};
 		gJ.images[id] = entry;
 	};
 };
-

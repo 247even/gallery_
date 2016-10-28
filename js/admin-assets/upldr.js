@@ -1,3 +1,5 @@
+'use strict';
+
 var _upldr = function() {
 
     this.options = {

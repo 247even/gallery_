@@ -6,6 +6,7 @@ jsLoader({
     'srcpath': 'js/',
     'concat': true,
     'minify': false,
+    'skipmin': false,
     'gzip': false,
     'cache': false
 });
@@ -60,6 +61,10 @@ function adminInit() {
 
 
     $('.admin-header a[aria-controls="start-panel"]').on('shown.bs.tab', function(e) {
+
+        $(".gallery-row .gallery-item").removeClass("selected-image").off("click").on("click", function(e) {
+            $('#gallery-lightbox').modal('show');
+        });
 
         $('.scan-button').on('click', function() {
             loader();
