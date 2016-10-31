@@ -287,11 +287,15 @@
 								<!-- end tabs panel -->
 
 								<div id="slider-panel" role="tabpanel" class="tab-pane scroll-wrapper">
+										<h4>Slider</h4>
 										<div id="slider-sortable" class="tab-row sortable clearfix">
 
 										</div>
 										<div class="tab-row">
 												<form id="slider-form" class="form-inline">
+													<div class="row tab-row">
+													<div class="col-xs-6">
+														<label for="slider-number-select">Quantity:</label>
 														<select id="slider-number-select" class="form-control">
 																<option>2</option>
 																<option>3</option>
@@ -303,7 +307,10 @@
 																<option>9</option>
 																<option>10</option>
 															</select>
-															<button id="slider-auto-btn" class="btn btn-default">auto</button>
+															<button id="slider-auto-btn" class="btn btn-default">auto-fill</button>
+														</div>
+														<div class="col-xs-6">
+															<label for="slider-interval-select">Interval:</label>
 															<select id="slider-interval-select" class="form-control">
 																	<option>1</option>
 																	<option selected="selected">2</option>
@@ -316,11 +323,20 @@
 																	<option>9</option>
 																	<option>10</option>
 																</select>
-															<button id="slider-save-btn" class="btn btn-default" disabled>Save</button>
+														</div>
+													</div>
+													<div class="row tab-row">
+														<div class="col-xs-12">
 															<button id="slider-clear-btn" class="btn btn-default" disabled>Clear</button>
 															<button id="slider-preview-btn" class="btn btn-default" disabled>Preview</button>
+															<button id="slider-save-btn" class="btn btn-default" disabled>Save</button>
+														</div>
+													</div>
 												</form>
 										</div>
+
+										<hr>
+										<h4>Blur-Effect</h4>
 										<div class="tab-row">
 												<input id="blur-slider" type="range" min="0" max="20" step="1" data-rangeslider>
 										</div>
@@ -579,8 +595,6 @@
 
 		<div id="placeholder-item-prototype">
 			<div class="placeholder-item thumbSize col-xs-2 sortable-item" draggable="true" role="option" aria-grabbed="false">
-					<div class="thumb-div">
-					</div>
 			</div>
 		</div>
 

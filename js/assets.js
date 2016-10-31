@@ -114,6 +114,9 @@ var debounce = function(func, threshold, execAsap) {
 })(jQuery);
 
 function proportion(el, a, b) {
+    if (typeof el === 'string') {
+      var el = document.querySelectorAll(el);
+    };
     var r = !r ? false : true;
     var a = !a ? 0 : a;
     var b = !b ? 0 : b;
