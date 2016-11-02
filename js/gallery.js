@@ -202,66 +202,71 @@ function initGalleryNavigation() {
     });
 };
 
-function buildSliders(image, i) {
-//function buildIndexCarousel(image, i) {
-    if (!gJ.sliders || gJ.sliders.length === 0) {
+function buildSliders(slider) {
+
+    var sliders = (slider) ? slider : gJ.sliders;
+    if (!sliders) { return false; }
+
+    var sliderKeys = Object.keys(sliders);
+
+    if (!sliderKeys || sliderKeys.length === 0) {
         console.log('no sliders');
         return false;
     }
 
-    var slidersLength = gJ.sliders[0].length;
-    if (slidersLength === 0) {
-        console.log('no images');
-        return false;
-    }
-    if (gJ.sliders[0] === 'auto') {
+    console.log(sliders);
 
-    }
+    for (var key in sliders) {
 
-    clearHtml(['#slider-1 .carousel-inner', '#slider-1 .carousel-indicators']);
+          var slidersLength = sliders[key][0].length;
+          if (slidersLength === 0) {
+              console.log('no images');
+              return false;
+          }
+          if (sliders[key][0] === 'auto') {
 
-    for (var i = 0; i < slidersLength; i++) {
+          }
 
-        var key = gJ.sliders[0][i];
-        var gJimage = gJ.images[key];
-        var respiPath = 'gallery/' + gJimage.path + '_respi/' + gJimage.file;
+          console.log('clear: #'+ key);
+          clearHtml(['#'+ key +' .carousel-inner', '#'+ key +' .carousel-indicators']);
+//          clearHtml(['#''slider-1 .carousel-inner', '#slider-1 .carousel-indicators']);
 
-        // add thumb & image to preloader:
-        if (imagesLoader) {
-          //imagesLoader.addImage(thumb);
-          imagesLoader.addImage(image);
-        }
+          for (var i = 0; i < slidersLength; i++) {
 
-        prototype({
-            'template': '#slider-item-prototype',
-            'selectors': ['respi-path'],
-            'values': [respiPath],
-            'targets': '#slider-1 .carousel-inner'
-        });
+              var image = sliders[key][0][i];
+              var gJimage = gJ.images[image];
+              var respiPath = 'gallery/' + gJimage.path + '_respi/' + gJimage.file;
 
-/*
-        var item = '<div class=\"box section section--relative section--fixed-size section--bg-adapted item dark center section--full-height\"'
-                    + 'style=\"background-image: url(' + image + ');\">'
-                    + '<div class=\"box__magnet box__magnet--sm-padding after-navbar\"><div class=\"container\">'
-                    + '<div class=\"row\"> <div class=\"col-sm-8 col-sm-offset-2\"><div class=\"hero\"></div></div></div></div></div></div>';
-        $('#slider-1 .carousel-inner').append(item);
-*/
+              // add thumb & image to preloader:
+              if (imagesLoader) {
+                //imagesLoader.addImage(thumb);
+                imagesLoader.addImage(image);
+              }
 
-        var indicator = '<li class=\"box-shadow--2dp\" data-app-prevent-settings=\"\" data-target=\"#slider-1\" data-slide-to=\"' + i + '\"></li>';
-        $('#slider-1 .carousel-indicators').append(indicator);
-        $('#slider-1 .carousel-indicators li').removeClass('active');
-        $('#slider-1 .carousel-indicators li:first').addClass('active');
-        $('#slider-1 .item').removeClass('active');
-        $('#slider-1 .item:first').addClass('active');
+              prototype({
+                  'template': '#slider-item-prototype',
+                  'selectors': ['respi-path'],
+                  'values': [respiPath],
+                  'targets': '#'+ key +' .carousel-inner'
+              });
 
-        $('#slider-1').carousel({
-          interval: 1000
-        })
+              var indicator = '<li class=\"box-shadow--2dp\" data-app-prevent-settings=\"\" data-target=\"#'+ key +'\" data-slide-to=\"' + i + '\"></li>';
+              $('#'+ key +' .carousel-indicators').append(indicator);
+              $('#'+ key +' .carousel-indicators li').removeClass('active');
+              $('#'+ key +' .carousel-indicators li:first').addClass('active');
+              $('#'+ key +' .item').removeClass('active');
+              $('#'+ key +' .item:first').addClass('active');
+          }
 
-/*
-        $('#slider-1 .box').removeClass('active');
-        $('#slider-1 .box:first').addClass('active');
-*/
+          var int = 2000;
+          if (sliders[key][1] && sliders[key][1] != 0) {
+              int = sliders[key][1] * 1000;
+          }
+
+          $('#'+key).carousel({
+            interval: int
+          });
+
     }
 };
 

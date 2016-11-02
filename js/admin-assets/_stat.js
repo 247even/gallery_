@@ -7,6 +7,9 @@ var stat = {
     'imagesModified': [],
     'imagesNotProcessed': [],
     'workingFolder': '',
+    'workingSlider': 's1',
+    'sliders': {},
+    'effect' : ['blur', 5],
 
     '_workingImage': '',
     set workingImage(val) {
@@ -31,7 +34,6 @@ var stat = {
         this._folderImages = val;
         console.log('folderImages buildFolderTable()');
         buildFolderTable();
-        //getNewImages();
     },
     get folderImages() {
         return this._folderImages;
@@ -43,16 +45,6 @@ var stat = {
         if (val) {
             this._allImages = val;
         }
-        //getNewImages();
-        //console.log('allImages buildFolderTable()');
-        //buildFolderTable();
-        /*
-        var imgtd = Object.keys(stat.allImages).length;
-        if(stat.newImages.length > 0){
-            imgtd = imgtd+"/"+stat.newImages.length;
-        }
-        $("#tr-"+stat.workingFolder+" .td-img").html(imgtd);
-        */
     },
     get allImages() {
         return this._allImages;
@@ -125,25 +117,7 @@ var stat = {
                     stat.newFolders = _.without(stat.newFolders, folder);
                 }
             });
-
-            /*
-            $('#folder-modal .modal-body .folder-name').html('"' + fo + '" (' + stat.folderImages[fo][0] + ')');
-
-            $('#folder-modal').attr('data', fo)
-                .modal('show');
-            */
-
-            /*
-            prototype({
-            'template' : '#folder-button-template',
-            'selectors' : ['folder'],
-            'values' : [stat.newFolders[i]],
-            'targets' : '#folderButtons'
-            });
-            */
-            //}
         }
-        //buildFolderTable();
     },
     get newFolders() {
         return this._newFolders;

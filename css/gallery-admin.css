@@ -204,3 +204,31 @@
 	width: 100px;
 	height: 100px;
 }
+
+#slider-panel label {
+	width: 100%;
+	float: none;
+}
+
+#slider-number-select,
+#slider-interval-select  {
+	width: auto;
+	max-width: 50%;
+	float: left;
+}
+
+#slider-auto-btn {
+	margin-left: 6px;
+}
+
+.label2 {
+	display: inline-block;
+	width: auto;
+	color: inherit;
+	background-color: inherit;
+	border: 0;
+	padding: 6px 12px;
+	font-size: 14px;
+	font-weight: 400;
+	text-align: center;
+}

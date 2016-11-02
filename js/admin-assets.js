@@ -8,6 +8,9 @@ var stat = {
     'imagesModified': [],
     'imagesNotProcessed': [],
     'workingFolder': '',
+    'workingSlider': 's1',
+    'sliders': {},
+    'effect' : ['blur', 5],
 
     '_workingImage': '',
     set workingImage(val) {
@@ -32,7 +35,6 @@ var stat = {
         this._folderImages = val;
         console.log('folderImages buildFolderTable()');
         buildFolderTable();
-        //getNewImages();
     },
     get folderImages() {
         return this._folderImages;
@@ -44,16 +46,6 @@ var stat = {
         if (val) {
             this._allImages = val;
         }
-        //getNewImages();
-        //console.log('allImages buildFolderTable()');
-        //buildFolderTable();
-        /*
-        var imgtd = Object.keys(stat.allImages).length;
-        if(stat.newImages.length > 0){
-            imgtd = imgtd+"/"+stat.newImages.length;
-        }
-        $("#tr-"+stat.workingFolder+" .td-img").html(imgtd);
-        */
     },
     get allImages() {
         return this._allImages;
@@ -126,25 +118,7 @@ var stat = {
                     stat.newFolders = _.without(stat.newFolders, folder);
                 }
             });
-
-            /*
-            $('#folder-modal .modal-body .folder-name').html('"' + fo + '" (' + stat.folderImages[fo][0] + ')');
-
-            $('#folder-modal').attr('data', fo)
-                .modal('show');
-            */
-
-            /*
-            prototype({
-            'template' : '#folder-button-template',
-            'selectors' : ['folder'],
-            'values' : [stat.newFolders[i]],
-            'targets' : '#folderButtons'
-            });
-            */
-            //}
         }
-        //buildFolderTable();
     },
     get newFolders() {
         return this._newFolders;
@@ -632,7 +606,14 @@ $('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 
 }); /* Sliders */
 
+var dis = true;
+
 $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e) {
+
+  $("#slider-clear-btn").prop("disabled", dis);
+  $("#slider-preview-btn").prop("disabled", dis);
+  $("#slider-save-btn").prop("disabled", dis);
+
 
     if ( !$('#slider-sortable .sortable-item').length ) {
         for (var i = 0; i < 2; i++) {
@@ -643,90 +624,20 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         }
 
         proportion('#slider-sortable .placeholder-item', 1, 1);
-
-//        var phel = document.querySelectorAll('#slider-sortable .placeholder-item');
-//        proportion(phel, 1, 1);
-        //$('#slider-sortable .placeholder-item').proportion(1,1);
     }
 
-
-    var blurIntensity = 5;
-
-    document.getElementById('blur-slider').value = blurIntensity;
-    document.getElementById('blur-input').value = blurIntensity;
-
-    function fullScreen(img) {
-        var ef = document.getElementById("effect-fullscreen");
-        document.getElementById("effect-preview-image").addEventListener("click", function() {
-            ef.style.display = 'block';
-            ef.style.backgroundImage = 'url(' + img + ')';
-        });
-        ef.addEventListener("click", function() {
-            ef.style.display = 'none';
-        });
-    };
-
-    function loadBlur() {
-
-        var selImg = document.querySelector("#slider-sortable .selected-image .thumb-div");
-
-        if (!selImg) {
-          console.log(selImg);
-          var selItem = document.querySelector("#slider-sortable .gallery-item");
-          selItem.className += " selected-image";
-          selImg = document.querySelector("#slider-sortable .selected-image .thumb-div");
-        }
-
-        var imgSrc = selImg.getAttribute("respi-path");
-        $("#blurPath").val(imgSrc);
-        var imgSrcSplit = imgSrc.split("/");
-        var imgSrc_720 = imgSrc.replace("_respi", "_720");
-        var imgSrc_720_blur = imgSrc_720.replace("gallery", "gallery/blur");
-
-        //document.querySelector("#blur-status").innerHTML = "Static blur image not found.";
-
-        $("#blur-image-frame img").attr('src', imgSrc_720).imagesLoaded().always(function() {
-            //console.log("blur image");
-        }).done(function() {
-            blur('#effect-preview-image', blurIntensity);
-            fullScreen(imgSrc_720);
-            blur('#effect-fullscreen', blurIntensity);
-        });
-
-        /*
-         $("#blurImageFrame img").attr('src', imgSrc_720_blur + '?ts=' + Date.now()).imagesLoaded().always(function(instance) {
-         //console.log('blur image request');
-         }).done(function(instance) {
-         document.querySelector("#blur-status").innerHTML = "Static blur image found.";
-         fullScreen(imgSrc_720_blur);
-         //console.log("blur image loaded");
-         }).fail(function() {
-         console.log('image failure');
-         document.querySelector("#blur-status").innerHTML = "Static blur image not found.";
-
-         $("#blurImageFrame img").attr('src', imgSrc_720).imagesLoaded().always(function() {
-         console.log("blur image not loaded");
-         }).done(function() {
-         blur('#effect-preview-image', blurIntensity);
-         fullScreen(imgSrc_720);
-         blur('#effect-fullscreen', blurIntensity);
-         });
-
-         });
-         */
-
-    };
+    document.getElementById('blur-slider').value = stat.effect[1];
+    document.getElementById('blur-input').value = stat.effect[1];
 
     $("#blur-slider").rangeslider({
         polyfill: false,
         onInit: function(position, value) {
-            //document.getElementById("blur-input").value = value;
         },
         onSlide: function(position, value) {
             document.getElementById("blur-input").value = value;
         },
         onSlideEnd: function(position, value) {
-            blurIntensity = value;
+            stat.effect[1] = value;
             document.getElementById("blur-input").value = value;
             blur('#effect-preview-image', value);
             blur('#effect-fullscreen', value);
@@ -740,21 +651,9 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         }
     });
 
-    $("#blur-submit").click(function(e) {
+    $("#blur-save-button").click(function(e) {
         e.preventDefault();
-        var postdata = $("#blur-form").serialize();
-        console.log(postdata);
-        $.ajax({
-            type: "GET",
-            url: "gallery/blur.php",
-            data: postdata,
-            success: function(data) {
-                console.log(data);
-                if (data == "done") {
-                    loadBlur();
-                }
-            }
-        })
+        gJ.effect = stat.effect;
     });
 
     $(".gallery-row .selected-image").removeClass("selected-image");
@@ -767,15 +666,6 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         sliderNumber = nS.options[nS.selectedIndex].text;
         //console.log(nS.options[nS.selectedIndex].text);
     });
-
-    function selectedIds() {
-        var selected_ids = [];
-        var items = document.querySelectorAll("#slider-sortable .gallery-item");
-        for (var i = 0, len = items.length; i < len; i++) {
-            selected_ids.push(items[i].getAttribute("data-id"));
-        }
-        return selected_ids;
-    };
 
     function autoIds(q) {
 
@@ -820,24 +710,9 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     };
     autoIds();
 
-    /*
-     sortable('.sortable',{
-     placeholderClass: 'col-xs-3 gallery-item sort-placeholder',
-     forcePlaceholderSize: true
-     //hoverClass: 'sort-placeholder'
-     });
-
-     sortable('.sortable')[0].addEventListener('sortupdate', function(e) {
-     console.log(e);
-     gJ.sliders["slider1"] = selectedIds();
-     saveStatus(true);
-     });
-     */
-
     function reset() {
         clearHtml(["#slider-sortable"]);
         removeClasses(".gallery-item", ["selected-image"]);
-        //$(".gallery-item").removeClass("selected-image");
 
         for (var i = 0; i < 2; i++) {
           prototype({
@@ -850,7 +725,6 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         //proportion(phel, 1, 1);
         proportion('#slider-sortable .placeholder-item', 1, 1);
 
-        //$("#slider-sortable").html("");
 				$("#slider-save-btn").prop("disabled", true);
         $("#slider-clear-btn").prop("disabled", true);
         $("#slider-preview-btn").prop("disabled", true);
@@ -872,7 +746,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
             }
         });
 
-        gJ.sliders[0] = [];
+        //gJ.sliders[0] = [];
     });
 
     $("#slider-save-btn").on("click", function(e) {
@@ -883,28 +757,18 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 
     $("#slider-preview-btn").on("click", function(e) {
         e.preventDefault();
-        buildSliders();
+        $('#slider-1').attr('id', stat.workingSlider);
+        buildSliders(_.pick(stat.sliders, [stat.workingSlider]));
         $('#slider-wrapper').removeClass('hidden');
-        $('#slider-1 .item').respi();
+        $('#'+ stat.workingSlider +' .item').respi();
         setTimeout(function() {
-            $('#slider-1').carousel();
-        }, 1000);
+            //$('#'+stat.workingSlider).carousel();
+        }, stat.sliders[stat.workingSlider][1]);
     });
 
     $('#slider-wrapper').on('click', function() {
-        $('#slider-wrapper').addClass('hidden');
+        $(this).addClass('hidden');
     });
-
-    /*
-     $(".gallery-row .gallery-item").removeClass("selected-image").off("click").on("click", function(e) {
-     e.preventDefault();
-     e.stopPropagation();
-     $(".gallery-item").removeClass("selected-image");
-     $(this).addClass("selected-image");
-
-     loadBlur();
-     });
-     */
 
     sortable('.sortable', {
         placeholderClass: 'col-xs-2 gallery-item sort-placeholder',
@@ -913,8 +777,19 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     })
 
     sortable('.sortable')[0].addEventListener('sortupdate', function(e) {
-        gJ.sliders[0] = selectedIds();
+        stat.sliders[ stat.workingSlider ] = [
+          selectedIds(),
+          $('#slider-interval-select').val()
+        ];
         saveStatus(true);
+    });
+
+    $('#slider-interval-select').on('click', function(){
+      stat.sliders[ stat.workingSlider ] = [
+        selectedIds(),
+        $(this).val()
+      ];
+      console.log(stat.sliders);  
     });
 
     $(".gallery-row .gallery-item").off("click").on("click", function(e) {
@@ -937,11 +812,9 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
             $("#slider-sortable .gallery-item a").remove();
 
             // set same height for chrome
-            //var el = document.querySelectorAll("#slider-sortable .gallery-item");
-            //console.log(el);
+            var el = document.querySelectorAll("#slider-sortable .gallery-item");
             if (el.length > 0) {
-              proportion('#slider-sortable .gallery-item', 1, 1);
-              //$("#slider-sortable .gallery-item").proportion();
+              proportion(el, 1, 1);
               $("#slider-sortable .gallery-item").css('height', Math.round(el[0].offsetHeight));
             }
 
@@ -954,11 +827,11 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 
         var selected_ids = selectedIds();
         var selLength = selected_ids.length;
-        var dis = true;
 
         $('#slider-sortable .placeholder-item').remove();
 
         if (selLength === 0) {
+          dis = true;
           for (var i = 0; i < 2; i++) {
             prototype({
               'template' : '#placeholder-item-prototype',
@@ -975,6 +848,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         }
 
         if (selLength === 1) {
+          dis = true;
           prototype({
             'template' : '#placeholder-item-prototype',
             'targets' : '#slider-sortable'
@@ -984,30 +858,73 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         }
 
         if (selLength >= 2 ) {
+          stat.sliders[ stat.workingSlider ] = [
+            selectedIds(),
+            $('#slider-interval-select').val()
+          ];
           dis = false;
         }
 
-        $("#slider-save-btn").prop("disabled", dis);
         $("#slider-clear-btn").prop("disabled", dis);
         $("#slider-preview-btn").prop("disabled", dis);
+        $("#slider-save-btn").prop("disabled", true);
 
-        gJ.sliders[0] = selected_ids;
-        saveStatus(true);
+        if (!dis && gJ.sliders[stat.workingSlider] !== stat.sliders[stat.workingSlider]) {
+          $("#slider-save-btn").prop("disabled", false);
+          saveStatus(true);
+        }
 
     });
 
-    /*
-     $('.sortable').sortable('.sortable',{
-     placeholderClass: 'col-xs-3 gallery-item sort-placeholder',
-     forcePlaceholderSize: true,
-     hoverClass: 'is-hovered'
-     }).unbind('sortupdate').bind('sortupdate', function(e, ui) {
-     gJ.sliders["slider1"] = selectedIds();
-     saveStatus(true);
-     });
-     */
-
 });
+
+function fullScreen(img) {
+    var ef = document.getElementById("effect-fullscreen");
+    document.getElementById("effect-preview-image").addEventListener("click", function() {
+        ef.style.display = 'block';
+        ef.style.backgroundImage = 'url(' + img + ')';
+    });
+    ef.addEventListener("click", function() {
+        ef.style.display = 'none';
+    });
+};
+
+function loadBlur() {
+
+    var selImg = document.querySelector("#slider-sortable .selected-image .thumb-div");
+
+    if (!selImg) {
+      console.log(selImg);
+      var selItem = document.querySelector("#slider-sortable .gallery-item");
+      selItem.className += " selected-image";
+      selImg = document.querySelector("#slider-sortable .selected-image .thumb-div");
+    }
+
+    var imgSrc = selImg.getAttribute("respi-path");
+    $("#blurPath").val(imgSrc);
+    var imgSrcSplit = imgSrc.split("/");
+    var imgSrc_720 = imgSrc.replace("_respi", "_720");
+    var imgSrc_720_blur = imgSrc_720.replace("gallery", "gallery/blur");
+
+    //document.querySelector("#blur-status").innerHTML = "Static blur image not found.";
+
+    $("#blur-image-frame img").attr('src', imgSrc_720).imagesLoaded().always(function() {
+        //console.log("blur image");
+    }).done(function() {
+        blur('#effect-preview-image', stat.effect[1]);
+        fullScreen(imgSrc_720);
+        blur('#effect-fullscreen', stat.effect[1]);
+    });
+};
+
+function selectedIds() {
+    var selected_ids = [];
+    var items = document.querySelectorAll("#slider-sortable .gallery-item");
+    for (var i = 0, len = items.length; i < len; i++) {
+        selected_ids.push(items[i].getAttribute("data-id"));
+    }
+    return selected_ids;
+};
 /* Tags Panel */
 
 var selectedImages_tags;
