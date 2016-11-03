@@ -2,233 +2,157 @@
 .admin-header,
 #login-screen,
 #effect-fullscreen {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
-
 #slider-wrapper,
 #effect-fullscreen,
-#effect-fullscreen-image {
-	height: 100%;
-}
-
+#effect-fullscreen-image { height: 100% }
 #blur-image-frame,
 .placeholder-item {
-	background-color: #444;
-	background-image: url('placeholder.svg');
-	background-repeat: no-repeat;
-	background-position: center;
+    background-color: #444;
+    background-image: url(placeholder.svg);
+    background-repeat: no-repeat;
+    background-position: center;
 }
-
 #blur-image-frame {
-	text-align: center;
-	max-height: 500px;
-	background-size: 128px;
-	cursor: pointer;
+    text-align: center;
+    max-height: 500px;
+    background-size: 128px;
+    cursor: pointer;
 }
-
-.placeholder-item {
-	background-size: 64px;
-}
-
-#blur-image-frame img {
-	width: 100%;
-}
-
-#slider-wrapper {
-	z-index: 11;
-}
-
+.placeholder-item { background-size: 64px }
+#blur-image-frame img { width: 100% }
+#slider-wrapper { z-index: 11 }
 #effect-fullscreen {
-	text-align: center;
-	z-index: 12;
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: cover;
-	overflow: hidden;
-	cursor: pointer;
+    text-align: center;
+    z-index: 12;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    overflow: hidden;
+    cursor: pointer;
 }
-
-.selected-image {
-	border: 2px solid red;
-}
-
-#file-table {
-	table-layout: fixed;
-}
-.th-thumb {
-	width: 80px;
-}
-.th-name {
-	width: 200px;
-}
+.selected-image { border: 2px solid red }
+#file-table { table-layout: fixed }
+.th-thumb { width: 80px }
+.th-name { width: 200px }
 .td-file-name {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-
-/* admin panel */
-
 .admin-header {
-	padding-top: 5px;
-	background-color: #000;
+    padding-top: 5px;
+    background-color: #000;
 }
-
 .admin-header .nav-tabs {
-	padding-left: 5px;
-	border-color: #292929;
+    padding-left: 5px;
+    border-color: #292929;
 }
-
-.admin-header .nav-tabs a {
-	color: #ccc;
-}
-
-.admin-header .nav-tabs > li.active > a {
-	color: #eee;
-	background-color: #292929;
-	border-color: #292929;
-}
-
-.admin-header .nav-tabs > li:hover > a {
-	color: #eee;
-	background-color: #292929;
-	border-color: #292929;
-}
-
+.admin-header .nav-tabs a { color: #ccc }
 .admin-panel {
-	background-color: #292929;
-	color: #eee;
+    background-color: #292929;
+    color: #eee;
 }
-
-.admin-panel .navbar:before, .admin-panel .navbar-container {
-	height: auto !important;
-}
-
+.admin-panel .navbar:before,
+.admin-panel .navbar-container { height: auto!important }
 .tab-content {
-	margin: 0;
-	padding-bottom: 50px
+    padding-bottom: 50px;
+    margin: 0;
 }
-.tab-content, .overflow-auto {
-	overflow: auto !important;
-}
-
-/* login */
-
+.tab-content,
+.overflow-auto { overflow: auto!important }
 #login-screen {
-	z-index: 999;
-	height: 100%;
-	background-color: #ccc;
+    z-index: 999;
+    height: 100%;
+    background-color: #ccc;
 }
 .form-signin {
-	max-width: 330px;
-	padding: 15px;
-	margin: 0 auto;
+    max-width: 330px;
+    margin: 0 auto;
+    padding: 15px;
 }
-
-/* admin panel */
-.admin-header {
-	padding-top: 5px;
-	background-color: #000;
-}
-
-.admin-header .nav-tabs {
-	padding-left: 5px;
-	border-color: #292929;
-}
-
-.admin-header .nav-tabs a {
-	color: #ccc;
-}
-
-.admin-header .nav-tabs > li.active > a {
-	color: #eee;
-	background-color: #292929;
-	border-color: #292929;
-}
-
-.admin-header .nav-tabs > li:hover > a {
-	color: #eee;
-	background-color: #292929;
-	border-color: #292929;
-}
-
-.admin-panel {
-	background-color: #292929;
-	color: #eee;
-}
-
-.admin-panel .navbar:before, .admin-panel .navbar-container {
-	height: auto !important;
-}
-
-.navbar-container, .after-navbar::before {
-    height: 47px !important;
-}
-
-.selected-image {
-	border: 2px solid red;
-}
-
+.navbar-container,
+.after-navbar::before { height: 47px!important }
 .rangeslider {
-	margin-top: 20px;
-	background: #e6e6e6;
+    margin-top: 20px;
+    background: #e6e6e6;
 }
-
-.td-index {
-	width: 50px;
+.td-index { width: 50px }
+.td-ign,
+.td-del,
+.td-scn {
+    width: 60px;
+    text-align: center;
 }
-
-.td-ign, .td-del, .td-scn {
-	width: 60px;
-	text-align: center;
-}
-
-.success {
-	color: #333;
-}
-
-#slider-sortable {
-	min-height: 89px;
-}
-
-#slider-sortable .thumb-div {
-	cursor: pointer;
-}
-
+.success { color: #333 }
+#slider-sortable { min-height: 89px }
+#slider-sortable .thumb-div { cursor: pointer }
 .sortable-placeholder {
-	position: relative;
-	float: left;
-	width: 100px;
-	height: 100px;
+    position: relative;
+    float: left;
+    width: 100px;
+    height: 100px;
 }
-
 #slider-panel label {
-	width: 100%;
-	float: none;
+    width: 100%;
+    float: none;
 }
-
 #slider-number-select,
-#slider-interval-select  {
-	width: auto;
-	max-width: 50%;
-	float: left;
+#slider-interval-select {
+    width: auto;
+    max-width: 50%;
+    float: left;
 }
-
 #slider-auto-btn {
-	margin-left: 6px;
+  margin-left: 6px;
 }
 
 .label2 {
-	display: inline-block;
-	width: auto;
-	color: inherit;
-	background-color: inherit;
-	border: 0;
-	padding: 6px 12px;
-	font-size: 14px;
-	font-weight: 400;
-	text-align: center;
+    display: inline-block;
+    width: auto;
+    color: inherit;
+    background-color: inherit;
+    border: 0;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+    padding: 6px 12px;
+}
+.rangeslider__fill { background-color: #337ab7 }
+button .glyphicon { color: #fff }
+.admin-header .nav-tabs > li.active > a,
+.admin-header .nav-tabs > li:hover > a {
+    color: #eee;
+    background-color: #292929;
+    border-color: #292929;
+}
+
+.tab-pane-container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+tr.warning {
+	color: #666;
+	background-color: transparent;
+}
+
+.tab-row {
+	float: none;
+	margin: 20px 0 0 0;
+}
+.tab-row:after {
+  display: table;
+  content: " ";
+  clear: both;
+}
+.tab-col {
+  padding-left: 3px;
+  padding-right: 3px;
 }

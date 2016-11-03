@@ -345,15 +345,3 @@
 .table-hover > tbody > tr > th.warning:hover {
 	background-color: transparent;
 }
-
-tr.warning {
-	color: #666;
-	background-color: transparent;
-}
-
-.tab-row {
-	display: block;
-	float: none;
-	width: 100%;
-	margin-top: 20px;
-}

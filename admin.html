@@ -291,8 +291,7 @@
 										<div id="slider-sortable" class="tab-row sortable clearfix">
 										</div>
 										<div class="tab-row">
-													<div class="row tab-row">
-													<div class="col-xs-6">
+												<div class="tab-col col-xs-6">
 														<label for="slider-number-select">Quantity:</label>
 														<select id="slider-number-select" class="form-control">
 																<option>2</option>
@@ -305,41 +304,40 @@
 																<option>9</option>
 																<option>10</option>
 														</select>
-														<button id="slider-auto-btn" class="btn btn-default">auto-fill</button>
-													</div>
-													<div class="col-xs-6">
-															<label for="slider-interval-select">Interval:</label>
-															<select id="slider-interval-select" class="form-control">
-																	<option>1</option>
-																	<option selected="selected">2</option>
-																	<option>3</option>
-																	<option>4</option>
-																	<option>5</option>
-																	<option>6</option>
-																	<option>7</option>
-																	<option>8</option>
-																	<option>9</option>
-																	<option>10</option>
-															</select>
-															<span class="form-control label2">seconds</span>
-													</div>
-													</div>
-													<div class="row tab-row">
-														<div class="col-xs-4">
-															<button id="slider-clear-btn" class="btn btn-default btn-block" disabled>
-																<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Clear</button>
-														</div>
-														<div class="col-xs-4">
-															<button id="slider-preview-btn" class="btn btn-default btn-block" disabled>
-																<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Preview</button>
-														</div>
-														<div class="col-xs-4">
-															<button id="slider-save-btn" class="btn btn-default btn-block" disabled>
-																<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Save</button>
-														</div>
-													</div>
+														<button id="slider-fill-btn" class="btn btn-default">fill</button>
+														<button id="slider-auto-btn" class="btn btn-default">auto</button>
+												</div>
+												<div class="tab-col col-xs-6">
+														<label for="slider-interval-select">Interval:</label>
+														<select id="slider-interval-select" class="form-control">
+																<option>1</option>
+																<option selected="selected">2</option>
+																<option>3</option>
+																<option>4</option>
+																<option>5</option>
+																<option>6</option>
+																<option>7</option>
+																<option>8</option>
+																<option>9</option>
+																<option>10</option>
+														</select>
+														<span class="form-control label2">seconds</span>
+												</div>
 										</div>
-
+										<div class="tab-row">
+												<div class="tab-col col-xs-4">
+														<button id="slider-clear-btn" class="btn btn-warning btn-block" disabled>
+																<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Clear</button>
+												</div>
+												<div class="tab-col col-xs-4">
+														<button id="slider-preview-btn" class="btn btn-primary btn-block" disabled>
+																<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Preview</button>
+												</div>
+												<div class="tab-col col-xs-4">
+														<button id="slider-save-btn" class="btn btn-success btn-block" disabled>
+																<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Save</button>
+												</div>
+										</div>
 										<hr>
 										<h4>Blur-Effect</h4>
 										<div class="tab-row">
