@@ -8,6 +8,7 @@ var stat = {
     'imagesNotProcessed': [],
     'workingFolder': '',
     'workingSlider': 's1',
+    'selectedIds': [],
     'sliders': {},
     'effect' : ['blur', 5],
 

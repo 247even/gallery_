@@ -15,7 +15,7 @@ function prototype(data) {
 
     var values;
     if (data.values) {
-      values = data.values;      
+      values = data.values;
     }
 
     var targets;

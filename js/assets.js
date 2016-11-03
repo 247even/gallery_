@@ -185,7 +185,7 @@ $(narray).nearest(19);
 
     var values;
     if (data.values) {
-      values = data.values;      
+      values = data.values;
     }
 
     var targets;
