@@ -7,10 +7,40 @@ var stat = {
     'imagesModified': [],
     'imagesNotProcessed': [],
     'workingFolder': '',
-    'workingSlider': 's1',
-    'selectedIds': [],
+    '_effect' : ['blur', 5],
+    set effect(val) {
+      this._effect = val;
+      blur('#effect-preview-image', stat.effect[1]);
+      blur('#effect-fullscreen', stat.effect[1]);
+    },
+    get effect() {
+      return this._effect;
+    },
+
     'sliders': {},
-    'effect' : ['blur', 5],
+    'workingSlider': 's1',
+    '_sliderNumber' : 5,
+    set sliderNumber(val) {
+      this._sliderNumber = val;
+    },
+    get sliderNumber() {
+      return this._sliderNumber;
+    },
+    '_sliderInterval' : 3,
+    set sliderInterval(val) {
+      this._sliderInterval = val;
+    },
+    get sliderInterval() {
+      return this._sliderInterval;
+    },
+    '_selectedIds': [],
+    set selectedIds(val) {
+      this._selectedIds = val;
+      statSaveSlider();
+    },
+    get selectedIds() {
+      return this._selectedIds;
+    },
 
     '_workingImage': '',
     set workingImage(val) {
@@ -124,4 +154,20 @@ var stat = {
         return this._newFolders;
     }
 
+};
+
+function statSaveSlider(im) {
+    //var images = (im) ? im : selectedIds();
+    var images = (im) ? im : stat.selectedIds;
+    var pressed = document.getElementById('slider-auto-btn').getAttribute('aria-pressed');
+
+    if (!im && pressed) {
+        images = 'auto';
+    }
+
+    stat.sliders[stat.workingSlider] = [
+        images,
+        stat.sliderInterval,
+        stat.sliderNumber
+    ];
 };
