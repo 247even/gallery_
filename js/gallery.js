@@ -425,7 +425,7 @@ function initGallery() {
             $('#gallery-lightbox').modal('show');
         })
         .onScreen({
-            container: '#arbeiten',
+            container: '#gallery-section',
             direction: 'vertical',
             doIn: function(e) {
                 // Do something to the matched elements as they come in
