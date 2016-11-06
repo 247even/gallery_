@@ -1,5 +1,35 @@
 // func.js
 
+function createStyle(css) {
+
+    if (document.querySelector('head style#' + css.id)) {
+        document.head.removeChild(document.getElementById(css.id));
+    }
+
+    if (window.jQuery) {
+        $(document.head).append('<style id="' + css.id + '" type="text/css">' + css.style + '</style>');
+        return false;
+    }
+
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.id = css.id;
+
+    if (style.styleSheet) {
+        style.styleSheet.cssText = css.style;
+    } else {
+        style.appendChild(document.createTextNode(css.style));
+    }
+
+    document.head.appendChild(style);
+};
+
+createStyle({
+    id: 'test',
+    style: 'h1 { background: red; }'
+});
+
+
 Array.prototype.unique = function() {
     var u = [];
     var l = this.length;
@@ -23,8 +53,10 @@ function blur(el, val) {
 
 function removeClasses(el, classes) {
     var el = document.querySelectorAll(el);
-    for (var e = 0; e < el.length; e++) {
-        for (var i = 0; i < classes.length; i++) {
+    var elLength = el.length;
+    for (var e = 0; e < elLength; e++) {
+        var cLength = classes.length;
+        for (var i = 0; i < cLength; i++) {
             if (el[e].classList) {
                 el[e].classList.remove(classes[i]);
             } else {
@@ -36,7 +68,8 @@ function removeClasses(el, classes) {
 };
 
 function addClasses(el, classes) {
-    for (var i = 0, j = classes.length; i < j; i++) {
+    var j = classes.length;
+    for (var i = 0; i < j; i++) {
         el.classList ? el.classList.add(classes[i]) : el.className += ' ' + classes[i];
     };
 };
@@ -73,7 +106,8 @@ function convertTimestamp(timestamp) {
 
 // clear html elements
 function clearHtml(el) {
-    for (var i = 0; i < el.length; i++) {
+    var ell = el.length;
+    for (var i = 0; i < ell; i++) {
         document.querySelector(el[i]).innerHTML = "";
     }
 };
@@ -114,17 +148,18 @@ var debounce = function(func, threshold, execAsap) {
 
 function proportion(el, a, b) {
     if (typeof el === 'string') {
-      var el = document.querySelectorAll(el);
+        var el = document.querySelectorAll(el);
     };
     var r = !r ? false : true;
     var a = !a ? 0 : a;
     var b = !b ? 0 : b;
-    for (i = 0; i < el.length; i++) {
+    var ell = el.length;
+    for (i = 0; i < ell; i++) {
         var width = el[i].offsetWidth;
         if (el[i].style.width) {
-              width = el[i].style.width;
+            width = el[i].style.width;
         }
-        el[i].style.height =  width * ( b / a ) + 'px';
+        el[i].style.height = width * (b / a) + 'px';
     }
 };
 

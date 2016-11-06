@@ -78,26 +78,6 @@ function adminInit() {
     $('.admin-header a[aria-controls="start-panel"]').trigger('click');
 };
 
-/*
-function setFolderIgnoreButton() {
-    // the row ignore button stuff:
-    $('#foldersTable .btn-ign').on('click', function() {
-        ignoreFolder($(this).closest('tr').attr('data'));
-    });
-};
-
-function setDeleteFolderButton() {
-    // the row delete button stuff:
-    $('#foldersTable .btn-del').on('click', function() {
-        var dataFolder = $(this).closest('tr').attr('data');
-        removeFolder(dataFolder).done(function(data) {
-            console.log('folder removed');
-            $('#tr-' + dataFolder).remove();
-        });
-    });
-};
-*/
-
 function removeImages() {
     var l = imagesRemoved.length;
     var paths = [];

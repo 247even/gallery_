@@ -6,6 +6,13 @@ var stat = {
     'imagesAddedKeys': [],
     'imagesModified': [],
     'imagesNotProcessed': [],
+    'options' : {
+        'sizes': [280,430,720,1200],
+        'thumbSize': 'md',
+      	'thumbProportion': '1,1',
+      	'thumbFit': 'cover',
+      	'thumbPadding': '0'
+    },
     'workingFolder': '',
     '_effect' : ['blur', 5],
     set effect(val) {
@@ -112,8 +119,10 @@ var stat = {
             var folder = stat.newFolders[0];
             stat.workingFolder = folder;
             console.log(stat.folderImages);
-
-            var msg = '"' + folder + '" (' + stat.folderImages[folder][0] + ')';
+            var msg = '"' + folder + '"';
+            if (stat.folderImages[folder]){
+                msg = msg +' (' + stat.folderImages[folder][0] + ')';
+            }
 
             bootbox.confirm({
                 size: 'small',
@@ -133,14 +142,16 @@ var stat = {
                     console.log(result);
                     if (result) {
                       // add folder:
+                      gJ.folders.push(folder);
+                      setFolderSelect();
+                      $('#upload-folder-select').val(folder).prop('selected', true);
                       processNewFolder({
                           'folder': folder,
                           'cb': function() {
                               stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
                           }
                       });
-
-                      return false;
+                      return;
                     }
 
                     // ignore folder:

@@ -2,20 +2,7 @@
 $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e) {
 
 	var upldrData = {};
-
-	function folderSelect() {
-		$('#upload-folder-select').html('');
-		for (var i = 0; gJ.folders.length > i; i++) {
-			var folder = gJ.folders[i];
-			prototype({
-				'template' : '#folder-select-prototype',
-				'selectors' : ['folder'],
-				'values' : [folder],
-				'targets' : '#upload-folder-select'
-			});
-		}
-	};
-	folderSelect();
+	setFolderSelect();
 
 	function filesToGJ(f) {
 		for ( i = 0; f.length > i; i++) {
@@ -23,13 +10,25 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		}
 	};
 
-	$('#new-folder-name').on('keypress', function(event) {
-		var regex = new RegExp('^[a-zA-Z0-9_-äüö ]+$');
-		var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
-		if (!regex.test(key)) {
-			event.preventDefault();
-			return false;
-		}
+	$('#new-folder-name').on('keyup', function(event) {
+			console.log(event);
+
+			var valLength = $(this).val().trim().length
+
+			if (valLength > 1 && event.keyCode != 8) {
+				var regex = new RegExp('^[a-zA-Z0-9_äüö -]+$');
+				var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+				if (!regex.test(key)) {
+					event.preventDefault();
+					console.log('test');
+				}
+			}
+
+			if (valLength < 1) {
+				$('#new-folder-btn').prop('disabled', true);
+			} else {
+				$('#new-folder-btn').prop('disabled', false);
+			}
 	});
 
 	$('#new-folder-btn').on('click', function() {
@@ -37,13 +36,24 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		if (val) {
 			val = val.trim();
 
-			if ( _.indexOf( gJ.folders, val ) != -1 && _.indexOf( gJ.ignore, val ) != -1 ) {
+			if ( gJ.folders.indexOf(val) != -1 || gJ.ignore.indexOf(val) != -1 ) {
 				console.log('folder already present');
+				bootbox.alert({
+            size: 'small',
+            message: 'A folder "'+val+'" already exists.',
+            callback: function(result) {
+                if (result) {
+
+                }
+            }
+        });
 				return false;
 			}
 
 			createFolder(val).done(function(data){
 				console.log(data.dir);
+				stat.newFolders = [data.dir];
+				$('#new-folder-name').val('');
 			});
 
 			/*
@@ -149,4 +159,18 @@ function processResponse(res) {
 		};
 		gJ.images[id] = entry;
 	};
+};
+
+function setFolderSelect(fo) {
+	$('#upload-folder-select').html('');
+	var folders = fo ? fo : gJ.folders;
+	var foldersLength = folders.length;
+	for (var i = 0; foldersLength > i; i++) {
+		prototype({
+			'template' : '#folder-select-prototype',
+			'selectors' : ['folder'],
+			'values' : [folders[i]],
+			'targets' : '#upload-folder-select'
+		});
+	}
 };

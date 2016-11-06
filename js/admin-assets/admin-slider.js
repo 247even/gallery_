@@ -13,12 +13,15 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     }
 
     if (!$('#slider-sortable').find('div.sortable-item').length) {
-        for (var i = 0; i < 2; i++) {
+
             prototype({
                 'template': '#placeholder-item-prototype',
                 'targets': '#slider-sortable'
             });
-        }
+            prototype({
+                'template': '#placeholder-item-prototype',
+                'targets': '#slider-sortable'
+            });
 
         proportion('#slider-sortable .placeholder-item', 1, 1);
     }
@@ -39,9 +42,9 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     });
 
     $('#blur-input').on('change', function() {
-        var bsval = document.getElementById('blur-slider').value;
-        if (bsval != this.value) {
-            $('#blur-slider').val(this.value).change();
+        var bs = $('#blur-slider');
+        if (bs.val() != this.value) {
+            bs.val(this.value).change();
         }
         stat.effect = ['blur', this.value];
     });
@@ -51,7 +54,6 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     });
 
     $('div.gallery-row div.selected-image').removeClass('selected-image');
-    //	$('.sortable').sortable('destroy');
     document.getElementById('slider-sortable').innerHtml = '';
     autoIds();
 
@@ -63,8 +65,6 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     $('#slider-fill-btn').on('click', function(e) {
         e.preventDefault();
         reset();
-//        var sliderNumber = $('#slider-number-select').val();
-        //for (var i = 0; i < sliderNumber; i++) {
         for (var i = 0; i < stat.sliderNumber; i++) {
             $('#gallery-row').find('div.gallery-item').eq(i).trigger('click');
         }
@@ -121,37 +121,36 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 
     sortable('.sortable')[0].addEventListener('sortupdate', function(e) {
         selectedIds();
-        //statSaveSlider();
-        //saveStatus(true);
     });
 
     $('#slider-interval-select').on('change', function() {
         stat.sliderInterval = $(this).val();
-        //statSaveSlider();
     });
 
     $('#slider-number-select').on('change', function() {
         stat.sliderNumber = $(this).val();
-        //statSaveSlider();
     });
 
     $('div#gallery-row').find('div.gallery-item').off('click').on('click', function(e) {
 
         e.preventDefault();
         e.stopPropagation();
-
         $(this).toggleClass('selected-image');
 
         if ($(this).hasClass('selected-image')) {
 
             var cl = 'thumbSize gallery-item col-xs-2 selected-image sortable-item';
-            var id = $(this).attr('data-id');
-            var src = $(this).find('div.thumb-div').attr('data-src');
 
             prototype({
       				'template' : '#sortable-item-prototype',
-      				'selectors' : ['data-id', 'bg-image'],
-      				'values' : [id, src],
+      				'selectors' : [
+                  'data-id',
+                  'bg-image'
+                ],
+      				'values' : [
+                  $(this).attr('data-id'),
+                  $(this).find('div.thumb-div').attr('data-src')
+                ],
       				'targets' : '#slider-sortable'
       			});
 
@@ -171,8 +170,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
             }
 
         } else {
-            var data_id = $(this).attr('data-id');
-            $('div#slider-sortable').find('div.gallery-item[data-id="' + data_id + '"]').remove();
+            $('div#slider-sortable').find('div.gallery-item[data-id="' + $(this).attr('data-id') + '"]').remove();
         }
 
         sortable('.sortable');
@@ -210,20 +208,19 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         }
 
         if (selLength >= 2) {
-            //statSaveSlider();
             dis = false;
         }
 
         buttonDisable(dis)
-        //$('#slider-save-btn').prop('disabled', true);
-        document.getElementById('slider-save-btn').disabled = true;
 
         if (!dis && gJ.sliders[stat.workingSlider] !== stat.sliders[stat.workingSlider]) {
             //$('#slider-save-btn').prop('disabled', false);
             document.getElementById('slider-save-btn').disabled = false;
             saveStatus(true);
+            return false;
         }
 
+        document.getElementById('slider-save-btn').disabled = true;
     });
 
 });
@@ -244,8 +241,8 @@ function loadBlur(imgId) {
     if (!imgId) {
         var selImg = document.querySelector('#slider-sortable .selected-image');
         if (!selImg) {
-            var selItem = document.querySelector('#slider-sortable .gallery-item');
-            selItem.className += ' selected-image';
+            document.getElementById('slider-sortable').querySelector('.gallery-item')
+                .className += ' selected-image';
             selImg = document.querySelector('#slider-sortable .selected-image');
         }
         var imgId = selImg.getAttribute('data-id');
@@ -282,10 +279,10 @@ function reset() {
 
 function selectedIds() {
     var selected_ids = [];
-//    var items = document.querySelectorAll('#slider-sortable .gallery-item');
     var items = document.getElementById('slider-sortable').querySelectorAll('.gallery-item');
 
-    for (var i = 0, len = items.length; i < len; i++) {
+    var len = items.length;
+    for (var i = 0; i < len; i++) {
         selected_ids.push(items[i].getAttribute('data-id'));
     }
     stat.selectedIds = selected_ids;
@@ -301,10 +298,10 @@ function buttonDisable(st) {
 
 function autoIds(q) {
 
-    if (!$('#slider-sortable').is(':empty')) {
-        $('#slider-sortable').find('div.gallery-item').each(function() {
-            var did = $(this).attr('data-id');
-            $('div.gallery-row [data-id="' + did + '"]').addClass('selected-image');
+    if (!$('div#slider-sortable').is(':empty')) {
+        $('div#slider-sortable').find('div.gallery-item').each(function() {
+            $('div#gallery-row').find('div[data-id="' + $(this).attr('data-id') + '"]')
+              .addClass('selected-image');
         });
         return false;
     }

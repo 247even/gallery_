@@ -7,6 +7,13 @@ var stat = {
     'imagesAddedKeys': [],
     'imagesModified': [],
     'imagesNotProcessed': [],
+    'options' : {
+        'sizes': [280,430,720,1200],
+        'thumbSize': 'md',
+      	'thumbProportion': '1,1',
+      	'thumbFit': 'cover',
+      	'thumbPadding': '0'
+    },
     'workingFolder': '',
     '_effect' : ['blur', 5],
     set effect(val) {
@@ -113,8 +120,10 @@ var stat = {
             var folder = stat.newFolders[0];
             stat.workingFolder = folder;
             console.log(stat.folderImages);
-
-            var msg = '"' + folder + '" (' + stat.folderImages[folder][0] + ')';
+            var msg = '"' + folder + '"';
+            if (stat.folderImages[folder]){
+                msg = msg +' (' + stat.folderImages[folder][0] + ')';
+            }
 
             bootbox.confirm({
                 size: 'small',
@@ -134,14 +143,16 @@ var stat = {
                     console.log(result);
                     if (result) {
                       // add folder:
+                      gJ.folders.push(folder);
+                      setFolderSelect();
+                      $('#upload-folder-select').val(folder).prop('selected', true);
                       processNewFolder({
                           'folder': folder,
                           'cb': function() {
                               stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
                           }
                       });
-
-                      return false;
+                      return;
                     }
 
                     // ignore folder:
@@ -476,134 +487,148 @@ function saveStatus(state) {
 
 $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(e) {
 
-	$('#configReset').click(function() {
-		$('#optionsForm')[0].reset();
-		buildGallery(gJ);
-	});
+    $('#configReset').click(function() {
+        //$('#optionsForm')[0].reset();
+				$('#optionsForm').reset();
+        buildGallery(gJ);
+    });
 
-	// pre-/re-set thumbSize
-	var thumbSize = !gJ.thumbDisplay ? "md" : gJ.thumbDisplay;
-	$("#thumbDisplaySelect").val(thumbSize);
-
-	$("#thumbDisplaySelect").on("change", function() {
-		var value = $(this).val();
-
-		var proportion = gJ.thumbProportion;
-		proportion = !proportion ? [1, 1] : proportion.split(',');
-
+    // pre-/re-set thumbSize
 		/*
-		 var tpgi = document.querySelector('.gallery-item');
-		 addClasses(tpgi, thumbSize);
-		 */
+    var thumbSize = !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize;
+    $('#thumbSizeSelect').val(thumbSize);
+		*/
 
-		var thumbSize = !gJ.thumbDisplay ? "md" : gJ.thumbDisplay;
+    $('#thumbSizeSelect').val(
+				!gJ.options || !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize
+		);
 
-		//str.split(",").join("")
+    $('#thumbSizeSelect').on('change', function() {
+        var value = $(this).val();
+        var proportion = !gJ.options.thumbProportion ? stat.options.thumbProportion.split(',') : gJ.options.thumbProportion.split(',');
+        var thumbSize = !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize;
 
-		var tds = thumbDisplaySizes[thumbSize]
-		removeClasses(".gallery-item", tds);
+        removeClasses('.gallery-item', thumbSizeSizes[thumbSize]);
 
-		gJ.thumbDisplay = value;
+        //gJ.options.thumbSize = value;
+				stat.options.thumbSize = value;
 
-		ntds = thumbDisplaySizes[value].toString();
-		ntds = ntds.replace(/,/g, " ");
-		console.log(ntds);
-		$('.gallery-item').addClass(ntds).proportion(proportion[0], proportion[1]);
+        var ntds = thumbSizeSizes[value].toString();
+        ntds = ntds.replace(/,/g, ' ');
+        $('div#gallery-row').find('div.gallery-item').addClass(ntds).proportion(proportion[0], proportion[1]);
 
-		saveStatus(true);
-	});
+        saveStatus(true);
+    });
 
-	// pre-/re-set Proportion
-	var thumbProp = !gJ.proportion ? "1,1" : gJ.proportion;
-	$("#thumProportionSelect").val(thumbProp);
+    // pre-/re-set Proportion
+		/*
+    var thumbProp = !gJ.options.proportion ? stat.options.proportion : gJ.options.proportion;
+    $('#thumProportionSelect').val(thumbProp);
+*/
+    $('#thumProportionSelect').val(
+				!gJ.options || !gJ.options.proportion ? stat.options.proportion : gJ.options.proportion
+		);
 
-	$("#thumbProportionSelect").on("change", function() {
-		var value = $(this).val();
-		gJ.thumbProportion = value;
-		value = value.split(',');
-		$(".gallery-item").proportion(value[0], value[1]);
-		saveStatus(true);
-	});
+    $('#thumbProportionSelect').on('change', function() {
+        var value = $(this).val();
+        //gJ.options.thumbProportion = value;
+				stat.options.thumbProportion = value;
+        value = value.split(',');
+        $('div#gallery-row').find('div.gallery-item').proportion(value[0], value[1]);
+        saveStatus(true);
+    });
 
-	// pre-/re-set thumbFit
-	var thumbFit = !gJ.thumbFit ? "cover" : gJ.thumbFit;
-	$("#thumbFitSelect").val(thumbFit);
+    // pre-/re-set thumbFit
+		/*
+    var thumbFit = !gJ.options.thumbFit ? stat.options.thumbFit : gJ.options.thumbFit;
+    $('#thumbFitSelect').val(thumbFit);
+		*/
 
-	$("#thumbFitSelect").on("change", function() {
-		var value = $(this).val();
-		gJ.thumbFit = value;
-		$(".gallery-item .thumb-div").removeClass('cover-image contain-image').addClass(value + '-image');
-		saveStatus(true);
-	});
+		$('#thumbFitSelect').val(
+				!gJ.options || !gJ.options.thumbFit ? stat.options.thumbFit : gJ.options.thumbFit
+		);
 
-	// pre-/re-set thumbFit
-	var thumbPadding = !gJ.thumbPadding ? 0 : gJ.thumbPadding;
-	$("#thumbPaddingInput").val(thumbPadding);
+    $('#thumbFitSelect').on('change', function() {
+        var value = $(this).val();
+        //gJ.options.thumbFit = value;
+				stat.options.thumbFit = value;
+        $('div#gallery-row').find('div.gallery-item .thumb-div').removeClass('cover-image contain-image').addClass(value + '-image');
+        saveStatus(true);
+    });
 
-	$("#thumbPaddingInput").keydown(function() {
-		// Allow: backspace, delete, tab, escape, enter
-		if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
-		// Allow: Ctrl+A
-		(e.keyCode == 65 && e.ctrlKey === true) ||
-		// Allow: Ctrl+C
-		(e.keyCode == 67 && e.ctrlKey === true) ||
-		// Allow: Ctrl+X
-		(e.keyCode == 88 && e.ctrlKey === true) ||
-		// Allow: home, end, left, right
-		(e.keyCode >= 35 && e.keyCode <= 39)) {
-			// let it happen, don't do anything
-			return;
-		}
-		// Ensure that it is a number and stop the keypress
-		if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-			e.preventDefault();
-		}
-	});
+    // pre-/re-set thumbFit
+    /*var thumbPadding = !gJ.options.thumbPadding ? stat.options.thumbPadding : gJ.options.thumbPadding;
+    $('#thumbPaddingInput').val(thumbPadding);
+		*/
 
-	$("#thumbPaddingInput").on("change input", function() {
-		var value = $(this).val();
-		value = (!value || value < 1) ? 0 : value;
-		gJ.thumbPadding = value;
-		$(".gallery-item").css("padding", value + "px");
-		saveStatus(true);
-	});
+		$('#thumbPaddingInput').val(
+				!gJ.options || !gJ.options.thumbPadding ? stat.options.thumbPadding : gJ.options.thumbPadding
+  	);
 
-	$("#inputSizes").attr('placeholder', gJ.sizes).keydown(function(e) {
-		// Allow: backspace, delete, tab, escape, enter and ,
-		if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
-		// Allow: Ctrl+A
-		(e.keyCode == 65 && e.ctrlKey === true) ||
-		// Allow: Ctrl+C
-		(e.keyCode == 67 && e.ctrlKey === true) ||
-		// Allow: Ctrl+X
-		(e.keyCode == 88 && e.ctrlKey === true) ||
-		// Allow: home, end, left, right
-		(e.keyCode >= 35 && e.keyCode <= 39)) {
-			// let it happen, don't do anything
-			return;
-		}
-		// Ensure that it is a number and stop the keypress
-		if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-			e.preventDefault();
-		}
-	});
+    $('#thumbPaddingInput').keydown(function() {
+        // Allow: backspace, delete, tab, escape, enter
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+            // Allow: Ctrl+A
+            (e.keyCode == 65 && e.ctrlKey === true) ||
+            // Allow: Ctrl+C
+            (e.keyCode == 67 && e.ctrlKey === true) ||
+            // Allow: Ctrl+X
+            (e.keyCode == 88 && e.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
 
-	$("#inputSizes").on("change input", function() {
-		var value = $(this).val().split(',');
-		value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
-		gJ.sizes = value;
-		saveStatus(true);
-	});
+    $('#thumbPaddingInput').on('change input', function() {
+        var value = $(this).val();
+        value = (!value || value < 1) ? 0 : value;
+        stat.options.thumbPadding = value;
+				createStyle({id: 'item-padding',style: 'div#gallery-row div.gallery-item {padding: '+ value + 'px}'});
+        saveStatus(true);
+    });
 
-	$("#coverCheckbox").click(function(e) {
-		e.stopImmediatePropagation();
-		var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
-		var checked = (element.checked) ? false : true;
-		element.checked = (checked) ? false : checked.toString();
-		saveStatus(true);
-	});
+    $('#inputSizes').attr('placeholder', gJ.sizes).keydown(function(e) {
+        // Allow: backspace, delete, tab, escape, enter and ,
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
+            // Allow: Ctrl+A
+            (e.keyCode == 65 && e.ctrlKey === true) ||
+            // Allow: Ctrl+C
+            (e.keyCode == 67 && e.ctrlKey === true) ||
+            // Allow: Ctrl+X
+            (e.keyCode == 88 && e.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
 
-}); /* Raw Panel */
+    $('#inputSizes').on('change input', function() {
+        var value = $(this).val().split(',');
+        stat.options.sizes = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
+        saveStatus(true);
+    });
+
+    $('#coverCheckbox').click(function(e) {
+        e.stopImmediatePropagation();
+        var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
+        var checked = (element.checked) ? false : true;
+        element.checked = (checked) ? false : checked.toString();
+        saveStatus(true);
+    });
+
+});
+/* Raw Panel */
 $('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 
 	loader();
@@ -666,12 +691,15 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     }
 
     if (!$('#slider-sortable').find('div.sortable-item').length) {
-        for (var i = 0; i < 2; i++) {
+
             prototype({
                 'template': '#placeholder-item-prototype',
                 'targets': '#slider-sortable'
             });
-        }
+            prototype({
+                'template': '#placeholder-item-prototype',
+                'targets': '#slider-sortable'
+            });
 
         proportion('#slider-sortable .placeholder-item', 1, 1);
     }
@@ -692,9 +720,9 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     });
 
     $('#blur-input').on('change', function() {
-        var bsval = document.getElementById('blur-slider').value;
-        if (bsval != this.value) {
-            $('#blur-slider').val(this.value).change();
+        var bs = $('#blur-slider');
+        if (bs.val() != this.value) {
+            bs.val(this.value).change();
         }
         stat.effect = ['blur', this.value];
     });
@@ -704,7 +732,6 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     });
 
     $('div.gallery-row div.selected-image').removeClass('selected-image');
-    //	$('.sortable').sortable('destroy');
     document.getElementById('slider-sortable').innerHtml = '';
     autoIds();
 
@@ -716,8 +743,6 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     $('#slider-fill-btn').on('click', function(e) {
         e.preventDefault();
         reset();
-//        var sliderNumber = $('#slider-number-select').val();
-        //for (var i = 0; i < sliderNumber; i++) {
         for (var i = 0; i < stat.sliderNumber; i++) {
             $('#gallery-row').find('div.gallery-item').eq(i).trigger('click');
         }
@@ -774,37 +799,36 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 
     sortable('.sortable')[0].addEventListener('sortupdate', function(e) {
         selectedIds();
-        //statSaveSlider();
-        //saveStatus(true);
     });
 
     $('#slider-interval-select').on('change', function() {
         stat.sliderInterval = $(this).val();
-        //statSaveSlider();
     });
 
     $('#slider-number-select').on('change', function() {
         stat.sliderNumber = $(this).val();
-        //statSaveSlider();
     });
 
     $('div#gallery-row').find('div.gallery-item').off('click').on('click', function(e) {
 
         e.preventDefault();
         e.stopPropagation();
-
         $(this).toggleClass('selected-image');
 
         if ($(this).hasClass('selected-image')) {
 
             var cl = 'thumbSize gallery-item col-xs-2 selected-image sortable-item';
-            var id = $(this).attr('data-id');
-            var src = $(this).find('div.thumb-div').attr('data-src');
 
             prototype({
       				'template' : '#sortable-item-prototype',
-      				'selectors' : ['data-id', 'bg-image'],
-      				'values' : [id, src],
+      				'selectors' : [
+                  'data-id',
+                  'bg-image'
+                ],
+      				'values' : [
+                  $(this).attr('data-id'),
+                  $(this).find('div.thumb-div').attr('data-src')
+                ],
       				'targets' : '#slider-sortable'
       			});
 
@@ -824,8 +848,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
             }
 
         } else {
-            var data_id = $(this).attr('data-id');
-            $('div#slider-sortable').find('div.gallery-item[data-id="' + data_id + '"]').remove();
+            $('div#slider-sortable').find('div.gallery-item[data-id="' + $(this).attr('data-id') + '"]').remove();
         }
 
         sortable('.sortable');
@@ -863,20 +886,19 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         }
 
         if (selLength >= 2) {
-            //statSaveSlider();
             dis = false;
         }
 
         buttonDisable(dis)
-        //$('#slider-save-btn').prop('disabled', true);
-        document.getElementById('slider-save-btn').disabled = true;
 
         if (!dis && gJ.sliders[stat.workingSlider] !== stat.sliders[stat.workingSlider]) {
             //$('#slider-save-btn').prop('disabled', false);
             document.getElementById('slider-save-btn').disabled = false;
             saveStatus(true);
+            return false;
         }
 
+        document.getElementById('slider-save-btn').disabled = true;
     });
 
 });
@@ -897,8 +919,8 @@ function loadBlur(imgId) {
     if (!imgId) {
         var selImg = document.querySelector('#slider-sortable .selected-image');
         if (!selImg) {
-            var selItem = document.querySelector('#slider-sortable .gallery-item');
-            selItem.className += ' selected-image';
+            document.getElementById('slider-sortable').querySelector('.gallery-item')
+                .className += ' selected-image';
             selImg = document.querySelector('#slider-sortable .selected-image');
         }
         var imgId = selImg.getAttribute('data-id');
@@ -935,10 +957,10 @@ function reset() {
 
 function selectedIds() {
     var selected_ids = [];
-//    var items = document.querySelectorAll('#slider-sortable .gallery-item');
     var items = document.getElementById('slider-sortable').querySelectorAll('.gallery-item');
 
-    for (var i = 0, len = items.length; i < len; i++) {
+    var len = items.length;
+    for (var i = 0; i < len; i++) {
         selected_ids.push(items[i].getAttribute('data-id'));
     }
     stat.selectedIds = selected_ids;
@@ -954,10 +976,10 @@ function buttonDisable(st) {
 
 function autoIds(q) {
 
-    if (!$('#slider-sortable').is(':empty')) {
-        $('#slider-sortable').find('div.gallery-item').each(function() {
-            var did = $(this).attr('data-id');
-            $('div.gallery-row [data-id="' + did + '"]').addClass('selected-image');
+    if (!$('div#slider-sortable').is(':empty')) {
+        $('div#slider-sortable').find('div.gallery-item').each(function() {
+            $('div#gallery-row').find('div[data-id="' + $(this).attr('data-id') + '"]')
+              .addClass('selected-image');
         });
         return false;
     }
@@ -1203,20 +1225,7 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
 $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e) {
 
 	var upldrData = {};
-
-	function folderSelect() {
-		$('#upload-folder-select').html('');
-		for (var i = 0; gJ.folders.length > i; i++) {
-			var folder = gJ.folders[i];
-			prototype({
-				'template' : '#folder-select-prototype',
-				'selectors' : ['folder'],
-				'values' : [folder],
-				'targets' : '#upload-folder-select'
-			});
-		}
-	};
-	folderSelect();
+	setFolderSelect();
 
 	function filesToGJ(f) {
 		for ( i = 0; f.length > i; i++) {
@@ -1224,13 +1233,25 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		}
 	};
 
-	$('#new-folder-name').on('keypress', function(event) {
-		var regex = new RegExp('^[a-zA-Z0-9_-äüö ]+$');
-		var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
-		if (!regex.test(key)) {
-			event.preventDefault();
-			return false;
-		}
+	$('#new-folder-name').on('keyup', function(event) {
+			console.log(event);
+
+			var valLength = $(this).val().trim().length
+
+			if (valLength > 1 && event.keyCode != 8) {
+				var regex = new RegExp('^[a-zA-Z0-9_äüö -]+$');
+				var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+				if (!regex.test(key)) {
+					event.preventDefault();
+					console.log('test');
+				}
+			}
+
+			if (valLength < 1) {
+				$('#new-folder-btn').prop('disabled', true);
+			} else {
+				$('#new-folder-btn').prop('disabled', false);
+			}
 	});
 
 	$('#new-folder-btn').on('click', function() {
@@ -1238,13 +1259,24 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		if (val) {
 			val = val.trim();
 
-			if ( _.indexOf( gJ.folders, val ) != -1 && _.indexOf( gJ.ignore, val ) != -1 ) {
+			if ( gJ.folders.indexOf(val) != -1 || gJ.ignore.indexOf(val) != -1 ) {
 				console.log('folder already present');
+				bootbox.alert({
+            size: 'small',
+            message: 'A folder "'+val+'" already exists.',
+            callback: function(result) {
+                if (result) {
+
+                }
+            }
+        });
 				return false;
 			}
 
 			createFolder(val).done(function(data){
 				console.log(data.dir);
+				stat.newFolders = [data.dir];
+				$('#new-folder-name').val('');
 			});
 
 			/*
@@ -1350,6 +1382,20 @@ function processResponse(res) {
 		};
 		gJ.images[id] = entry;
 	};
+};
+
+function setFolderSelect(fo) {
+	$('#upload-folder-select').html('');
+	var folders = fo ? fo : gJ.folders;
+	var foldersLength = folders.length;
+	for (var i = 0; foldersLength > i; i++) {
+		prototype({
+			'template' : '#folder-select-prototype',
+			'selectors' : ['folder'],
+			'values' : [folders[i]],
+			'targets' : '#upload-folder-select'
+		});
+	}
 };
 function getAllImages(folders, d, cb) {
     // deep = if true, include thumbnail folders;
@@ -1540,14 +1586,7 @@ function processNewFolders(cb) {
 function processNewFolder(d) {
 
     console.log("processNewFolder()");
-
-    var folder = stat.workingFolder;
-
-    if (d) {
-        var folder = d.folder;
-        // is this necessary?:
-        // stat.workingFolder = d.folder;
-    }
+    var folder = d ? d.folder : stat.workingFolder;
 
     // read images from folder:
     imagesFromFolder(folder).done(function(imagesFromFolderData) {
@@ -1559,18 +1598,18 @@ function processNewFolder(d) {
             var keys = Object.keys(imagesFromFolderData);
             var kLength = keys.length;
         } else {
-            // somethings wron with the response, so error = true
+            // somethings wrong with the response, so error = true
             er = true;
         }
 
         if (er || kLength < 1) {
             console.log("no images");
+            stat.newImages = [];
 						// callback:
             if (d.cb) {
                 d.cb();
             }
-						stat.newImages = [];
-            stat.newFolders = _.without(stat.newFolders, folder);
+            //stat.newFolders = _.without(stat.newFolders, folder);
             return false;
         }
 

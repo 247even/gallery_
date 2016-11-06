@@ -26,14 +26,7 @@ function processNewFolders(cb) {
 function processNewFolder(d) {
 
     console.log("processNewFolder()");
-
-    var folder = stat.workingFolder;
-
-    if (d) {
-        var folder = d.folder;
-        // is this necessary?:
-        // stat.workingFolder = d.folder;
-    }
+    var folder = d ? d.folder : stat.workingFolder;
 
     // read images from folder:
     imagesFromFolder(folder).done(function(imagesFromFolderData) {
@@ -45,18 +38,18 @@ function processNewFolder(d) {
             var keys = Object.keys(imagesFromFolderData);
             var kLength = keys.length;
         } else {
-            // somethings wron with the response, so error = true
+            // somethings wrong with the response, so error = true
             er = true;
         }
 
         if (er || kLength < 1) {
             console.log("no images");
+            stat.newImages = [];
 						// callback:
             if (d.cb) {
                 d.cb();
             }
-						stat.newImages = [];
-            stat.newFolders = _.without(stat.newFolders, folder);
+            //stat.newFolders = _.without(stat.newFolders, folder);
             return false;
         }
 

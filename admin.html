@@ -28,6 +28,7 @@
 	<link rel="stylesheet" href="css/imafox.css">
 	<link rel="stylesheet" href="css/loader.css">
 
+	<script src="js/options.js"></script>
 	<script src="js/jquery-2.2.4.min.js"></script>
 	<script src="js/lodash.min.js"></script>
 	<script src="js/jsLoader.js"></script>
@@ -191,7 +192,6 @@
 						<!-- end start-panel -->
 
 						<div id="options-panel" role="tabpanel" class="tab-pane scroll-wrapper">
-							<div>
 								<form id="optionsForm">
 									<table class="table">
 										<thead>
@@ -206,7 +206,7 @@
 												<th scope="row">1</th>
 												<td>Thumb display</td>
 												<td>
-													<select id="thumbDisplaySelect" class="form-control">
+													<select id="thumbSizeSelect" class="form-control">
 																<option value="xs">extra small</option>
 																<option value="sm">small</option>
 																<option value="md">medium</option>
@@ -259,7 +259,6 @@
 											</button>
 
 								</form>
-							</div>
 						</div>
 						<!-- end options panel -->
 
@@ -398,7 +397,7 @@
 										<div class="input-group">
 											<input id="new-folder-name" type="text" class="form-control" placeholder="newfolder">
 											<span class="input-group-btn">
-															<button id="new-folder-btn" class="btn btn-default" type="button">Create</button>
+															<button id="new-folder-btn" class="btn btn-default" type="button" disabled>Create</button>
 													</span>
 										</div>
 									</div>

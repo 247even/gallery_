@@ -1,15 +1,16 @@
 (function($) {
 	$.fn.respi = function(arr) {
 		var res;
-		
-		function nearest(el,arr){
-			
-			var arr = !arr ? $('body').attr("respi-sizes").split(',') : arr;
+
+		function nearest(el, arr){
+
+			var arr = !arr ? $('body').attr("respi-sizes") : arr;
+			arr = typeof arr != 'array' ? arr.split(',') : arr;
 			var w = el.width();
 			var h = el.height();
 			var frame = (h >= w) ? h : w;
 			var min = arr[0];
-			    
+
 			$.each(arr, function(k, value) {
 				var value = parseInt(value);
 				if (value <= frame) {
@@ -20,9 +21,9 @@
 					return false;
 				}
 			});
-			return res;			
+			return res;
 		}
-		
+
 		this.each(function() {
 			var _respi_el = !$(this).attr("respi-path") ? $(this).find("[respi-path]") : $(this);
 			var _respi = _respi_el.attr("respi-path").replace("_respi", "_"+nearest($(this), arr));
@@ -38,4 +39,3 @@
 })(jQuery);
 
 //console.log($(".proportion").respi([256,320,480,720]));
-
