@@ -29,6 +29,7 @@ var stat = {
     '_sliderNumber' : 5,
     set sliderNumber(val) {
       this._sliderNumber = val;
+      statSaveSlider(im);
     },
     get sliderNumber() {
       return this._sliderNumber;
@@ -36,6 +37,7 @@ var stat = {
     '_sliderInterval' : 3,
     set sliderInterval(val) {
       this._sliderInterval = val;
+      statSaveSlider();
     },
     get sliderInterval() {
       return this._sliderInterval;
@@ -153,7 +155,6 @@ var stat = {
                       });
                       return;
                     }
-
                     // ignore folder:
                     ignoreFolder(folder);
                     stat.newFolders = _.without(stat.newFolders, folder);
@@ -168,14 +169,14 @@ var stat = {
 };
 
 function statSaveSlider(im) {
-    //var images = (im) ? im : selectedIds();
-    var images = (im) ? im : stat.selectedIds;
-    var pressed = document.getElementById('slider-auto-btn').getAttribute('aria-pressed');
-
-    if (!im && pressed) {
-        images = 'auto';
+    var images = im ? im : stat.selectedIds;
+    /*
+    if (!im) {
+        if (document.getElementById('slider-auto-btn').getAttribute('aria-pressed')) {
+            images = 'auto';
+        }
     }
-
+    */
     stat.sliders[stat.workingSlider] = [
         images,
         stat.sliderInterval,

@@ -33,6 +33,19 @@ function loadJSON() {
 function buildGallery(data, filter) {
     gJ = data;
 
+    //console.log(_.orderBy(gJ.images, ['path'], ['asc']));
+    var imagesByTime = _.sortBy(gJ.images, ['time']);
+    var imagesByTimeLength = imagesByTime.length;
+    var idsByTime = imagesByTime.map(function(el){
+      for (var key in gJ.images) {
+        if(gJ.images[key] === el) {
+          return key;
+          break;
+        }
+      }
+    });
+    console.log(idsByTime);
+
     options = !options ? gJ.options : options;
 
     document.body.setAttribute('respi-sizes', options.sizes);
@@ -200,9 +213,12 @@ function buildSliders(slider) {
         return false;
     }
 
-    console.log(sliders);
-
     for (var key in sliders) {
+
+        if (sliders[key][0] === 'auto') {
+          console.log('slider auto');
+          return false;
+        }
 
         var slidersLength = sliders[key][0].length;
         if (slidersLength === 0) {
@@ -210,11 +226,10 @@ function buildSliders(slider) {
             return false;
         }
         if (sliders[key][0] === 'auto') {
-
+            console.log('auto');
         }
 
         clearHtml(['#' + key + ' .carousel-inner', '#' + key + ' .carousel-indicators']);
-        //          clearHtml(['#''slider-1 .carousel-inner', '#slider-1 .carousel-indicators']);
 
         for (var i = 0; i < slidersLength; i++) {
 
@@ -281,11 +296,11 @@ function galleryFilter(fil) {
     for (var key in gJ.images) {
         if (gJ.images[key].tags.indexOf(fil) > -1) {
             //inItems.push(gJ.images[key]);
-            items.not('.img-active').filter('[data-id="'+key+'"]').addClass('img-active').removeClass('img-inactive img-hidden');
+            items.not('.img-active').filter('[data-id="' + key + '"]').addClass('img-active').removeClass('img-inactive img-hidden');
             continue;
         }
         //outItems.push(gJ.images[key]);
-        items.filter('.img-active[data-id="'+key+'"]').addClass('img-inactive img-hidden').removeClass('img-active');
+        items.filter('.img-active[data-id="' + key + '"]').addClass('img-inactive img-hidden').removeClass('img-active');
     }
 
     return false;

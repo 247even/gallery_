@@ -2,6 +2,8 @@
 $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e) {
 
 	var upldrData = {};
+	$('#new-folder-name').val('');
+	$('#new-folder-btn').prop('disabled', true);
 	setFolderSelect();
 
 	function filesToGJ(f) {
@@ -11,9 +13,12 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	};
 
 	$('#new-folder-name').on('keyup', function(event) {
-			console.log(event);
-
 			var valLength = $(this).val().trim().length
+
+			if (valLength === 0) {
+				$('#new-folder-btn').prop('disabled', true);
+				return false;
+			}
 
 			if (valLength > 1 && event.keyCode != 8) {
 				var regex = new RegExp('^[a-zA-Z0-9_äüö -]+$');
