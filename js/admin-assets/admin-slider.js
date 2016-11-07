@@ -35,9 +35,9 @@ $('#slider-auto-btn').on('click', function() {
 
     $(this).html('auto <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>');
 
-    var sliderNumber = $('select#slider-number-select').val();
+    var sliderNumber = $('#slider-number-select').val();
     for (var i = 0; i < sliderNumber; i++) {
-        $('section#gallery-section').find('div.gallery-item').eq(i).trigger('click');
+        $('#gallery-section').find('div.gallery-item').eq(i).trigger('click');
     }
     console.log(stat.selectedIds);
     stat.selectedIds = 'auto';
@@ -80,7 +80,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         proportion('#slider-sortable .placeholder-item', 1, 1);
     }
 
-    $('button#slider-preview-btn').on('click', function() {
+    $('#slider-preview-btn').on('click', function() {
         $('#slider-1').attr('id', stat.workingSlider);
         console.log(_.pick(stat.sliders, [stat.workingSlider]));
         buildSliders(_.pick(stat.sliders, [stat.workingSlider]));
@@ -98,12 +98,21 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     })
 
     sortable('.sortable')[0].addEventListener('sortupdate', function(e) {
+        $('#slider-auto-btn[aria-pressed="true"]')
+            .removeClass('active')
+            .attr('aria-pressed','false')
+            .html('auto <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>');
         selectedIds();
     });
 
-    $('div#gallery-row').find('div.gallery-item').off('click').on('click', function(e) {
+    $('#gallery-row').find('div.gallery-item').off('click').on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
+
+        $('#slider-auto-btn[aria-pressed="true"]')
+            .removeClass('active')
+            .attr('aria-pressed','false')
+            .html('auto <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>');
 
         $(this).toggleClass('selected-image');
 
@@ -140,7 +149,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
             }
 
         } else {
-            $('div#slider-sortable').find('div.gallery-item[data-id="' + $(this).attr('data-id') + '"]').remove();
+            $('#slider-sortable').find('div.gallery-item[data-id="' + $(this).attr('data-id') + '"]').remove();
         }
 
         sortable('.sortable');

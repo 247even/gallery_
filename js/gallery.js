@@ -32,22 +32,7 @@ function loadJSON() {
 
 function buildGallery(data, filter) {
     gJ = data;
-
-    //console.log(_.orderBy(gJ.images, ['path'], ['asc']));
-    var imagesByTime = _.sortBy(gJ.images, ['time']);
-    var imagesByTimeLength = imagesByTime.length;
-    var idsByTime = imagesByTime.map(function(el){
-      for (var key in gJ.images) {
-        if(gJ.images[key] === el) {
-          return key;
-          break;
-        }
-      }
-    });
-    console.log(idsByTime);
-
     options = !options ? gJ.options : options;
-
     document.body.setAttribute('respi-sizes', options.sizes);
 
     buildGalleryItems();
@@ -215,18 +200,15 @@ function buildSliders(slider) {
 
     for (var key in sliders) {
 
-        if (sliders[key][0] === 'auto') {
-          console.log('slider auto');
-          return false;
-        }
-
         var slidersLength = sliders[key][0].length;
         if (slidersLength === 0) {
             console.log('no images');
             return false;
         }
         if (sliders[key][0] === 'auto') {
-            console.log('auto');
+            var number = sliders[key][2] < 2 ? 3 : sliders[key][2];
+            sliders[key][0] = _.take(sortedIdsBy('time'), number);
+            slidersLength = sliders[key][0].length;
         }
 
         clearHtml(['#' + key + ' .carousel-inner', '#' + key + ' .carousel-indicators']);

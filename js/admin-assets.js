@@ -759,7 +759,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         proportion('#slider-sortable .placeholder-item', 1, 1);
     }
 
-    $('button#slider-preview-btn').on('click', function() {
+    $('#slider-preview-btn').on('click', function() {
         $('#slider-1').attr('id', stat.workingSlider);
         console.log(_.pick(stat.sliders, [stat.workingSlider]));
         buildSliders(_.pick(stat.sliders, [stat.workingSlider]));
@@ -780,9 +780,14 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         selectedIds();
     });
 
-    $('div#gallery-row').find('div.gallery-item').off('click').on('click', function(e) {
+    $('#gallery-row').find('div.gallery-item').off('click').on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
+
+        $('#slider-auto-btn[aria-pressed="true"]')
+            .removeClass('active')
+            .attr('aria-pressed','false')
+            .html('auto <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>');
 
         $(this).toggleClass('selected-image');
 

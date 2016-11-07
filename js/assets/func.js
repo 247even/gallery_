@@ -1,5 +1,22 @@
 // func.js
 
+function sortedIdsBy(prop, ord) {
+    var property = prop ? prop : 'time';
+    var order = ord ? ord : 'asc';
+    var imagesByProp = _.orderBy(gJ.images, [property], [order]);
+    //var imagesByProp = _.sortBy(gJ.images, [property]);
+    var imagesByPropLength = imagesByProp.length;
+    var idsByProp = imagesByProp.map(function(el) {
+        for (var key in gJ.images) {
+            if (gJ.images[key] === el) {
+                return key;
+                break;
+            }
+        }
+    });
+    return idsByProp;
+};
+
 function createStyle(css) {
 
     if (document.querySelector('head style#' + css.id)) {
