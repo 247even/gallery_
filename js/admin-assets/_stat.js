@@ -164,6 +164,23 @@ var stat = {
     },
     get newFolders() {
         return this._newFolders;
+    },
+
+    _allTags : [],
+    set allTags(val) {
+      this._allTags = val;
+      var stl = stat.allTags.length;
+      for (var i=0; i < stl; i++) {
+        prototype({
+            'template': '#tag-button-prototype',
+            'selectors': ['text'],
+            'values': [stat.allTags[i]],
+            'targets': '#all-tags'
+        });
+      }
+    },
+    get allTags() {
+      return this._allTags;
     }
 
 };

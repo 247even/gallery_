@@ -2,214 +2,180 @@
 
 var selectedImages_tags;
 
-$('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
-    var selectedImages;
-
-    function selectTags() {
-
-        selectedImages = $(".gallery-row .selected-image");
-
-        var firstTag = selectedImages.first().attr('data-tags');
-        firstTag = _.split(firstTag, ',');
-
-        var groupTags = $("#input-tags").attr("value").split(',');
-        var interTags;
-        var firstTags;
-        var selectedTags = [];
-        var i = 0;
-
-        if (selectedImages.length == 1) {
-
-            selectedTags = groupTags = interTags = firstTag;
-
-        } else if (selectedImages.length > 1) {
-
-            if (!groupTags[0]) {
-                groupTags = firstTag;
+var selectizeInput = $('#input-tags').selectize({
+    plugins: ['remove_button'],
+    delimiter: ',',
+    persist: false,
+    createFilter: '^[a-zA-Z0-9_äüö -]+$',
+    create: function(inpt) {
+        var input = inpt.split(',');
+        $('#gallery-row').find('div.selected-image').each(function() {
+            var dataTags = $(this).attr('data-tags').split(',');
+            unionTags = _.union(dataTags, input);
+            if (unionTags != dataTags) {
+                $(this).attr('data-tags', unionTags).addClass('edited');
             }
-
-            selectedImages.each(function() {
-                i++;
-                attrTags = $(this).attr('data-tags');
-                attrTags = attrTags.split(',');
-
-                // all unique selected tags:
-                selectedTags = _.union(selectedTags, attrTags);
-                groupTags = _.intersection(groupTags, attrTags);
-
-            });
-
-        } else {
-            console.log("nothing selected");
-            selectedTags = [];
-            groupTags = [];
-        }
-
-        $("#input-tags").attr("value", groupTags);
-
-        var selectizeTags = $("#input-tags")[0].selectize;
-        selectizeTags.clear();
-        $.each(groupTags, function(i, v) {
-            selectizeTags.createItem(v);
-        })
-        selectizeTags.refreshItems()
-
-        $(".selectize-input .item").on("click", function() {
-            var value = $(this).attr("data-value");
-
-            $($(".gallery-row .gallery-item")).each(function(k) {
-                var tags = $(this).attr("data-tags");
-                if (tags.includes(value)) {
-                    $(this).addClass('selected-image');
-                }
-            });
         });
+        return {
+            'text': input,
+            'value': input
+        };
+    }
+});
+var selectizeTags = selectizeInput[0].selectize;
+selectizeTags.clear();
 
-        return groupTags;
-    };
+$('.selectize-input .item').on('click', function() {
+    var value = $(this).attr('data-value');
+    $('#gallery-row').find('div.gallery-item[data-tags*="'+value+'"]').addClass('selected-image');
+});
 
-    $('#input-tags').selectize({
-        plugins: ['remove_button'],
-        delimiter: ',',
-        create: function(input) {
-            //console.log("create: " + input);
-            input = input.split(',');
-            selectedImages.each(function() {
-                var dataTags = $(this).attr('data-tags');
-                dataTags = dataTags.split(',');
-                unionTags = _.union(dataTags, input);
-                if (unionTags != dataTags) {
-                    $(this).attr('data-tags', unionTags).addClass('edited');
-                }
-            });
+$('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
 
-            return {
-                "text": input,
-                "value": input
-            };
-        }
+    stat.allTags = !stat.allTags.length ? gJ.tags : stat.allTags;
+
+    $('#all-tags').find('button').on('click', function(){
+        $('#gallery-row').find('div.gallery-item[data-tags*="'+$(this).text()+'"]').trigger('click');
     });
 
-    $(".gallery-row .gallery-item").removeClass("selected-image").off("click").on("click", function(e) {
-			/*
+    $('#gallery-row').find('div.gallery-item').removeClass('selected-image').off('click').on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-				*/
-
-        $(this).toggleClass("selected-image");
+        $(this).toggleClass('selected-image');
         selectTags();
-        //return false;
     });
 
-    selectTags();
-
-    $("#tags-submit-button").click(function(e) {
+    $('#tags-submit-button').click(function(e) {
         e.preventDefault();
 
         var tags = [];
 
-        $(".gallery-row .edited").each(function() {
-            var this_id = $(this).attr("data-id");
-            var this_tags = $(this).attr("data-tags");
-            this_tags = this_tags.split(',');
-            gJ.images[this_id].tags = this_tags;
+        $('#gallery-row').find('.edited').each(function() {
+            gJ.images[$(this).attr('data-id')].tags = $(this).attr('data-tags').split(',');
         });
 
         $.each(gJ.images, function(k, v) {
             tags.push(v.tags);
         })
-        tags = _.uniq(_.flattenDeep(tags));
-        gJ.tags = tags;
-        buildGalleryNavigation();
 
+        gJ.tags = _.uniq(_.flattenDeep(tags));
+        buildGalleryNavigation();
         saveStatus(true);
 
         //console.log(tagsJSON);
         return false;
 
-        var postdata = $("#tags-form").serialize();
-
-        // ?????
-        /*
-         console.log(postdata);
-         $.ajax({
-         type : "GET",
-         url : "gallery/save.php",
-         data : postdata,
-         success : function(data) {
-         console.log(data);
-
-         }
-         })
-         */
+        var postdata = $('#tags-form').serialize();
     });
 
-    function deleteSelectedImages() {
-        var i = 0;
-        var paths = [];
-
-        if (selectedImages.length > 0) {
-            selectedImages.each(function() {
-                i++;
-                var id = $(this).attr('data-id');
-                // For testing! >>
-                //paths.push(gJ.images[id].path+'/'+gJ.images[id].file);
-                for (var sz in gJ.sizes) {
-                    var size = gJ.sizes[sz];
-                    paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
-                }
-                delete gJ.images[id];
-            })
-
-            function deleteImage(path) {
-                if (paths.length > 0) {
-                    $.ajax({
-                        type: "GET",
-                        url: "gallery/removeImage.php",
-                        data: "path=" + path
-                    }).done(function() {
-                        p++;
-                        console.log("done " + p);
-                        deleteFinished();
-                    }).fail(function() {
-                        p++;
-                        console.log("fail " + p);
-                        deleteFinished();
-                    })
-                }
-            };
-
-            var p = 0;
-            var pl = paths.length;
-
-            function deleteFinished() {
-                if (p <= pl) {
-                    deleteImage(paths[p]);
-                } else {
-                    console.log("finished deleting");
-
-                    // save JSON:
-                    $("#deleteImagesButton").off("click").text("save").on("click", function() {
-
-                        /*
-                         backup().done(function(data){
-                         var content = JSON.stringify(gJ);
-                         var target = "gallery.json";
-                         saveFileAs(content, target);
-                         });
-                         */
-                        saveJSON();
-                    });
-                }
-            };
-
-            deleteFinished();
-        }
-    };
-
-    $("#deleteImagesButton").on("click", function() {
-        console.log("delete clicked");
+    $('#deleteImagesButton').on('click', function() {
+        console.log('delete clicked');
         deleteSelectedImages();
     });
 
 });
+
+function selectTags() {
+
+    var selectedImages = $('#gallery-row').find('div.selected-image');
+    var selectedLength = selectedImages.length;
+    var selectedTags = [];
+
+    selectizeTags.clear();
+
+    if (selectedLength === 0) {
+      console.log('nothing selected');
+      return false;
+    }
+
+    var firstTag = selectedImages.first().attr('data-tags').split(',');
+    var groupTags = $('#input-tags').attr('value').split(',');
+
+    if (selectedLength === 1) {
+
+        selectedTags = groupTags = firstTag;
+
+    } else if (selectedLength > 1) {
+
+        groupTags = !groupTags[0] ? firstTag : groupTags;
+        selectedImages.each(function() {
+            attrTags = $(this).attr('data-tags').split(',');
+            // all unique selected tags:
+            selectedTags = _.union(selectedTags, attrTags);
+            groupTags = _.intersection(groupTags, attrTags);
+        });
+
+    }
+
+    $('#input-tags').attr('value', groupTags);
+
+    $.each(groupTags, function(i, v) {
+        selectizeTags.createItem(v);
+    });
+    selectizeTags.refreshItems();
+
+//    return groupTags;
+};
+
+function deleteSelectedImages() {
+    var i = 0;
+    var paths = [];
+
+    if (selectedImages.length > 0) {
+        selectedImages.each(function() {
+            i++;
+            var id = $(this).attr('data-id');
+            // For testing! >>
+            //paths.push(gJ.images[id].path+'/'+gJ.images[id].file);
+            for (var sz in gJ.sizes) {
+                var size = gJ.sizes[sz];
+                paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
+            }
+            delete gJ.images[id];
+        })
+
+        function deleteImage(path) {
+            if (paths.length > 0) {
+                $.ajax({
+                    type: 'GET',
+                    url: 'gallery/removeImage.php',
+                    data: 'path=' + path
+                }).done(function() {
+                    p++;
+                    console.log('done ' + p);
+                    deleteFinished();
+                }).fail(function() {
+                    p++;
+                    console.log('fail ' + p);
+                    deleteFinished();
+                })
+            }
+        };
+
+        var p = 0;
+        var pl = paths.length;
+
+        function deleteFinished() {
+            if (p <= pl) {
+                deleteImage(paths[p]);
+            } else {
+                console.log('finished deleting');
+
+                // save JSON:
+                $('#deleteImagesButton').off('click').text('save').on('click', function() {
+
+                    /*
+                     backup().done(function(data){
+                     var content = JSON.stringify(gJ);
+                     var target = 'gallery.json';
+                     saveFileAs(content, target);
+                     });
+                     */
+                    saveJSON();
+                });
+            }
+        };
+
+        deleteFinished();
+    }
+};

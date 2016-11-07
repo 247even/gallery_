@@ -263,22 +263,26 @@
 						<!-- end options panel -->
 
 						<div id="tags-panel" role="tabpanel" class="tab-pane scroll-wrapper">
+							<h4>Tags</h4>
+
 							<section class="">
+								<div id="all-tags">
+								</div>
 
 								<form id="tags-form">
 									<div class="control-group">
 										<label for="input-tags">Tags:</label>
-										<input type="text" id="input-tags" class="demo-default selectized" value="">
+										<input id="input-tags" type="text" class="demo-default selectized" value="">
 									</div>
 									<button id="tags-submit-button" type="submit" class="btn btn-default">
-													save
-												</button>
+											save
+									</button>
 								</form>
 								<br>
 								<br>
 								<button id="deleteImagesButton" class="btn btn-lg btn-danger btn-block" type="submit">
-												delete image/s
-											</button>
+										delete image/s
+								</button>
 							</section>
 							<!-- admin-panel -->
 						</div>
@@ -597,6 +601,10 @@
 						<div class="thumb-div cover-image" style="background-image: url('{{bg-image}}');">
 						</div>
 				</div>
+		</div>
+
+		<div id="tag-button-prototype">
+			<button class="btn btn-default">{{text}}</button>
 		</div>
 
 	</div>
