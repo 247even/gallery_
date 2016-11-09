@@ -4,6 +4,8 @@
 
 $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(e) {
 
+    $('#gallery-row').find('.gallery-item').removeClass('selected-image').off('click');
+
     $('#configReset').click(function() {
         //$('#optionsForm')[0].reset();
 				$('#optionsForm').reset();

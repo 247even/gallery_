@@ -1,4 +1,6 @@
 var options = {
+    galleryPath : './gallery/',
+    JSONurl : 'gallery/gallery.json',
     sizes : '280,430,720,1200',
     thumbPadding : 0,
     proportion: [1,1],

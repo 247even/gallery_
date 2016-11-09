@@ -17,36 +17,6 @@ function sortedIdsBy(prop, ord) {
     return idsByProp;
 };
 
-function createStyle(css) {
-
-    if (document.querySelector('head style#' + css.id)) {
-        document.head.removeChild(document.getElementById(css.id));
-    }
-
-    if (window.jQuery) {
-        $(document.head).append('<style id="' + css.id + '" type="text/css">' + css.style + '</style>');
-        return false;
-    }
-
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.id = css.id;
-
-    if (style.styleSheet) {
-        style.styleSheet.cssText = css.style;
-    } else {
-        style.appendChild(document.createTextNode(css.style));
-    }
-
-    document.head.appendChild(style);
-};
-
-createStyle({
-    id: 'test',
-    style: 'h1 { background: red; }'
-});
-
-
 Array.prototype.unique = function() {
     var u = [];
     var l = this.length;
@@ -125,7 +95,13 @@ function convertTimestamp(timestamp) {
 function clearHtml(el) {
     var ell = el.length;
     for (var i = 0; i < ell; i++) {
-        document.querySelector(el[i]).innerHTML = "";
+        var qs = document.querySelectorAll(el[i]);
+        var qsl = qs.length;
+        if (qsl > 0) {
+          for (var j=0; j < qsl; j++) {
+            qs.innerHTML = "";
+          }
+        }
     }
 };
 
@@ -151,33 +127,6 @@ var debounce = function(func, threshold, execAsap) {
 
         timeout = setTimeout(delayed, threshold || 100);
     };
-};
-
-// jquery proportion
-(function($) {
-    $.fn.proportion = function(a, b) {
-        var a = !a ? 0 : a;
-        var b = !b ? 0 : b;
-        $(this).css('height', $(this).outerWidth() * b / a);
-        return this;
-    }
-})(jQuery);
-
-function proportion(el, a, b) {
-    if (typeof el === 'string') {
-        var el = document.querySelectorAll(el);
-    };
-    var r = !r ? false : true;
-    var a = !a ? 0 : a;
-    var b = !b ? 0 : b;
-    var ell = el.length;
-    for (i = 0; i < ell; i++) {
-        var width = el[i].offsetWidth;
-        if (el[i].style.width) {
-            width = el[i].style.width;
-        }
-        el[i].style.height = width * (b / a) + 'px';
-    }
 };
 
 

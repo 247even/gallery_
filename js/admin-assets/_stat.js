@@ -182,18 +182,10 @@ var stat = {
     get allTags() {
       return this._allTags;
     }
-
 };
 
 function statSaveSlider(im) {
     var images = im ? im : stat.selectedIds;
-    /*
-    if (!im) {
-        if (document.getElementById('slider-auto-btn').getAttribute('aria-pressed')) {
-            images = 'auto';
-        }
-    }
-    */
     stat.sliders[stat.workingSlider] = [
         images,
         stat.sliderInterval,
