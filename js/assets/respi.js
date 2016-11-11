@@ -3,8 +3,8 @@
 		var res;
 
 		function nearest(el, arr){
-
-			var arr = !arr ? $('body').attr("respi-sizes") : arr;
+			var arr = arr || $('body').attr("respi-sizes");
+			//var arr = !arr ? $('body').attr("respi-sizes") : arr;
 			arr = typeof arr != 'array' ? arr.split(',') : arr;
 			var w = el.width();
 			var h = el.height();

@@ -6,55 +6,63 @@ var stat = {
     'imagesAddedKeys': [],
     'imagesModified': [],
     'imagesNotProcessed': [],
-    'options' : {
-        'sizes': [280,430,720,1200],
-        'thumbSize': 'md',
-      	'thumbProportion': '1,1',
-      	'thumbFit': 'cover',
-      	'thumbPadding': '0'
-    },
     'workingFolder': '',
-    '_effect' : ['blur', 5],
+
+    '_options': {},
+    set options(val) {
+        for (var key in val) {
+            this._options[key] = val[key];
+        }
+        console.log(this._options);
+    },
+    get options() {
+        for (var key in this._options) {
+
+        }
+        return this._options;
+    },
+
+    '_effect': ['blur', 5],
     set effect(val) {
-      this._effect = val;
-      blur('#effect-preview-image', stat.effect[1]);
-      blur('#effect-fullscreen', stat.effect[1]);
+        this._effect = val;
+        blur('#effect-preview-image', stat.effect[1]);
+        blur('#effect-fullscreen', stat.effect[1]);
     },
     get effect() {
-      return this._effect;
+        return this._effect;
     },
 
     'sliders': {},
     'workingSlider': 's1',
-    '_sliderNumber' : 5,
+    '_sliderNumber': 5,
     set sliderNumber(val) {
-      this._sliderNumber = val;
-      statSaveSlider(im);
+        this._sliderNumber = val;
+        statSaveSlider();
     },
     get sliderNumber() {
-      return this._sliderNumber;
+        return this._sliderNumber;
     },
-    '_sliderInterval' : 3,
+    '_sliderInterval': 3,
     set sliderInterval(val) {
-      this._sliderInterval = val;
-      statSaveSlider();
+        this._sliderInterval = val;
+        statSaveSlider();
     },
     get sliderInterval() {
-      return this._sliderInterval;
+        return this._sliderInterval;
     },
     '_selectedIds': [],
     set selectedIds(val) {
-      this._selectedIds = val;
-      statSaveSlider();
+        this._selectedIds = val;
+        statSaveSlider();
     },
     get selectedIds() {
-      return this._selectedIds;
+        return this._selectedIds;
     },
 
     '_workingImage': '',
     set workingImage(val) {
         this._workingImage = val;
-        console.log('workingImage: '+this._workingImage);
+        console.log('workingImage: ' + this._workingImage);
     },
     get workingImage() {
         return this._workingImage;
@@ -63,7 +71,7 @@ var stat = {
     '_workingSize': '',
     set workingSize(val) {
         this._workingSize = val;
-        console.log('workingSize: '+this._workingSize);
+        console.log('workingSize: ' + this._workingSize);
     },
     get workingSize() {
         return this._workingSize;
@@ -93,10 +101,10 @@ var stat = {
     '_newImages': [],
     set newImages(val) {
         this._newImages = val;
-        console.log('stat.newImages: '+stat.newImages.length);
+        console.log('stat.newImages: ' + stat.newImages.length);
         console.log(stat.folderImages);
         $('#folder-modal .modal-body .status-div').html(stat.newImages.length);
-        if(stat.newImages.length > 0){
+        if (stat.newImages.length > 0) {
 
         }
     },
@@ -122,8 +130,8 @@ var stat = {
             stat.workingFolder = folder;
             console.log(stat.folderImages);
             var msg = '"' + folder + '"';
-            if (stat.folderImages[folder]){
-                msg = msg +' (' + stat.folderImages[folder][0] + ')';
+            if (stat.folderImages[folder]) {
+                msg = msg + ' (' + stat.folderImages[folder][0] + ')';
             }
 
             bootbox.confirm({
@@ -143,17 +151,17 @@ var stat = {
                 callback: function(result) {
                     console.log(result);
                     if (result) {
-                      // add folder:
-                      gJ.folders.push(folder);
-                      setFolderSelect();
-                      $('#upload-folder-select').val(folder).prop('selected', true);
-                      processNewFolder({
-                          'folder': folder,
-                          'cb': function() {
-                              stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
-                          }
-                      });
-                      return;
+                        // add folder:
+                        gJ.folders.push(folder);
+                        setFolderSelect();
+                        $('#upload-folder-select').val(folder).prop('selected', true);
+                        processNewFolder({
+                            'folder': folder,
+                            'cb': function() {
+                                stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
+                            }
+                        });
+                        return;
                     }
                     // ignore folder:
                     ignoreFolder(folder);
@@ -166,28 +174,29 @@ var stat = {
         return this._newFolders;
     },
 
-    _allTags : [],
+    _allTags: [],
     set allTags(val) {
-      this._allTags = val;
-      var stl = stat.allTags.length;
-      for (var i=0; i < stl; i++) {
-        prototype({
-            'template': '#tag-button-prototype',
-            'selectors': ['text'],
-            'values': [stat.allTags[i]],
-            'targets': '#all-tags'
-        });
-      }
+        this._allTags = val;
+        var stl = stat.allTags.length;
+        for (var i = 0; i < stl; i++) {
+            prototype({
+                'template': '#tag-button-prototype',
+                'selectors': ['text'],
+                'values': [stat.allTags[i]],
+                'targets': '#all-tags'
+            });
+        }
     },
     get allTags() {
-      return this._allTags;
+        return this._allTags;
     }
 };
 
+stat.options = options;
+
 function statSaveSlider(im) {
-    var images = im ? im : stat.selectedIds;
     stat.sliders[stat.workingSlider] = [
-        images,
+        im || stat.selectedIds,
         stat.sliderInterval,
         stat.sliderNumber
     ];

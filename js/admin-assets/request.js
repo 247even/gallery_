@@ -36,6 +36,10 @@ var backup = function() {
     return $.post("gallery/backup.php", "backup=true", null, 'json');
 };
 
+var loadBackup = function(url) {
+    return $.getJSON(url);
+};
+
 var fileExists = function(file) {
     return $.ajax({
         url: file,

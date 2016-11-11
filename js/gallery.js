@@ -3,10 +3,6 @@
 var gJ; // = ex galleryJSON
 var imagesJSON;
 var animrunning = false;
-/*
-var galleryPath = "./gallery/";
-var JSONurl = "gallery/gallery.json";
-*/
 var imagesPreLoaded;
 
 function loadJSON() {
@@ -17,7 +13,8 @@ function loadJSON() {
 
     req.onload = function() {
         if (req.status >= 200 && req.status < 400) {
-            buildGallery(JSON.parse(req.responseText));
+            gJ = JSON.parse(req.responseText);
+            buildGallery();
         } else {
             console.log('no gallery.json received');
         }
@@ -30,10 +27,10 @@ function loadJSON() {
     req.send();
 };
 
-function buildGallery(data, filter) {
-    gJ = data;
-    options = !options ? gJ.options : options;
-    document.body.setAttribute('respi-sizes', options.sizes);
+function buildGallery(filter) {
+
+    var filter = filter || 'all';
+    options = options || gJ.options;
 
     buildGalleryItems();
 
@@ -43,7 +40,7 @@ function buildGallery(data, filter) {
     initGalleryNavigation();
 
     // fade em in...
-    galleryFilter('all');
+    galleryFilter(filter);
 
     if (gJ.sliders && gJ.sliders.length) {
       buildSliders();
@@ -80,9 +77,8 @@ function buildGalleryItems(filter) {
         var thumbFilePath = 'gallery/' + folder + '_' + initialThumbSize + '/' + file;
 
         // check if a filter was passed to this function
-        if (filter && filter != 'all') {
-            //console.log('filter: ' + filter);
-            if (tags.indexOf(filter) == -1) {
+        if (filter && filter !== 'all') {
+            if (tags.indexOf(filter) === -1) {
                 return true
             };
         }
@@ -97,6 +93,7 @@ function buildGalleryItems(filter) {
         i++;
     };
 
+    // delete thumb prototype
     //var tP = document.getElementById('thumb-prototype');
     //tP.parentNode.removeChild(tP);
 };
@@ -169,9 +166,7 @@ function buildLightbox(init) {
 function buildGalleryNavigation(tags) {
     console.log('buildGalleryNavigation');
 
-    if (!tags) {
-        var tags = gJ.tags;
-    }
+    var tags = tags || gJ.tags;
 
     // build filter buttons
     document.getElementById('filter-select').innerHTML = '<option value="all" data-filter="all">----</option>';
@@ -203,11 +198,8 @@ function initGalleryNavigation() {
 function buildSliders(slider) {
     console.log('buildSliders');
 
-    var sliders = (slider) ? slider : gJ.sliders;
-    if (!sliders) {
-        return false;
-    }
-
+    var sliders = slider || gJ.sliders;
+    if (!sliders) { return false; }
     var sliderKeys = Object.keys(sliders);
 
     if (!sliderKeys || sliderKeys.length === 0) {
@@ -441,18 +433,14 @@ function initGallery() {
 };
 
 $(function() {
+
+    document.body.setAttribute('respi-sizes', options.sizes);
+
     // wait for js to be loaded
     return jsCheckLoaded('assets', function() {
         loadJSON();
     });
-    /*
-    if (typeof adminAssets == 'undefined' || !adminAssets) {
-    		setTimeout(function() {
-    				adminInit();
-    		}, 1000);
-    		return false;
-    }
-    */
+
     console.log('after js check load');
     //loadJSON();
 });

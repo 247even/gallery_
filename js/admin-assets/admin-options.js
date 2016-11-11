@@ -12,79 +12,56 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
         buildGallery(gJ);
     });
 
-    // pre-/re-set thumbSize
-		/*
-    var thumbSize = !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize;
-    $('#thumbSizeSelect').val(thumbSize);
-		*/
-
     $('#thumbSizeSelect').val(
-				!gJ.options || !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize
-		);
+        stat.options.thumbSize
+		).on('change', function() {
 
-    $('#thumbSizeSelect').on('change', function() {
-        var value = $(this).val();
-        var proportion = !gJ.options.thumbProportion ? stat.options.thumbProportion.split(',') : gJ.options.thumbProportion.split(',');
-        var thumbSize = !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize;
+        removeClasses('div#gallery-row div.gallery-item', stat.options.thumbSizeSizes[stat.options.thumbSize]);
 
-        removeClasses('.gallery-item', thumbSizeSizes[thumbSize]);
-
-        //gJ.options.thumbSize = value;
-				stat.options.thumbSize = value;
-
-        var ntds = thumbSizeSizes[value].toString();
-        ntds = ntds.replace(/,/g, ' ');
-        $('div#gallery-row').find('div.gallery-item').addClass(ntds).proportion(proportion[0], proportion[1]);
+        stat.options = { 'thumbSize' : $(this).val() };
+        var ntds = stat.options.thumbSizeSizes[stat.options.thumbSize].toString().replace(/,/g, ' ');
+        //var ntds = thumbSizeSizes[value].toString();
+        //ntds = ntds.replace(/,/g, ' ');
+        $('div#gallery-row').find('div.gallery-item').addClass(ntds);
+        proportion({
+          selector : 'section#gallery-section div.gallery-item',
+          proportion : stat.options.proportion,
+          className : 'pgi',
+          styleId : 'prop-gallery-item'
+        });
 
         saveStatus(true);
     });
 
-    // pre-/re-set Proportion
-		/*
-    var thumbProp = !gJ.options.proportion ? stat.options.proportion : gJ.options.proportion;
-    $('#thumProportionSelect').val(thumbProp);
-*/
-    $('#thumProportionSelect').val(
-				!gJ.options || !gJ.options.proportion ? stat.options.proportion : gJ.options.proportion
-		);
-
-    $('#thumbProportionSelect').on('change', function() {
-        var value = $(this).val();
-        //gJ.options.thumbProportion = value;
-				stat.options.thumbProportion = value;
-        value = value.split(',');
-        $('div#gallery-row').find('div.gallery-item').proportion(value[0], value[1]);
+    $('#thumbProportionSelect').val(
+				stat.options.proportion.toString()
+		).on('change', function() {
+        stat.options = {
+            'proportion' : $(this).val().split(',').map( function (n) {
+                  return parseInt(n);
+                })
+            };
+        proportion({
+          selector : 'section#gallery-section div.gallery-item',
+          proportion : stat.options.proportion,
+          className : 'pgi',
+          styleId : 'prop-gallery-item'
+        });
         saveStatus(true);
     });
 
-    // pre-/re-set thumbFit
-		/*
-    var thumbFit = !gJ.options.thumbFit ? stat.options.thumbFit : gJ.options.thumbFit;
-    $('#thumbFitSelect').val(thumbFit);
-		*/
 
 		$('#thumbFitSelect').val(
-				!gJ.options || !gJ.options.thumbFit ? stat.options.thumbFit : gJ.options.thumbFit
-		);
-
-    $('#thumbFitSelect').on('change', function() {
-        var value = $(this).val();
-        //gJ.options.thumbFit = value;
-				stat.options.thumbFit = value;
-        $('div#gallery-row').find('div.gallery-item .thumb-div').removeClass('cover-image contain-image').addClass(value + '-image');
+      stat.options.thumbFit.toString()
+		).on('change', function() {
+        stat.options = { 'thumbFit' : $(this).val() };
+        $('div#gallery-row').find('div.gallery-item .thumb-div').removeClass('cover-image contain-image').addClass(stat.options.thumbFit + '-image');
         saveStatus(true);
     });
 
-    // pre-/re-set thumbFit
-    /*var thumbPadding = !gJ.options.thumbPadding ? stat.options.thumbPadding : gJ.options.thumbPadding;
-    $('#thumbPaddingInput').val(thumbPadding);
-		*/
-
 		$('#thumbPaddingInput').val(
-				!gJ.options || !gJ.options.thumbPadding ? stat.options.thumbPadding : gJ.options.thumbPadding
-  	);
-
-    $('#thumbPaddingInput').keydown(function() {
+				stat.options.thumbPadding
+  	).on('keydown', function() {
         // Allow: backspace, delete, tab, escape, enter
         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
             // Allow: Ctrl+A
@@ -102,17 +79,15 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
             e.preventDefault();
         }
-    });
-
-    $('#thumbPaddingInput').on('change input', function() {
+    }).on('change input', function() {
         var value = $(this).val();
         value = (!value || value < 1) ? 0 : value;
-        stat.options.thumbPadding = value;
-				createStyle({id: 'item-padding',style: 'div#gallery-row div.gallery-item {padding: '+ value + 'px}'});
+        stat.options = { 'thumbPadding' : value };
+				createStyle({id: 'item-padding',style: 'div#gallery-row div.gallery-item {padding: '+ stat.options.thumbPadding + 'px}'});
         saveStatus(true);
     });
 
-    $('#inputSizes').attr('placeholder', gJ.sizes).keydown(function(e) {
+    $('#inputSizes').attr('placeholder', stat.options.sizes.toString()).on('keydown', function(e) {
         // Allow: backspace, delete, tab, escape, enter and ,
         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
             // Allow: Ctrl+A
@@ -130,19 +105,18 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
             e.preventDefault();
         }
-    });
-
-    $('#inputSizes').on('change input', function() {
+    }).on('change input', function() {
         var value = $(this).val().split(',');
-        stat.options.sizes = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
+        value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
+        stat.options = { 'sizes' : value };
         saveStatus(true);
     });
 
     $('#coverCheckbox').click(function(e) {
         e.stopImmediatePropagation();
         var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
-        var checked = (element.checked) ? false : true;
-        element.checked = (checked) ? false : checked.toString();
+        var checked = element.checked ? false : true;
+        element.checked = checked ? false : checked.toString();
         saveStatus(true);
     });
 

@@ -87,7 +87,7 @@ function resizeStoreSync(data, keys, length, folder) {
 function checkImageSizes(images, deep, cb) {
     console.log('checkImageSizes');
 
-    var images = (images) ? images : gJ.images;
+    var images = images || gJ.images;
     var imagesLength = images.length;
     // if 'images' is not an array, but an object:
     if (!imagesLength) {
@@ -95,7 +95,7 @@ function checkImageSizes(images, deep, cb) {
         imagesLength = imageKeys.length;
     };
     var sizesLength = gJ.sizes.length;
-    var deep = (deep) ? true : false;
+    var deep = deep ? true : false;
     deep = true;
     var id = 0;
     var sz = 0;
@@ -197,7 +197,7 @@ function getNewImages(images) {
 };
 
 function gjFilteredByFolder(fo) {
-    var folder = (fo) ? fo : stat.workingFolder;
+    var folder = fo || stat.workingFolder;
     var result = {};
     var keys = Object.keys(gJ.images);
     var klength = keys.length;
@@ -290,7 +290,7 @@ function saveJSON() {
 };
 
 function saveStatus(state) {
-    var st = (state) ? false : true;
+    var st = state ? false : true;
     if (saving) {
         st = true
     }

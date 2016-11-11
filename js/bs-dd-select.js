@@ -10,9 +10,7 @@ var ddSelect = function(evt, cb) {
 		var sel = $(this).find('.bs-dd-selected');
 		if (sel.length > 0) {
 			var val = sel.attr('data-value');
-			var caret = ' <span class="caret"></span>';
-			var txt = sel.find('a').html();
-			$(this).find('button').html(txt + caret);
+			$(this).find('button').html( sel.find('a').html() + ' <span class="caret"></span>');
 		}
 
 		if (evt === 'onselect' && cb) {

@@ -16,13 +16,10 @@ jsLoader = function(od) {
     };
 
     this.set = function(od) {
-        if (od) {
-            for (var key in od) {
-                options[key] = od[key];
-            }
+        for (var key in od) {
+            options[key] = od[key];
         }
     };
-
     if (od) {
         this.set(od);
     }
@@ -42,19 +39,13 @@ jsLoader = function(od) {
             script.onreadystatechange = funcReadyStateChange;
             script.onerror = funcError;
 
-            if (options.head) {
-                document.head.appendChild(script);
-            } else {
-                document.body.appendChild(script);
-            }
+            var te = options.head ? document.head : document.body;
+            te.appendChild(script);
 
             var done = false;
 
             function funcLoad() {
-                if (!done) {
-                    done = true;
-                    //callback(path, "ok");
-                }
+                done = !done && true;
             }
 
             function funcReadyStateChange() {

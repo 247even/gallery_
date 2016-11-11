@@ -1,8 +1,16 @@
 // jquery proportion
 (function($) {
     $.fn.proportion = function(a, b) {
-        var a = !a ? 0 : a;
-        var b = !b ? 0 : b;
+        var a, b;
+        if (a) {
+          if (typeof a === 'array') {
+              a = a[0];
+              b = a[1]
+          } else {
+              a = a || 0;
+              b = b || 0;
+          }
+        }
         $(this).css('height', $(this).outerWidth() * b / a);
         return this;
     }
@@ -22,9 +30,9 @@ function proportion(d) {
 
     var prop = {
         'selector': d.selector,
-        'proportion': !d.proportion ? [0, 0] : d.proportion,
-        'className': !d.className ? 'prop_' + prop.proportion.toString : d.className,
-        'styleId': !d.styleId ? className : d.styleId,
+        'proportion': d.proportion || [1, 1],
+        'className': d.className || 'prop_' + prop.proportion.toString,
+        'styleId': d.styleId || className,
         'inline' : typeof d.inline === true ? true : false,
         'resize': typeof d.resize === false ? false : true
     }
@@ -50,7 +58,9 @@ function proportion(d) {
         if (wprop) { prop = wprop };
         console.log(prop);
         var eli = el ? el[i] : document.querySelector(prop.selector);
-        var width = eli.style.width ? eli.style.width : eli.offsetWidth;
+        var width = eli.style.width || eli.offsetWidth;
+        //console.log(width);
+        console.log(prop.proportion);
         var height = width * (prop.proportion[1] / prop.proportion[0]) + 'px';
 
         if (createStyle && !prop.inline) {

@@ -16,6 +16,7 @@ var autoprocess = false;
 
 function adminInit() {
     console.log('adminInit');
+    //stat.options = options;
 
     // check login
     // this is for development only!

@@ -1,8 +1,8 @@
 // func.js
 
 function sortedIdsBy(prop, ord) {
-    var property = prop ? prop : 'time';
-    var order = ord ? ord : 'asc';
+    var property = prop || 'time';
+    var order = ord || 'asc';
     var imagesByProp = _.orderBy(gJ.images, [property], [order]);
     //var imagesByProp = _.sortBy(gJ.images, [property]);
     var imagesByPropLength = imagesByProp.length;
@@ -93,14 +93,16 @@ function convertTimestamp(timestamp) {
 
 // clear html elements
 function clearHtml(el) {
-    var ell = el.length;
-    for (var i = 0; i < ell; i++) {
-        var qs = document.querySelectorAll(el[i]);
-        var qsl = qs.length;
-        if (qsl > 0) {
-          for (var j=0; j < qsl; j++) {
-            qs.innerHTML = "";
-          }
+    if (el) {
+        var ell = el.length;
+        for (var i = 0; i < ell; i++) {
+            var qs = document.querySelectorAll(el[i]);
+            var qsl = qs.length;
+            if (qsl > 0) {
+              for (var j=0; j < qsl; j++) {
+                qs.innerHTML = "";
+              }
+            }
         }
     }
 };

@@ -1,3 +1,17 @@
+
+
+function test(y) {
+  var x = false;
+
+  //var y = true;
+  !y && console.log('true test &&');
+  y || console.log('true test ||');
+
+  var t = document.head;
+  t.insertAdjacentHTML('beforeend', '<div>hello</div>');
+}
+test();
+
 var options = {
     galleryPath : './gallery/',
     JSONurl : 'gallery/gallery.json',
@@ -5,6 +19,7 @@ var options = {
     thumbPadding : 0,
     proportion: [1,1],
     thumbSize : 'md',
+    thumbFit : 'cover',
     thumbSizeSizes : {
         'xs': ['col-xs-1'],
         'sm': ['col-xs-2', 'col-sm-1'],

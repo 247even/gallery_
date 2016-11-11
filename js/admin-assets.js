@@ -7,55 +7,63 @@ var stat = {
     'imagesAddedKeys': [],
     'imagesModified': [],
     'imagesNotProcessed': [],
-    'options' : {
-        'sizes': [280,430,720,1200],
-        'thumbSize': 'md',
-      	'thumbProportion': '1,1',
-      	'thumbFit': 'cover',
-      	'thumbPadding': '0'
-    },
     'workingFolder': '',
-    '_effect' : ['blur', 5],
+
+    '_options': {},
+    set options(val) {
+        for (var key in val) {
+            this._options[key] = val[key];
+        }
+        console.log(this._options);
+    },
+    get options() {
+        for (var key in this._options) {
+
+        }
+        return this._options;
+    },
+
+    '_effect': ['blur', 5],
     set effect(val) {
-      this._effect = val;
-      blur('#effect-preview-image', stat.effect[1]);
-      blur('#effect-fullscreen', stat.effect[1]);
+        this._effect = val;
+        blur('#effect-preview-image', stat.effect[1]);
+        blur('#effect-fullscreen', stat.effect[1]);
     },
     get effect() {
-      return this._effect;
+        return this._effect;
     },
 
     'sliders': {},
     'workingSlider': 's1',
-    '_sliderNumber' : 5,
+    '_sliderNumber': 5,
     set sliderNumber(val) {
-      this._sliderNumber = val;
-      statSaveSlider(im);
+        this._sliderNumber = val;
+        statSaveSlider();
     },
     get sliderNumber() {
-      return this._sliderNumber;
+        return this._sliderNumber;
     },
-    '_sliderInterval' : 3,
+    '_sliderInterval': 3,
     set sliderInterval(val) {
-      this._sliderInterval = val;
-      statSaveSlider();
+        this._sliderInterval = val;
+        statSaveSlider();
     },
     get sliderInterval() {
-      return this._sliderInterval;
+        return this._sliderInterval;
     },
     '_selectedIds': [],
     set selectedIds(val) {
-      this._selectedIds = val;
-      statSaveSlider();
+        this._selectedIds = val;
+        statSaveSlider();
     },
     get selectedIds() {
-      return this._selectedIds;
+        return this._selectedIds;
     },
 
     '_workingImage': '',
     set workingImage(val) {
         this._workingImage = val;
-        console.log('workingImage: '+this._workingImage);
+        console.log('workingImage: ' + this._workingImage);
     },
     get workingImage() {
         return this._workingImage;
@@ -64,7 +72,7 @@ var stat = {
     '_workingSize': '',
     set workingSize(val) {
         this._workingSize = val;
-        console.log('workingSize: '+this._workingSize);
+        console.log('workingSize: ' + this._workingSize);
     },
     get workingSize() {
         return this._workingSize;
@@ -94,10 +102,10 @@ var stat = {
     '_newImages': [],
     set newImages(val) {
         this._newImages = val;
-        console.log('stat.newImages: '+stat.newImages.length);
+        console.log('stat.newImages: ' + stat.newImages.length);
         console.log(stat.folderImages);
         $('#folder-modal .modal-body .status-div').html(stat.newImages.length);
-        if(stat.newImages.length > 0){
+        if (stat.newImages.length > 0) {
 
         }
     },
@@ -123,8 +131,8 @@ var stat = {
             stat.workingFolder = folder;
             console.log(stat.folderImages);
             var msg = '"' + folder + '"';
-            if (stat.folderImages[folder]){
-                msg = msg +' (' + stat.folderImages[folder][0] + ')';
+            if (stat.folderImages[folder]) {
+                msg = msg + ' (' + stat.folderImages[folder][0] + ')';
             }
 
             bootbox.confirm({
@@ -144,17 +152,17 @@ var stat = {
                 callback: function(result) {
                     console.log(result);
                     if (result) {
-                      // add folder:
-                      gJ.folders.push(folder);
-                      setFolderSelect();
-                      $('#upload-folder-select').val(folder).prop('selected', true);
-                      processNewFolder({
-                          'folder': folder,
-                          'cb': function() {
-                              stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
-                          }
-                      });
-                      return;
+                        // add folder:
+                        gJ.folders.push(folder);
+                        setFolderSelect();
+                        $('#upload-folder-select').val(folder).prop('selected', true);
+                        processNewFolder({
+                            'folder': folder,
+                            'cb': function() {
+                                stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
+                            }
+                        });
+                        return;
                     }
                     // ignore folder:
                     ignoreFolder(folder);
@@ -167,28 +175,29 @@ var stat = {
         return this._newFolders;
     },
 
-    _allTags : [],
+    _allTags: [],
     set allTags(val) {
-      this._allTags = val;
-      var stl = stat.allTags.length;
-      for (var i=0; i < stl; i++) {
-        prototype({
-            'template': '#tag-button-prototype',
-            'selectors': ['text'],
-            'values': [stat.allTags[i]],
-            'targets': '#all-tags'
-        });
-      }
+        this._allTags = val;
+        var stl = stat.allTags.length;
+        for (var i = 0; i < stl; i++) {
+            prototype({
+                'template': '#tag-button-prototype',
+                'selectors': ['text'],
+                'values': [stat.allTags[i]],
+                'targets': '#all-tags'
+            });
+        }
     },
     get allTags() {
-      return this._allTags;
+        return this._allTags;
     }
 };
 
+stat.options = options;
+
 function statSaveSlider(im) {
-    var images = im ? im : stat.selectedIds;
     stat.sliders[stat.workingSlider] = [
-        images,
+        im || stat.selectedIds,
         stat.sliderInterval,
         stat.sliderNumber
     ];
@@ -282,7 +291,7 @@ function resizeStoreSync(data, keys, length, folder) {
 function checkImageSizes(images, deep, cb) {
     console.log('checkImageSizes');
 
-    var images = (images) ? images : gJ.images;
+    var images = images || gJ.images;
     var imagesLength = images.length;
     // if 'images' is not an array, but an object:
     if (!imagesLength) {
@@ -290,7 +299,7 @@ function checkImageSizes(images, deep, cb) {
         imagesLength = imageKeys.length;
     };
     var sizesLength = gJ.sizes.length;
-    var deep = (deep) ? true : false;
+    var deep = deep ? true : false;
     deep = true;
     var id = 0;
     var sz = 0;
@@ -392,7 +401,7 @@ function getNewImages(images) {
 };
 
 function gjFilteredByFolder(fo) {
-    var folder = (fo) ? fo : stat.workingFolder;
+    var folder = fo || stat.workingFolder;
     var result = {};
     var keys = Object.keys(gJ.images);
     var klength = keys.length;
@@ -485,7 +494,7 @@ function saveJSON() {
 };
 
 function saveStatus(state) {
-    var st = (state) ? false : true;
+    var st = state ? false : true;
     if (saving) {
         st = true
     }
@@ -505,79 +514,56 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
         buildGallery(gJ);
     });
 
-    // pre-/re-set thumbSize
-		/*
-    var thumbSize = !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize;
-    $('#thumbSizeSelect').val(thumbSize);
-		*/
-
     $('#thumbSizeSelect').val(
-				!gJ.options || !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize
-		);
+        stat.options.thumbSize
+		).on('change', function() {
 
-    $('#thumbSizeSelect').on('change', function() {
-        var value = $(this).val();
-        var proportion = !gJ.options.thumbProportion ? stat.options.thumbProportion.split(',') : gJ.options.thumbProportion.split(',');
-        var thumbSize = !gJ.options.thumbSize ? stat.options.thumbSize : gJ.options.thumbSize;
+        removeClasses('div#gallery-row div.gallery-item', stat.options.thumbSizeSizes[stat.options.thumbSize]);
 
-        removeClasses('.gallery-item', thumbSizeSizes[thumbSize]);
-
-        //gJ.options.thumbSize = value;
-				stat.options.thumbSize = value;
-
-        var ntds = thumbSizeSizes[value].toString();
-        ntds = ntds.replace(/,/g, ' ');
-        $('div#gallery-row').find('div.gallery-item').addClass(ntds).proportion(proportion[0], proportion[1]);
+        stat.options = { 'thumbSize' : $(this).val() };
+        var ntds = stat.options.thumbSizeSizes[stat.options.thumbSize].toString().replace(/,/g, ' ');
+        //var ntds = thumbSizeSizes[value].toString();
+        //ntds = ntds.replace(/,/g, ' ');
+        $('div#gallery-row').find('div.gallery-item').addClass(ntds);
+        proportion({
+          selector : 'section#gallery-section div.gallery-item',
+          proportion : stat.options.proportion,
+          className : 'pgi',
+          styleId : 'prop-gallery-item'
+        });
 
         saveStatus(true);
     });
 
-    // pre-/re-set Proportion
-		/*
-    var thumbProp = !gJ.options.proportion ? stat.options.proportion : gJ.options.proportion;
-    $('#thumProportionSelect').val(thumbProp);
-*/
-    $('#thumProportionSelect').val(
-				!gJ.options || !gJ.options.proportion ? stat.options.proportion : gJ.options.proportion
-		);
-
-    $('#thumbProportionSelect').on('change', function() {
-        var value = $(this).val();
-        //gJ.options.thumbProportion = value;
-				stat.options.thumbProportion = value;
-        value = value.split(',');
-        $('div#gallery-row').find('div.gallery-item').proportion(value[0], value[1]);
+    $('#thumbProportionSelect').val(
+				stat.options.proportion.toString()
+		).on('change', function() {
+        stat.options = {
+            'proportion' : $(this).val().split(',').map( function (n) {
+                  return parseInt(n);
+                })
+            };
+        proportion({
+          selector : 'section#gallery-section div.gallery-item',
+          proportion : stat.options.proportion,
+          className : 'pgi',
+          styleId : 'prop-gallery-item'
+        });
         saveStatus(true);
     });
 
-    // pre-/re-set thumbFit
-		/*
-    var thumbFit = !gJ.options.thumbFit ? stat.options.thumbFit : gJ.options.thumbFit;
-    $('#thumbFitSelect').val(thumbFit);
-		*/
 
 		$('#thumbFitSelect').val(
-				!gJ.options || !gJ.options.thumbFit ? stat.options.thumbFit : gJ.options.thumbFit
-		);
-
-    $('#thumbFitSelect').on('change', function() {
-        var value = $(this).val();
-        //gJ.options.thumbFit = value;
-				stat.options.thumbFit = value;
-        $('div#gallery-row').find('div.gallery-item .thumb-div').removeClass('cover-image contain-image').addClass(value + '-image');
+      stat.options.thumbFit.toString()
+		).on('change', function() {
+        stat.options = { 'thumbFit' : $(this).val() };
+        $('div#gallery-row').find('div.gallery-item .thumb-div').removeClass('cover-image contain-image').addClass(stat.options.thumbFit + '-image');
         saveStatus(true);
     });
 
-    // pre-/re-set thumbFit
-    /*var thumbPadding = !gJ.options.thumbPadding ? stat.options.thumbPadding : gJ.options.thumbPadding;
-    $('#thumbPaddingInput').val(thumbPadding);
-		*/
-
 		$('#thumbPaddingInput').val(
-				!gJ.options || !gJ.options.thumbPadding ? stat.options.thumbPadding : gJ.options.thumbPadding
-  	);
-
-    $('#thumbPaddingInput').keydown(function() {
+				stat.options.thumbPadding
+  	).on('keydown', function() {
         // Allow: backspace, delete, tab, escape, enter
         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
             // Allow: Ctrl+A
@@ -595,17 +581,15 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
             e.preventDefault();
         }
-    });
-
-    $('#thumbPaddingInput').on('change input', function() {
+    }).on('change input', function() {
         var value = $(this).val();
         value = (!value || value < 1) ? 0 : value;
-        stat.options.thumbPadding = value;
-				createStyle({id: 'item-padding',style: 'div#gallery-row div.gallery-item {padding: '+ value + 'px}'});
+        stat.options = { 'thumbPadding' : value };
+				createStyle({id: 'item-padding',style: 'div#gallery-row div.gallery-item {padding: '+ stat.options.thumbPadding + 'px}'});
         saveStatus(true);
     });
 
-    $('#inputSizes').attr('placeholder', gJ.sizes).keydown(function(e) {
+    $('#inputSizes').attr('placeholder', stat.options.sizes.toString()).on('keydown', function(e) {
         // Allow: backspace, delete, tab, escape, enter and ,
         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
             // Allow: Ctrl+A
@@ -623,19 +607,18 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
             e.preventDefault();
         }
-    });
-
-    $('#inputSizes').on('change input', function() {
+    }).on('change input', function() {
         var value = $(this).val().split(',');
-        stat.options.sizes = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
+        value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
+        stat.options = { 'sizes' : value };
         saveStatus(true);
     });
 
     $('#coverCheckbox').click(function(e) {
         e.stopImmediatePropagation();
         var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
-        var checked = (element.checked) ? false : true;
-        element.checked = (checked) ? false : checked.toString();
+        var checked = element.checked ? false : true;
+        element.checked = checked ? false : checked.toString();
         saveStatus(true);
     });
 
@@ -643,52 +626,45 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
 /* Raw Panel */
 $('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 
-	loader();
+    loader();
+		$('#gallery-row').find('.gallery-item').off('click').removeClass('selected-image');
+		$('#json-output').text(JSON.stringify(gJ, null, '\t'));
 
-	getAllBackups().done(function(data) {
-		$("#loadBackupSelect").html("").append("<option>---</option>");
-		//console.log(data);
-		//var data = JSON.parse(data);
-		for (var i = 0; i < data.length; i++) {
-			var split = data[i].split(".");
-			var opt = "<option data-url=" + data[i] + ">" + convertTimestamp(split[1]) + "</option>";
-			$("#loadBackupSelect").append(opt);
-		};
+    getAllBackups().done(function(data) {
+        $('#loadBackupSelect').html('').append('<option>---</option>');
+        var dataLength = data.length;
+        for (var i = 0; i < dataLength; i++) {
+            var split = data[i].split('.');
+            $('#loadBackupSelect').append(
+                '<option data-url=' + data[i] + '>' + convertTimestamp(split[1]) + '</option>'
+            );
+        };
 
-		$("#loadBackupSelect").on("change", function() {
-			loader();
-			var dataUrl = $('#loadBackupSelect option:selected').attr("data-url");
-			var url = "gallery/" + dataUrl;
-			var outputText = "Gallery JSON";
-			var outputData = gJ;
-			if (!dataUrl) {
-				$("#json-output").text(JSON.stringify(outputData, null, '\t'));
-				$(".outputFile").text(outputText);
-				return false;
-			}
+        $('#loadBackupSelect').on('change', function() {
+            loader();
+            var dataUrl = $('#loadBackupSelect').find('option:selected').attr('data-url');
+            var url = 'gallery/' + dataUrl;
 
-			$.getJSON(url, function(data) {
-				outputData = data;
-				outputText = dataUrl;
-			}).always(function() {
-				$("#json-output").text(JSON.stringify(outputData, null, '\t'));
-				$(".outputFile").text(outputText);
-				loader("off");
-			});
+            if (!dataUrl) {
+                $('#json-output').text(JSON.stringify(gJ, null, '\t'));
+                $('#outputFile').text('Gallery JSON');
+                return false;
+            }
 
-			$("#loadBuBtn").on("click", function() {
-				buildGallery(outputData);
-			});
-		});
+						loadBackup(url).done(function(data) {
+								$('#json-output').text(JSON.stringify(data, null, '\t'));
+								$('#outputFile').text(dataUrl);
+								$('#loadBuBtn').on('click', function() {
+		                buildGallery(data);
+		            });
+								loader('off');
+						});
+        });
 
-	});
-
-	$(".gallery-row .gallery-item").removeClass("selected-image");
-
-	$("#json-output").text(JSON.stringify(gJ, null, '\t'));
-	loader("off");
-
-}); /* Sliders */
+				loader('off');
+    });
+});
+/* Sliders */
 
 var dis = true;
 
@@ -1712,6 +1688,10 @@ var getAllBackups = function() {
 
 var backup = function() {
     return $.post("gallery/backup.php", "backup=true", null, 'json');
+};
+
+var loadBackup = function(url) {
+    return $.getJSON(url);
 };
 
 var fileExists = function(file) {
