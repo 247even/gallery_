@@ -14,7 +14,9 @@ var stat = {
         for (var key in val) {
             this._options[key] = val[key];
         }
-        console.log(this._options);
+        if (this._options !== options) {
+            saveStatus(true);
+        }
     },
     get options() {
         for (var key in this._options) {
@@ -129,7 +131,7 @@ var stat = {
         if (stat.newFolders.length > 0) {
             var folder = stat.newFolders[0];
             stat.workingFolder = folder;
-            console.log(stat.folderImages);
+            //console.log(stat.folderImages);
             var msg = '"' + folder + '"';
             if (stat.folderImages[folder]) {
                 msg = msg + ' (' + stat.folderImages[folder][0] + ')';
@@ -175,8 +177,38 @@ var stat = {
         return this._newFolders;
     },
 
-    _allTags: [],
+    '_tagsSelectedIds': [],
+    set tagsSelectedIds(val) {
+        var index = this._tagsSelectedIds.indexOf(val);
+        if (index > -1) {
+            this._tagsSelectedIds.splice(index, 1);
+        } else {
+            this._tagsSelectedIds.push(val);
+        }
+    },
+    get tagsSelectedIds() {
+      return this._tagsSelectedIds;
+    },
+
+    '_imageTags': {},
+    set imageTags(val) {
+
+    },
+    get imageTags() {
+        return this._imageTags;
+    },
+
+    '_tagsEdited': [],
+    set tagsEdited(val) {
+        this._tagsEdited = _.uniq(this._tagsEdited.push(val));
+    },
+    get tagsEdited() {
+        return this._tagsEdited;
+    },
+
+    '_allTags': [],
     set allTags(val) {
+        this._allTags = [];
         this._allTags = val;
         var stl = stat.allTags.length;
         for (var i = 0; i < stl; i++) {
@@ -192,8 +224,6 @@ var stat = {
         return this._allTags;
     }
 };
-
-stat.options = options;
 
 function statSaveSlider(im) {
     stat.sliders[stat.workingSlider] = [
@@ -504,68 +534,65 @@ function saveStatus(state) {
 
 //$('#optionsForm').validator();
 
-$('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(e) {
+function setOptions() {
 
     $('#gallery-row').find('.gallery-item').removeClass('selected-image').off('click');
 
-    $('#configReset').click(function() {
-        //$('#optionsForm')[0].reset();
-				$('#optionsForm').reset();
-        buildGallery(gJ);
-    });
+    stat.options = options;
 
     $('#thumbSizeSelect').val(
         stat.options.thumbSize
-		).on('change', function() {
+    ).on('change', function() {
 
         removeClasses('div#gallery-row div.gallery-item', stat.options.thumbSizeSizes[stat.options.thumbSize]);
-
-        stat.options = { 'thumbSize' : $(this).val() };
+        stat.options = {
+            'thumbSize': $(this).val()
+        };
         var ntds = stat.options.thumbSizeSizes[stat.options.thumbSize].toString().replace(/,/g, ' ');
-        //var ntds = thumbSizeSizes[value].toString();
-        //ntds = ntds.replace(/,/g, ' ');
         $('div#gallery-row').find('div.gallery-item').addClass(ntds);
         proportion({
-          selector : 'section#gallery-section div.gallery-item',
-          proportion : stat.options.proportion,
-          className : 'pgi',
-          styleId : 'prop-gallery-item'
+            selector: 'section#gallery-section div.gallery-item',
+            proportion: stat.options.proportion,
+            className: 'pgi',
+            styleId: 'prop-gallery-item'
         });
 
         saveStatus(true);
     });
 
     $('#thumbProportionSelect').val(
-				stat.options.proportion.toString()
-		).on('change', function() {
+        stat.options.proportion.toString()
+    ).on('change', function() {
         stat.options = {
-            'proportion' : $(this).val().split(',').map( function (n) {
-                  return parseInt(n);
-                })
-            };
+            'proportion': $(this).val().split(',').map(function(n) {
+                return parseInt(n);
+            })
+        };
         proportion({
-          selector : 'section#gallery-section div.gallery-item',
-          proportion : stat.options.proportion,
-          className : 'pgi',
-          styleId : 'prop-gallery-item'
+            selector: 'section#gallery-section div.gallery-item',
+            proportion: stat.options.proportion,
+            className: 'pgi',
+            styleId: 'prop-gallery-item'
         });
         saveStatus(true);
     });
 
 
-		$('#thumbFitSelect').val(
-      stat.options.thumbFit.toString()
-		).on('change', function() {
-        stat.options = { 'thumbFit' : $(this).val() };
+    $('#thumbFitSelect').val(
+        stat.options.thumbFit.toString()
+    ).on('change', function() {
+        stat.options = {
+            'thumbFit': $(this).val()
+        };
         $('div#gallery-row').find('div.gallery-item .thumb-div').removeClass('cover-image contain-image').addClass(stat.options.thumbFit + '-image');
         saveStatus(true);
     });
 
-		$('#thumbPaddingInput').val(
-				stat.options.thumbPadding
-  	).on('keydown', function() {
+    $('#thumbPaddingInput').val(
+        stat.options.thumbPadding
+    ).on('keydown', function() {
         // Allow: backspace, delete, tab, escape, enter
-        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+        if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
             // Allow: Ctrl+A
             (e.keyCode == 65 && e.ctrlKey === true) ||
             // Allow: Ctrl+C
@@ -582,16 +609,19 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
             e.preventDefault();
         }
     }).on('change input', function() {
-        var value = $(this).val();
-        value = (!value || value < 1) ? 0 : value;
-        stat.options = { 'thumbPadding' : value };
-				createStyle({id: 'item-padding',style: 'div#gallery-row div.gallery-item {padding: '+ stat.options.thumbPadding + 'px}'});
+        var value = $(this).val() || 0;
+        stat.options = {
+            'thumbPadding': (!value || value < 1) ? 0 : value
+        };
+        createStyle({
+            id: 'item-padding',
+            style: 'div#gallery-row div.gallery-item {padding: ' + stat.options.thumbPadding + 'px}'
+        });
         saveStatus(true);
     });
 
     $('#inputSizes').attr('placeholder', stat.options.sizes.toString()).on('keydown', function(e) {
-        // Allow: backspace, delete, tab, escape, enter and ,
-        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 188]) !== -1 ||
+        if ([46, 8, 9, 27, 13, 188].indexOf(e.keyCode) !== -1 ||
             // Allow: Ctrl+A
             (e.keyCode == 65 && e.ctrlKey === true) ||
             // Allow: Ctrl+C
@@ -600,7 +630,7 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
             (e.keyCode == 88 && e.ctrlKey === true) ||
             // Allow: home, end, left, right
             (e.keyCode >= 35 && e.keyCode <= 39)) {
-            // let it happen, don't do anything
+            // don't do anything
             return;
         }
         // Ensure that it is a number and stop the keypress
@@ -609,17 +639,21 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
         }
     }).on('change input', function() {
         var value = $(this).val().split(',');
-        value = _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))));
-        stat.options = { 'sizes' : value };
+        stat.options = {
+            'sizes': _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))))
+        };
         saveStatus(true);
     });
 
-    $('#coverCheckbox').click(function(e) {
-        e.stopImmediatePropagation();
-        var element = (e.currentTarget.htmlFor !== undefined) ? e.currentTarget.htmlFor : e.currentTarget;
-        var checked = element.checked ? false : true;
-        element.checked = checked ? false : checked.toString();
-        saveStatus(true);
+};
+
+$('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(e) {
+
+    setOptions();
+
+    $('#configReset').click(function() {
+        setOptions();
+        buildGallery(gJ);
     });
 
 });
@@ -1019,15 +1053,16 @@ var selectizeInput = $('#input-tags').selectize({
     delimiter: ',',
     persist: false,
     createFilter: '^[a-zA-Z0-9_äüö -]+$',
-    create: function(inpt) {
-        var input = inpt.split(',');
-        $('#gallery-row').find('div.selected-image').each(function() {
-            var dataTags = $(this).attr('data-tags').split(',');
-            unionTags = _.union(dataTags, input);
+    create: function(input) {
+        for (var i = 0, l = stat.tagsSelectedIds.length; i < l; i++) {
+            var id = stat.tagsSelectedIds[i];
+            var dataTags = stat.imageTags[id];
+            var unionTags = _.union(dataTags, input.split(','));
             if (unionTags != dataTags) {
-                $(this).attr('data-tags', unionTags).addClass('edited');
+                stat.imageTags[id] = unionTags;
+                stat.tagsEdited = id;
             }
-        });
+        }
         return {
             'text': input,
             'value': input
@@ -1037,38 +1072,50 @@ var selectizeInput = $('#input-tags').selectize({
 var selectizeTags = selectizeInput[0].selectize;
 selectizeTags.clear();
 
-$('.selectize-input .item').on('click', function() {
-    var value = $(this).attr('data-value');
-    $('#gallery-row').find('div.gallery-item[data-tags*="'+value+'"]').addClass('selected-image');
-});
+function setStatImageTags() {
+    for (var key in gJ.images) {
+        stat.imageTags[key] = stat.imageTags[key] || gJ.images[key].tags;
+    }
+};
 
 $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
 
+    setStatImageTags();
+    document.getElementById('all-tags').innerHTML = '';
     stat.allTags = !stat.allTags.length ? gJ.tags : stat.allTags;
 
-    $('#all-tags').find('button').on('click', function(){
-        $('#gallery-row').find('div.gallery-item[data-tags*="'+$(this).text()+'"]').trigger('click');
+    $('#all-tags').find('button').on('click', function() {
+        var text = $(this).text();
+        for (var key in stat.imageTags) {
+            if (stat.imageTags[key] === text || stat.imageTags[key].indexOf(text) > -1) {
+                $('#gallery-row').find('div.gallery-item[data-id="' + key + '"]').trigger('click');
+            }
+        }
     });
+
 
     $('#gallery-row').find('div.gallery-item').removeClass('selected-image').off('click').on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         $(this).toggleClass('selected-image');
+        stat.tagsSelectedIds = $(this).attr('data-id');
         selectTags();
     });
 
-    $('#tags-submit-button').click(function(e) {
+    $('#tags-submit-button').on('click', function(e) {
         e.preventDefault();
 
         var tags = [];
 
-        $('#gallery-row').find('.edited').each(function() {
-            gJ.images[$(this).attr('data-id')].tags = $(this).attr('data-tags').split(',');
-        });
+        var editedLength = stat.tagsEdited.length;
+        for (var i = 0; i < editedLength; i++) {
+            gJ.images[stat.tagsEdited[i]].tags = stat.imageTags[stat.tagsEdited[i]];
+        }
 
-        $.each(gJ.images, function(k, v) {
-            tags.push(v.tags);
-        })
+        for (var key in gJ.images) {
+            tags.push(gJ.images[key].tags);
+            console.log(tags);
+        }
 
         gJ.tags = _.uniq(_.flattenDeep(tags));
         buildGalleryNavigation();
@@ -1089,18 +1136,19 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
 
 function selectTags() {
 
-    var selectedImages = $('#gallery-row').find('div.selected-image');
+    var selectedImages = stat.tagsSelectedIds;
     var selectedLength = selectedImages.length;
     var selectedTags = [];
 
     selectizeTags.clear();
 
     if (selectedLength === 0) {
-      console.log('nothing selected');
-      return false;
+        console.log('nothing selected');
+        return false;
     }
 
-    var firstTag = selectedImages.first().attr('data-tags').split(',');
+
+    var firstTag = stat.imageTags[stat.tagsSelectedIds[0]] || gJ.images[stat.tagsSelectedIds[0]].tags;
     var groupTags = $('#input-tags').attr('value').split(',');
 
     if (selectedLength === 1) {
@@ -1110,12 +1158,12 @@ function selectTags() {
     } else if (selectedLength > 1) {
 
         groupTags = !groupTags[0] ? firstTag : groupTags;
-        selectedImages.each(function() {
-            attrTags = $(this).attr('data-tags').split(',');
-            // all unique selected tags:
+        for (var i = 0; i < selectedLength; i++) {
+            var selectedId = stat.tagsSelectedIds[i];
+            attrTags = stat.imageTags[selectedId] || gJ.images[selectedId].tags;
             selectedTags = _.union(selectedTags, attrTags);
             groupTags = _.intersection(groupTags, attrTags);
-        });
+        }
 
     }
 
@@ -1126,7 +1174,7 @@ function selectTags() {
     });
     selectizeTags.refreshItems();
 
-//    return groupTags;
+    //    return groupTags;
 };
 
 function deleteSelectedImages() {

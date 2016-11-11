@@ -13,7 +13,9 @@ var stat = {
         for (var key in val) {
             this._options[key] = val[key];
         }
-        console.log(this._options);
+        if (this._options !== options) {
+            saveStatus(true);
+        }
     },
     get options() {
         for (var key in this._options) {
@@ -128,7 +130,7 @@ var stat = {
         if (stat.newFolders.length > 0) {
             var folder = stat.newFolders[0];
             stat.workingFolder = folder;
-            console.log(stat.folderImages);
+            //console.log(stat.folderImages);
             var msg = '"' + folder + '"';
             if (stat.folderImages[folder]) {
                 msg = msg + ' (' + stat.folderImages[folder][0] + ')';
@@ -174,8 +176,38 @@ var stat = {
         return this._newFolders;
     },
 
-    _allTags: [],
+    '_tagsSelectedIds': [],
+    set tagsSelectedIds(val) {
+        var index = this._tagsSelectedIds.indexOf(val);
+        if (index > -1) {
+            this._tagsSelectedIds.splice(index, 1);
+        } else {
+            this._tagsSelectedIds.push(val);
+        }
+    },
+    get tagsSelectedIds() {
+      return this._tagsSelectedIds;
+    },
+
+    '_imageTags': {},
+    set imageTags(val) {
+
+    },
+    get imageTags() {
+        return this._imageTags;
+    },
+
+    '_tagsEdited': [],
+    set tagsEdited(val) {
+        this._tagsEdited = _.uniq(this._tagsEdited.push(val));
+    },
+    get tagsEdited() {
+        return this._tagsEdited;
+    },
+
+    '_allTags': [],
     set allTags(val) {
+        this._allTags = [];
         this._allTags = val;
         var stl = stat.allTags.length;
         for (var i = 0; i < stl; i++) {
@@ -191,8 +223,6 @@ var stat = {
         return this._allTags;
     }
 };
-
-stat.options = options;
 
 function statSaveSlider(im) {
     stat.sliders[stat.workingSlider] = [
