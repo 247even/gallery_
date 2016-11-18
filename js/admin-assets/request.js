@@ -1,39 +1,40 @@
+// request
 var request = true;
 
 var allFolders = function() {
-    return $.post("gallery/allFolders.php", "allFolders", null, 'json');
+    return $.post('allFolders.php', 'allFolders', null, 'json');
 };
 
 var createFolder = function(path) {
-    return $.post("gallery/createFolder.php", 'folder=' + path, null, 'json');
+    return $.post('createFolder.php', 'folder=gallery/' + path, null, 'json');
 };
 
 var removeFolder = function(folder) {
-    return $.post("gallery/removeFolder.php", "folder=" + folder, null);
+    return $.post('removeFolder.php', 'folder=gallery/' + folder, null);
 };
 
 var imagesFromFolder = function(f) {
-    var data = "folder=" + f + "&ts=" + Date.now();
-    return $.post("gallery/imagesFromFolder.php", data, null, 'json').done(function(data) {
+    var postdata = 'folder=gallery/' + f + '&ts=' + Date.now();
+    return $.post('imagesFromFolder.php', postdata, null, 'json').done(function(data) {
         stat.allImages = data;
     });
 };
 
 var resizeStore = function(folder, file, size, force) {
-    var postdata = 'folder=' + folder + '&file=' + file + '&sizes=' + size + '&force=' + force;
-    return $.post("gallery/resizeStore.php", postdata, 'json');
+    var postdata = 'folder=gallery/' + folder + '&file=' + file + '&sizes=' + size + '&force=' + force;
+    return $.post('resizeStore.php', postdata, 'json');
 };
 
 var removeImage = function(p) {
-    return $.post("gallery/removeImage.php", "path=" + p, null, 'json');
+    return $.post('removeImage.php', 'path=gallery/' + p, null, 'json');
 };
 
 var getAllBackups = function() {
-    return $.post("gallery/allBackups.php", "allBackups=true&t=" + Date.now(), null, 'json');
+    return $.post('allBackups.php', 'allBackups=true&t=' + Date.now(), null, 'json');
 };
 
 var backup = function() {
-    return $.post("gallery/backup.php", "backup=true", null, 'json');
+    return $.post(options.scriptBase + 'backup.php', 'backup=true', null, 'json');
 };
 
 var loadBackup = function(url) {
@@ -44,11 +45,11 @@ var fileExists = function(file) {
     return $.ajax({
         url: file,
         type: 'HEAD',
-				async : true
+        async: true
     });
 };
 
 var saveFileAs = function(c, t) {
-    var data = "content=" + c + "&target=" + t;
-    return $.post("gallery/saveFileAs.php", data, null, 'json');
+    var data = 'content=' + c + '&target=' + t;
+    return $.post(options.scriptBase + 'saveFileAs.php', data);
 };

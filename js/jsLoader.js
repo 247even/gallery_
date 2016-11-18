@@ -1,9 +1,8 @@
 jsLoader = function(od) {
     var options = {
         // path to jsLoader.php
-        //'url' = 'jsLoader.php',
-        'url': 'gallery/jsLoader.php',
-        'path': '',
+        'url': 'jsLoader.php',
+        'path': '/js/',
         'outpath': '/js/',
         'filter': '*.{js,json,js.gz,json.gz}',
         'concat': false,
@@ -27,10 +26,9 @@ jsLoader = function(od) {
     var request = new XMLHttpRequest();
     request.onloadend = function(e) {
         var response = JSON.parse(e.target.responseText);
-
-        for (i = 0; response.outfiles.length > i; i++) {
+        for (i = 0, rol = response.outfiles.length; rol > i; i++) {
             var script = document.createElement("script");
-            script.type = "text/javascript";
+//            script.type = "text/javascript";
             script.src = options.srcpath + response.outfiles[i];
             if (options.async) {
                 script.async = "async";
@@ -59,7 +57,7 @@ jsLoader = function(od) {
                 }
             }
 
-            function funcError() {
+            function funcError(e) {
                 if (!done) {
                     done = true;
                     //callback(path, "error");
@@ -96,16 +94,16 @@ var jsCheckLoaded = function(v, cb) {
 
     // wait for js to be loaded
     function doCheck() {
-        console.log(window[v]);
-        console.log("doCheck");
+       //console.log(window[v]);
+       //console.log("doCheck");
         if (typeof window[v] == 'undefined' || !window[v]) {
-            console.log("jscheckloaded 2: " + window[v]);
+           //console.log("jscheckloaded 2: " + window[v]);
             setTimeout(function() {
                 doCheck();
             }, 1000);
             return false;
         } else {
-            console.log("doCheck success: " + window[v]);
+           //console.log("doCheck success: " + window[v]);
 						if(cb){cb();}
             return true;
         }

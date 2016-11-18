@@ -1,9 +1,11 @@
 <?php
 // content and target should be required
 function saveFileAs($content, $target, $filename, $extension, $overwrite) {
-	
-	$enContent = json_encode($content);
 
+//	$enContent = json_encode($content);
+	$enContent = $content;
+
+/*
 	// check if target contains '/'
 	if (strpos($target, "/") !== false) {
 		if (strpos($target, "/") === 0) {
@@ -20,6 +22,7 @@ function saveFileAs($content, $target, $filename, $extension, $overwrite) {
 	} else {
 		$target = $target . '/' . $filename . '.' . $extension;
 	}
+*/
 
 	//mkdir($target);
 	touch($target);
@@ -36,12 +39,12 @@ function saveFileAs($content, $target, $filename, $extension, $overwrite) {
 $gContent = false;
 $gTarget = false;
 
-if (isset($_GET['content']) || isset($_POST['content'])) {
-	$gContent = json_decode($_GET['content']);
+if (isset($_POST['content'])) {
+	$gContent = json_decode($_POST['content']);
 }
 
-if (isset($_GET['target']) || isset($_POST['target'])) {
-	$gTarget = $_GET['target'];
+if (isset($_POST['target'])) {
+	$gTarget = $_POST['target'];
 }
 
 // content & target are required
@@ -49,4 +52,3 @@ if ($gContent && $gTarget) {
 	saveFileAs($gContent, $gTarget);
 }
 ?>
-

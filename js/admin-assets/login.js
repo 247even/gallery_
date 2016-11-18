@@ -18,17 +18,17 @@ function requestLogin(postdata) {
     request.onload = function(data) {
         if (request.status >= 200 && request.status < 400) {
             loggedin = data;
-            console.log(data);
+           //console.log(data);
             if (loggedin) {
                 // tba
             }
         } else {
-            console.log("nope");
+           //console.log("nope");
         }
     };
 
     request.onerror = function() {
-        console.log("connection error");
+       //console.log("connection error");
     };
 
     request.send(postdata);
@@ -49,7 +49,7 @@ function initLogin() {
     // Attach a submit handler to the form
     document.getElementById('loginSubmit').onclick = function(e) {
 
-        console.log("submit");
+       //console.log("submit");
         // Stop form from submitting normally
         e.preventDefault();
 
@@ -62,7 +62,7 @@ function initLogin() {
 
         var postdata = "username=" + username + "&password=" + password + "&rememberme=" + rememberme;
         //username=&password=&rememberme=on&depth=5
-        console.log("postdata: " + postdata);
+       //console.log("postdata: " + postdata);
 
         // Send the data using post
         requestLogin(postdata)

@@ -1,21 +1,9 @@
-
-
-function test(y) {
-  var x = false;
-
-  //var y = true;
-  !y && console.log('true test &&');
-  y || console.log('true test ||');
-
-  var t = document.head;
-  t.insertAdjacentHTML('beforeend', '<div>hello</div>');
-}
-test();
+// options
 
 var options = {
     galleryPath : './gallery/',
-    JSONurl : 'gallery/gallery.json',
-    sizes : '280,430,720,1200',
+    JSONurl : 'gallery.json',
+    sizes : ['280','430','720','1200'],
     thumbPadding : 0,
     proportion: [1,1],
     thumbSize : 'md',

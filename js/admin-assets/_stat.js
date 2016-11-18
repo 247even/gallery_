@@ -7,6 +7,7 @@ var stat = {
     'imagesModified': [],
     'imagesNotProcessed': [],
     'workingFolder': '',
+    'existingImages' : {},
 
     '_options': {},
     set options(val) {
@@ -64,7 +65,7 @@ var stat = {
     '_workingImage': '',
     set workingImage(val) {
         this._workingImage = val;
-        console.log('workingImage: ' + this._workingImage);
+        //console.log('workingImage: ' + this._workingImage);
     },
     get workingImage() {
         return this._workingImage;
@@ -73,7 +74,7 @@ var stat = {
     '_workingSize': '',
     set workingSize(val) {
         this._workingSize = val;
-        console.log('workingSize: ' + this._workingSize);
+        //console.log('workingSize: ' + this._workingSize);
     },
     get workingSize() {
         return this._workingSize;
@@ -82,7 +83,6 @@ var stat = {
     '_folderImages': [],
     set folderImages(val) {
         this._folderImages = val;
-        console.log('folderImages buildFolderTable()');
         buildFolderTable();
     },
     get folderImages() {
@@ -91,9 +91,9 @@ var stat = {
 
     '_allImages': {},
     set allImages(val) {
-        this._allImages = {};
-        if (val) {
-            this._allImages = val;
+        this._allImages = val || {};
+        if (Object.keys(this._allImages).length > 0) {
+            getNewImages();
         }
     },
     get allImages() {
@@ -103,12 +103,8 @@ var stat = {
     '_newImages': [],
     set newImages(val) {
         this._newImages = val;
-        console.log('stat.newImages: ' + stat.newImages.length);
-        console.log(stat.folderImages);
-        $('#folder-modal .modal-body .status-div').html(stat.newImages.length);
-        if (stat.newImages.length > 0) {
-
-        }
+        //console.log('stat.newImages: ' + stat.newImages.length);
+        //console.log(stat.folderImages);
     },
     get newImages() {
         return this._newImages;
@@ -130,7 +126,6 @@ var stat = {
         if (stat.newFolders.length > 0) {
             var folder = stat.newFolders[0];
             stat.workingFolder = folder;
-            //console.log(stat.folderImages);
             var msg = '"' + folder + '"';
             if (stat.folderImages[folder]) {
                 msg = msg + ' (' + stat.folderImages[folder][0] + ')';
@@ -151,7 +146,6 @@ var stat = {
                     }
                 },
                 callback: function(result) {
-                    console.log(result);
                     if (result) {
                         // add folder:
                         gJ.folders.push(folder);
@@ -160,20 +154,35 @@ var stat = {
                         processNewFolder({
                             'folder': folder,
                             'cb': function() {
-                                stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
+                                stat.newFolders = arrayWithout(stat.newFolders, stat.workingFolder);
                             }
                         });
                         return;
                     }
                     // ignore folder:
                     ignoreFolder(folder);
-                    stat.newFolders = _.without(stat.newFolders, folder);
+                    stat.newFolders = arrayWithout(stat.newFolders, folder);
                 }
             });
         }
     },
     get newFolders() {
         return this._newFolders;
+    },
+
+    '_ignoreFolders': [],
+    set ignoreFolders(val) {
+        var tr = $("#foldersTable tr[data='" + val + "']");
+        if (this._ignoreFolders.indexOf(val) === -1) {
+            this._ignoreFolders.push(val);
+            tr.removeClass().addClass('warning');
+        } else {
+            this._ignoreFolders.splice(this._ignoreFolders.indexOf(val), 1);
+            tr.removeClass().addClass('default');
+        }
+    },
+    get ignoreFolders() {
+        return this._ignoreFolders;
     },
 
     '_tagsSelectedIds': [],
@@ -186,7 +195,7 @@ var stat = {
         }
     },
     get tagsSelectedIds() {
-      return this._tagsSelectedIds;
+        return this._tagsSelectedIds;
     },
 
     '_imageTags': {},
@@ -199,7 +208,7 @@ var stat = {
 
     '_tagsEdited': [],
     set tagsEdited(val) {
-        this._tagsEdited = _.uniq(this._tagsEdited.push(val));
+        this._tagsEdited = this._tagsEdited.push(val).unique();
     },
     get tagsEdited() {
         return this._tagsEdited;

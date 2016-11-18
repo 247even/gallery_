@@ -6,7 +6,7 @@ var animrunning = false;
 var imagesPreLoaded;
 
 function loadJSON() {
-    console.log('loadJSON');
+   //console.log('loadJSON');
 
     var req = new XMLHttpRequest();
     req.open('GET', options.JSONurl, true);
@@ -14,14 +14,15 @@ function loadJSON() {
     req.onload = function() {
         if (req.status >= 200 && req.status < 400) {
             gJ = JSON.parse(req.responseText);
+           //console.log(sortedIdsBy());
             buildGallery();
         } else {
-            console.log('no gallery.json received');
+           //console.log('no gallery.json received');
         }
     };
 
     req.onerror = function() {
-        console.log('connection error');
+       //console.log('connection error');
     };
 
     req.send();
@@ -52,12 +53,14 @@ function buildGallery(filter) {
 
 
 function buildGalleryItems(filter) {
-    console.log('buildGalleryItems');
+   //console.log('buildGalleryItems');
 
-    var initialThumbSize = _.min(options.sizes);
+    //var initialThumbSize = _.min(options.sizes);
+    var initialThumbSize = getMin(options.sizes);
+
     var i = 0;
 
-    if (options.thumbPadding != 0) {
+    if (options.thumbPadding && options.thumbPadding != 0) {
         createStyle({
             id: 'item-padding',
             style: 'div#gallery-row div.gallery-item {padding: ' + thumbPadding + 'px}'
@@ -85,8 +88,8 @@ function buildGalleryItems(filter) {
 
         prototype({
             'template': '#thumb-prototype',
-            'selectors': ['respi', 'i', 'key', 'time', 'tags'],
-            'values': [respiPath, i, key, val.time, val.tags],
+            'selectors': ['respi', 'i', 'key'],
+            'values': [respiPath, i, key],
             'targets': '.gallery-row'
         });
 
@@ -99,7 +102,7 @@ function buildGalleryItems(filter) {
 };
 
 function buildLightbox(init) {
-    console.log('buildLightbox');
+   //console.log('buildLightbox');
 
     var itemSelector = init ? '.gallery-item' : '.gallery-item.img-active';
     var items = document.querySelectorAll('#gallery-section '+itemSelector);
@@ -107,13 +110,13 @@ function buildLightbox(init) {
     var $galleryLightbox = $('#gallery-lightbox');
 
     if (itemsLength === 0) {
-      console.log('no gallery items');
+     //console.log('no gallery items');
       return false;
     }
 
     // check if lightbox is present, if not, create it within body element
     if (!$galleryLightbox.length) {
-      console.log('nope');
+     //console.log('nope');
       document.getElementById('lightbox-prototype').querySelector('div').setAttribute('id','gallery-lightbox');
       prototype({
           'template': '#lightbox-prototype',
@@ -164,7 +167,7 @@ function buildLightbox(init) {
 };
 
 function buildGalleryNavigation(tags) {
-    console.log('buildGalleryNavigation');
+   //console.log('buildGalleryNavigation');
 
     var tags = tags || gJ.tags;
 
@@ -196,14 +199,14 @@ function initGalleryNavigation() {
 };
 
 function buildSliders(slider) {
-    console.log('buildSliders');
+   //console.log('buildSliders');
 
     var sliders = slider || gJ.sliders;
     if (!sliders) { return false; }
     var sliderKeys = Object.keys(sliders);
 
     if (!sliderKeys || sliderKeys.length === 0) {
-        console.log('no sliders');
+       //console.log('no sliders');
         return false;
     }
 
@@ -211,12 +214,13 @@ function buildSliders(slider) {
 
         var slidersLength = sliders[key][0].length;
         if (slidersLength === 0) {
-            console.log('no images');
+           //console.log('no images');
             return false;
         }
         if (sliders[key][0] === 'auto') {
             var number = sliders[key][2] < 2 ? 3 : sliders[key][2];
-            sliders[key][0] = _.take(sortedIdsBy('time'), number);
+            //sliders[key][0] = _.take(sortedIdsBy('time'), number);
+            sliders[key][0] = sortedIdsBy('time').slice(0,number);
             slidersLength = sliders[key][0].length;
         }
 
@@ -264,7 +268,7 @@ function buildSliders(slider) {
 
 //requires var animrunning = false;
 function galleryFilter(fil) {
-    console.log('galleryFilter');
+   //console.log('galleryFilter');
 
     var fi = 0;
     var cb;
@@ -357,7 +361,7 @@ function galleryFilter(fil) {
 };
 
 function initGallery() {
-    console.log('initGallery');
+   //console.log('initGallery');
 
     // background zoom function
     var zel = document.querySelectorAll('div#gallery-lightbox .zoom');
@@ -392,7 +396,7 @@ function initGallery() {
       styleId : 'prop-gallery-item'
     });
 
-    $('section#gallery-section').find('div.gallery-item').respi();
+    $('section#gallery-section').find('div.gallery-item div.thumb-div').respi();
     $('div#gallery-lightbox').find('div.item').respi();
 
     $('section#gallery-section').find('div.gallery-item')
@@ -405,12 +409,12 @@ function initGallery() {
             doIn: function(e) {
                 // Do something to the matched elements as they come in
                 var el = $(this).find('div.thumb-div');
-                el.css('background-image', "url(" + el.attr("data-src") + ")");
+                //el.css('background-image', "url(" + el.attr("data-src") + ")");
 
             },
             doOut: function() {
                 // Do something to the matched elements as they get off scren
-                console.log('doout');
+               //console.log('doout');
             },
             tolerance: 0,
             throttle: 50,
@@ -424,7 +428,6 @@ function initGallery() {
     try {
         return jsCheckLoaded('adminAssets', function() {
             adminInit();
-            console.log('admin init');
         });
     } catch (err) {
         //console.log(err);
@@ -434,13 +437,11 @@ function initGallery() {
 
 $(function() {
 
-    document.body.setAttribute('respi-sizes', options.sizes);
+    document.body.setAttribute('respi-sizes', options.sizes.toString());
 
     // wait for js to be loaded
     return jsCheckLoaded('assets', function() {
         loadJSON();
     });
 
-    console.log('after js check load');
-    //loadJSON();
 });

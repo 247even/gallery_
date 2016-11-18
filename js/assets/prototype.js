@@ -46,8 +46,8 @@ function prototype(data) {
     }
 
     if (data.cut) {
-      console.log('template:');
-        console.log(template);
+     //console.log('template:');
+       //console.log(template);
         //template.innerHTML = '';
         template.parentNode.removeChild(template);
     }

@@ -2,7 +2,7 @@ function processNewFolders(cb) {
 
     loader();
 
-    if (stat.newFolders.length <= 0) {
+    if (stat.newFolders.length === 0) {
         return false;
     }
 
@@ -24,8 +24,8 @@ function processNewFolders(cb) {
 };
 
 function processNewFolder(d) {
+   //console.log("processNewFolder()");
 
-    console.log("processNewFolder()");
     var folder = d ? d.folder : stat.workingFolder;
 
     // read images from folder:
@@ -34,7 +34,6 @@ function processNewFolder(d) {
         var er = false;
 
         if (imagesFromFolderData) {
-					//var keys = _.keys(imagesFromFolderData);
             var keys = Object.keys(imagesFromFolderData);
             var kLength = keys.length;
         } else {
@@ -43,7 +42,7 @@ function processNewFolder(d) {
         }
 
         if (er || kLength < 1) {
-            console.log("no images");
+           //console.log("no images");
             stat.newImages = [];
 						// callback:
             if (d.cb) {
@@ -78,7 +77,7 @@ function processNewFolder(d) {
                 });
 
                 // add folder to known folders
-                if (_.indexOf(gJ.folders, folder) < 0) {
+                if (gJ.folders.indexOf(folder) === -1) {
                     gJ.folders.push(folder);
                 }
 
@@ -97,23 +96,10 @@ function processNewFolder(d) {
 
     }).fail(function(){
         stat.newFolders = _.without(stat.newFolders, folder);
-        console.log("images from folder error");
+       //console.log("images from folder error");
     });
     // <-- end images from folder function
 
     fnf++;
 
-    /*
-    	} else {
-
-    		$('#allFoldersButton').off("click").text("go on").on("click", function() {
-    			for (var i = 0,
-    			    len = stat.newFolders.length; i < len; i++) {
-    				request.imagesFromFolder(stat.newFolders[i]).done(function(data) {
-    					console.log(data);
-    				})
-    			}
-    		});
-    	}
-    */
 };

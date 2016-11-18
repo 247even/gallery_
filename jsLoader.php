@@ -3,7 +3,8 @@ require 'Minifier.php';
 
 $o["path"] = "";
 $o["filter"] = '*.{js,json}';
-$o["root"] = dirname(__DIR__);
+//$o["root"] = dirname(__DIR__);
+$o["root"] = getcwd();
 $o["outpath"] = '/js/';
 $o["concat"] = false;
 $o["minify"] = false;
@@ -84,9 +85,12 @@ if ($o['concat']) {
 	}
 
 	//file_put_contents($outpath . $outExt, $fileContent);
+	$rootOutpath = $o["root"] . $o["outpath"] . $outFile;
 	file_put_contents($o["root"] . $o["outpath"] . $outFile, $fileContent);
 
 	array_push($response['outfiles'], $outFile);
+	$response['rootoutfiles'] = array();
+	array_push($response['rootoutfiles'], $rootOutpath);
 }
 
 

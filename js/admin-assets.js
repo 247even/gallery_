@@ -8,6 +8,7 @@ var stat = {
     'imagesModified': [],
     'imagesNotProcessed': [],
     'workingFolder': '',
+    'existingImages' : {},
 
     '_options': {},
     set options(val) {
@@ -65,7 +66,7 @@ var stat = {
     '_workingImage': '',
     set workingImage(val) {
         this._workingImage = val;
-        console.log('workingImage: ' + this._workingImage);
+        //console.log('workingImage: ' + this._workingImage);
     },
     get workingImage() {
         return this._workingImage;
@@ -74,7 +75,7 @@ var stat = {
     '_workingSize': '',
     set workingSize(val) {
         this._workingSize = val;
-        console.log('workingSize: ' + this._workingSize);
+        //console.log('workingSize: ' + this._workingSize);
     },
     get workingSize() {
         return this._workingSize;
@@ -83,7 +84,6 @@ var stat = {
     '_folderImages': [],
     set folderImages(val) {
         this._folderImages = val;
-        console.log('folderImages buildFolderTable()');
         buildFolderTable();
     },
     get folderImages() {
@@ -92,9 +92,9 @@ var stat = {
 
     '_allImages': {},
     set allImages(val) {
-        this._allImages = {};
-        if (val) {
-            this._allImages = val;
+        this._allImages = val || {};
+        if (Object.keys(this._allImages).length > 0) {
+            getNewImages();
         }
     },
     get allImages() {
@@ -104,12 +104,8 @@ var stat = {
     '_newImages': [],
     set newImages(val) {
         this._newImages = val;
-        console.log('stat.newImages: ' + stat.newImages.length);
-        console.log(stat.folderImages);
-        $('#folder-modal .modal-body .status-div').html(stat.newImages.length);
-        if (stat.newImages.length > 0) {
-
-        }
+        //console.log('stat.newImages: ' + stat.newImages.length);
+        //console.log(stat.folderImages);
     },
     get newImages() {
         return this._newImages;
@@ -131,7 +127,6 @@ var stat = {
         if (stat.newFolders.length > 0) {
             var folder = stat.newFolders[0];
             stat.workingFolder = folder;
-            //console.log(stat.folderImages);
             var msg = '"' + folder + '"';
             if (stat.folderImages[folder]) {
                 msg = msg + ' (' + stat.folderImages[folder][0] + ')';
@@ -152,7 +147,6 @@ var stat = {
                     }
                 },
                 callback: function(result) {
-                    console.log(result);
                     if (result) {
                         // add folder:
                         gJ.folders.push(folder);
@@ -161,20 +155,35 @@ var stat = {
                         processNewFolder({
                             'folder': folder,
                             'cb': function() {
-                                stat.newFolders = _.without(stat.newFolders, stat.workingFolder);
+                                stat.newFolders = arrayWithout(stat.newFolders, stat.workingFolder);
                             }
                         });
                         return;
                     }
                     // ignore folder:
                     ignoreFolder(folder);
-                    stat.newFolders = _.without(stat.newFolders, folder);
+                    stat.newFolders = arrayWithout(stat.newFolders, folder);
                 }
             });
         }
     },
     get newFolders() {
         return this._newFolders;
+    },
+
+    '_ignoreFolders': [],
+    set ignoreFolders(val) {
+        var tr = $("#foldersTable tr[data='" + val + "']");
+        if (this._ignoreFolders.indexOf(val) === -1) {
+            this._ignoreFolders.push(val);
+            tr.removeClass().addClass('warning');
+        } else {
+            this._ignoreFolders.splice(this._ignoreFolders.indexOf(val), 1);
+            tr.removeClass().addClass('default');
+        }
+    },
+    get ignoreFolders() {
+        return this._ignoreFolders;
     },
 
     '_tagsSelectedIds': [],
@@ -187,7 +196,7 @@ var stat = {
         }
     },
     get tagsSelectedIds() {
-      return this._tagsSelectedIds;
+        return this._tagsSelectedIds;
     },
 
     '_imageTags': {},
@@ -200,7 +209,7 @@ var stat = {
 
     '_tagsEdited': [],
     set tagsEdited(val) {
-        this._tagsEdited = _.uniq(this._tagsEdited.push(val));
+        this._tagsEdited = this._tagsEdited.push(val).unique();
     },
     get tagsEdited() {
         return this._tagsEdited;
@@ -234,39 +243,108 @@ function statSaveSlider(im) {
 };
 // admin-func.js
 
-function ignoreFolder(f) {
-    var tr = $("#foldersTable tr[data='" + f + "']");
-    console.log(gJ.ignore.indexOf(f));
-    if (gJ.ignore.indexOf(f) == -1) {
-        gJ.ignore.push(f);
-        tr.removeClass().addClass('warning');
-    } else {
-        gJ.ignore.splice(gJ.ignore.indexOf(f), 1);
-        tr.removeClass().addClass('default');
-    }
+function checkIrregularFilename(file) {
+      var response = {};
+      response.error = false;
+      response.expression = [];
+      var osl = options.sizes.length;
+      for (var i=0; i < osl; i++) {
+          if (file.indexOf('_'+options.sizes[i]) !== -1) {
+              response.error = true;
+              response.expression.push('_'+options.sizes[i]);
+          }
+      }
+      return response;
 };
 
-function processImages() {
-
-    loader();
-
-    $('#allImagesButton').off('click').text('resize ' + imagesAdded.length + ' image/s').on('click', function() {
-
-        window.ri = 0;
-        var data = imagesFromFolderData;
-        var keys = imagesAdded;
-        var length = 0;
-        if (keys) {
-            var length = keys.length;
+function arrayIntersection(arr1, arr2) {
+    // all values from arr1 which are in arr2
+    var inter1 = arr1.filter(function(value) {
+        if (arr2.indexOf(value) > -1) {
+            return value;
         }
-        resizeStoreSync(data, keys, length, folder);
-
     });
 
-    processImages();
-    //loader('off');
+    // all values from arr2 which are in arr1
+    var inter2 = arr2.filter(function(value) {
+        if (inter1.indexOf(value) > -1) {
+            return value;
+        }
+    });
 
-}; // end function processImages
+    return inter1.concat(inter2).unique();
+};
+
+function arrayWithout(arr1, arr2) {
+  /*
+    if (typeof arr2 === 'string') {
+      var arr2 = [arr2];
+    }
+  */
+    // all values from arr1 which are not in arr2
+    return arr1.filter(function(value) {
+        if (arr2.indexOf(value) === -1) {
+            return value;
+        }
+    });
+};
+
+function arrayDiff(arr1, arr2, concat) {
+    var concat = concat || false;
+    var diff = {};
+
+    // all values from arr1 which are not in arr2
+    diff.arr1 = arr1.filter(function(value) {
+        if (arr2.indexOf(value) === -1) {
+            return value;
+        }
+    });
+
+    if (!concat) {
+        return diff.arr1;
+    }
+
+    // all values from arr2 which are not in arr1
+    diff.arr2 = arr2.filter(function(value) {
+        if (arr1.indexOf(value) === -1) {
+            return value;
+        }
+    });
+
+    diff.concat = diff.arr1.concat(diff.arr2);
+
+    return diff;
+};
+
+/*
+var arr1 = [1,2,3,4];
+var arr2 = [4,6,1,4];
+console.log(arrayDiff(arr1,arr2));
+console.log(arrayDiff(arr1,arr2,true).arr2);
+console.log(arrayDiff(arr1,arr2,true).concat);
+*/
+
+function withoutGalleryBase(data) {
+    if (typeof data === 'string') {
+      return data.replace('gallery/','');
+    }
+
+    return data.map(function(value) {
+        return value.replace('gallery/','');
+    });
+};
+
+function ignoreFolder(f) {
+    var tr = $("#foldersTable tr[data='" + f + "']");
+    if (stat.ignoreFolders.indexOf(f) == -1) {
+        stat.ignoreFolders.push(f);
+        tr.removeClass().addClass('warning');
+    } else {
+        stat.ignoreFolders.splice(stat.ignoreFolders.indexOf(f), 1);
+        tr.removeClass().addClass('default');
+    }
+    //console.log(stat.ignoreFolders);
+};
 
 function addNewImages() {
     var ani = 0;
@@ -283,115 +361,19 @@ function addNewImages() {
             var key = imagesAddedKeys[ani];
             var file = imagesAdded[key].file;
             var folder = imagesAdded[key].path;
-            console.log(file);
 
             resizeStore(folder, file).done(function() {
                 gJ.images[key] = imagesAdded[key];
                 ani++;
-                addImages()
+                addImages();
             });
         } else {
-            console.log('all images added');
+            //console.log('all images added');
             buildGallery(gJ);
             saveStatus(true);
         }
-
     };
 };
-
-function resizeStoreSync(data, keys, length, folder) {
-
-    if (window.ri < length) {
-        var key = keys[window.ri];
-        var val = data[key];
-        var folder = val.path;
-        var file = val.file;
-
-        resizeStore(folder, file).done(function(resizeData) {
-            window.ri++;
-
-            // add images to gJ
-            gJ.images[key] = data[key];
-
-            resizeStoreSync();
-        });
-    }
-};
-
-function checkImageSizes(images, deep, cb) {
-    console.log('checkImageSizes');
-
-    var images = images || gJ.images;
-    var imagesLength = images.length;
-    // if 'images' is not an array, but an object:
-    if (!imagesLength) {
-        var imageKeys = Object.keys(images);
-        imagesLength = imageKeys.length;
-    };
-    var sizesLength = gJ.sizes.length;
-    var deep = deep ? true : false;
-    deep = true;
-    var id = 0;
-    var sz = 0;
-
-    function checkImage() {
-        console.log('checkImage');
-        if (id < imagesLength) {
-            var image = images[imageKeys[id]];
-            var folder = image.path;
-            console.log('checkImageSizeFolder: ' + folder);
-
-            if (sz < sizesLength) {
-                var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
-                var path = 'gallery/' + folder + '_' + gJ.sizes[sz] + '/' + image.file;
-
-                // deep: request each image from server
-                if (deep) {
-                    fileExists(path)
-                        .done(function() {
-                            console.log(path + ' does deep exist');
-                        })
-                        .fail(function() {
-                            console.log(path + ' does not deep exist');
-                            stat.imagesNotProcessed.push(id);
-                            //stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
-                            stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
-                        })
-                        .always(function() {
-                            sz++;
-                            checkImage();
-                        });
-
-                    return false;
-                }
-
-                // quick check against all images in stat.allImages:
-                if (!stat.allImages[sizeId]) {
-                    console.log(sizeId + ' does not exist');
-                    stat.imagesNotProcessed.push(id);
-                    //stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
-                    stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
-                }
-                sz++;
-                checkImage();
-
-            } else {
-                sz = 0;
-                id++;
-                checkImage();
-            }
-        } else {
-            console.log("check image done");
-            if (cb) {
-                cb();
-            }
-        }
-    };
-
-    // initial call:
-    checkImage();
-};
-
 
 function getNewImages(images) {
 
@@ -412,7 +394,9 @@ function getNewImages(images) {
 
     if (match.length > 0) {
         // we have new images
-        console.log('we have ' + match.length + ' new images');
+        //console.log('we have ' + match.length + ' new images');
+    } else {
+        //console.log('no new images');
     }
     stat.newImages = match;
     return match;
@@ -448,7 +432,7 @@ function gjFilteredByFolder(fo) {
 
 function deleteFolderRelations(folder, cb) {
     var folders = [folder];
-    var sizesLength = gJ.sizes.length;
+    var sizesLength = options.sizes.length;
     var i = 0;
 
     //check if folder is in 'ignore' and remove it
@@ -459,9 +443,9 @@ function deleteFolderRelations(folder, cb) {
         // remove images from galleryJSON:
         var imageKeys = Object.keys(gJ.images);
         var imagesLength = imageKeys.length;
-        for (var i = 0; i < imagesLength; i++) {
-            if (gJ.images[imageKeys[i]].path == folder) {
-                delete gJ.images[imageKeys[i]];
+        for (var j = 0; j < imagesLength; j++) {
+            if (gJ.images[imageKeys[j]].path == folder) {
+                delete gJ.images[imageKeys[j]];
             }
         }
         /*
@@ -472,21 +456,21 @@ function deleteFolderRelations(folder, cb) {
     }
 
     for (var l = 0; l < sizesLength; l++) {
-        folders.push(folder + '_' + gJ.sizes[l]);
+        folders.push(folder + '_' + options.sizes[l]);
     }
 
     function deleteFolder() {
         if (i < folders.length) {
             removeFolder(folders[i])
-                .done(function() {
+                .done(function(e) {
 
                 })
-                .always(function() {
+                .always(function(e) {
                     i++
                     deleteFolder();
                 });
         } else {
-            console.log('deleteFolder done');
+            //console.log('deleteFolder done');
             if (cb) {
                 cb();
             }
@@ -584,7 +568,7 @@ function setOptions() {
         stat.options = {
             'thumbFit': $(this).val()
         };
-        $('div#gallery-row').find('div.gallery-item .thumb-div').removeClass('cover-image contain-image').addClass(stat.options.thumbFit + '-image');
+        $('div#gallery-row').find('div.gallery-item div.thumb-div').removeClass('cover-image contain-image').addClass(stat.options.thumbFit + '-image');
         saveStatus(true);
     });
 
@@ -638,9 +622,19 @@ function setOptions() {
             e.preventDefault();
         }
     }).on('change input', function() {
-        var value = $(this).val().split(',');
+        var value = $(this).val().split(',').unique()
+            .filter(function(v) {
+                if (parseInt(v)) {
+                    return v
+                }
+            }).map(function(v, k) {
+                return parseInt(v);
+            }).sort(function(a, b) {
+                return a - b;
+            });
+
         stat.options = {
-            'sizes': _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))))
+            'sizes': value
         };
         saveStatus(true);
     });
@@ -651,9 +645,19 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
 
     setOptions();
 
-    $('#configReset').click(function() {
+    $('#optionsReset').on('click', function() {
         setOptions();
         buildGallery(gJ);
+    });
+
+    $('#optionsSave').on('click', function(e) {
+        e.preventDefault();
+        //          saveFileAs('var options ='+JSON.stringify(stat.options), 'options2.js').done(function(e){
+        saveFileAs(JSON.stringify('var options =' + JSON.stringify(stat.options)), 'options2.js').done(function(e) {
+            //console.log(e);
+        }).always(function(e) {
+            //console.log(e);
+        });
     });
 
 });
@@ -676,7 +680,7 @@ $('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 
         $('#loadBackupSelect').on('change', function() {
             loader();
-            var dataUrl = $('#loadBackupSelect').find('option:selected').attr('data-url');
+            var dataUrl = $(this).find('option:selected').attr('data-url');
             var url = 'gallery/' + dataUrl;
 
             if (!dataUrl) {
@@ -739,9 +743,9 @@ $('#slider-auto-btn').on('click', function() {
     for (var i = 0; i < sliderNumber; i++) {
         $('#gallery-section').find('div.gallery-item').eq(i).trigger('click');
     }
-    console.log(stat.selectedIds);
+   //console.log(stat.selectedIds);
     stat.selectedIds = 'auto';
-    console.log(stat.selectedIds);
+   //console.log(stat.selectedIds);
     buttonDisable(false);
 });
 
@@ -788,7 +792,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 
     $('#slider-preview-btn').on('click', function() {
         $('#slider-1').attr('id', stat.workingSlider);
-        console.log(_.pick(stat.sliders, [stat.workingSlider]));
+       //console.log(_.pick(stat.sliders, [stat.workingSlider]));
         buildSliders(_.pick(stat.sliders, [stat.workingSlider]));
         $('#slider-wrapper').removeClass('hidden');
         $('#' + stat.workingSlider).find('.item').respi();
@@ -824,7 +828,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 
         if ($(this).hasClass('selected-image')) {
 
-            var cl = 'thumbSize gallery-item col-xs-2 selected-image sortable-item';
+            var cl = 'gallery-item col-xs-2 selected-image sortable-item';
 
             prototype({
                 'template': '#sortable-item-prototype',
@@ -868,7 +872,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         $('#slider-sortable').find('div.placeholder-item').remove();
 
         selectedIds();
-        console.log(stat.sliders);
+       //console.log(stat.sliders);
         var selLength = stat.selectedIds.length;
 
         if (selLength === 0) {
@@ -1057,7 +1061,9 @@ var selectizeInput = $('#input-tags').selectize({
         for (var i = 0, l = stat.tagsSelectedIds.length; i < l; i++) {
             var id = stat.tagsSelectedIds[i];
             var dataTags = stat.imageTags[id];
-            var unionTags = _.union(dataTags, input.split(','));
+            //var unionTags = _.union(dataTags, input.split(','));
+            var unionTags = dataTags.concat(input.split(',')).unique();
+            //console.log(unionTags);
             if (unionTags != dataTags) {
                 stat.imageTags[id] = unionTags;
                 stat.tagsEdited = id;
@@ -1072,15 +1078,13 @@ var selectizeInput = $('#input-tags').selectize({
 var selectizeTags = selectizeInput[0].selectize;
 selectizeTags.clear();
 
-function setStatImageTags() {
-    for (var key in gJ.images) {
-        stat.imageTags[key] = stat.imageTags[key] || gJ.images[key].tags;
-    }
-};
 
 $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
 
-    setStatImageTags();
+    for (var key in gJ.images) {
+        stat.imageTags[key] = stat.imageTags[key] || gJ.images[key].tags;
+    }
+    
     document.getElementById('all-tags').innerHTML = '';
     stat.allTags = !stat.allTags.length ? gJ.tags : stat.allTags;
 
@@ -1114,10 +1118,12 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
 
         for (var key in gJ.images) {
             tags.push(gJ.images[key].tags);
-            console.log(tags);
+            //console.log(tags);
         }
 
-        gJ.tags = _.uniq(_.flattenDeep(tags));
+        //gJ.tags = _.uniq(_.flattenDeep(tags));
+        gJ.tags = tags.unique();
+        //console.log(gJ.tags);
         buildGalleryNavigation();
         saveStatus(true);
 
@@ -1128,7 +1134,7 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
     });
 
     $('#deleteImagesButton').on('click', function() {
-        console.log('delete clicked');
+        //console.log('delete clicked');
         deleteSelectedImages();
     });
 
@@ -1143,7 +1149,7 @@ function selectTags() {
     selectizeTags.clear();
 
     if (selectedLength === 0) {
-        console.log('nothing selected');
+        //console.log('nothing selected');
         return false;
     }
 
@@ -1161,8 +1167,10 @@ function selectTags() {
         for (var i = 0; i < selectedLength; i++) {
             var selectedId = stat.tagsSelectedIds[i];
             attrTags = stat.imageTags[selectedId] || gJ.images[selectedId].tags;
-            selectedTags = _.union(selectedTags, attrTags);
-            groupTags = _.intersection(groupTags, attrTags);
+//            selectedTags = _.union(selectedTags, attrTags);
+//            groupTags = _.intersection(groupTags, attrTags);
+              selectedTags = selectedTags.concat(attrTags).unique();
+              groupTags = arrayIntersection(groupTags, attrTags);
         }
 
     }
@@ -1202,11 +1210,11 @@ function deleteSelectedImages() {
                     data: 'path=' + path
                 }).done(function() {
                     p++;
-                    console.log('done ' + p);
+                    //console.log('done ' + p);
                     deleteFinished();
                 }).fail(function() {
                     p++;
-                    console.log('fail ' + p);
+                    //console.log('fail ' + p);
                     deleteFinished();
                 })
             }
@@ -1219,7 +1227,7 @@ function deleteSelectedImages() {
             if (p <= pl) {
                 deleteImage(paths[p]);
             } else {
-                console.log('finished deleting');
+                //console.log('finished deleting');
 
                 // save JSON:
                 $('#deleteImagesButton').off('click').text('save').on('click', function() {
@@ -1248,17 +1256,17 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	setFolderSelect();
 
 	function filesToGJ(f) {
-		for ( i = 0; f.length > i; i++) {
+			for ( i = 0; f.length > i; i++) {
 
-		}
+			}
 	};
 
 	$('#new-folder-name').on('keyup', function(event) {
-			var valLength = $(this).val().trim().length
+			var valLength = $(this).val().trim().length;
 
 			if (valLength === 0) {
-				$('#new-folder-btn').prop('disabled', true);
-				return false;
+					$('#new-folder-btn').prop('disabled', true);
+					return false;
 			}
 
 			if (valLength > 1 && event.keyCode != 8) {
@@ -1282,8 +1290,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		if (val) {
 			val = val.trim();
 
-			if ( gJ.folders.indexOf(val) != -1 || gJ.ignore.indexOf(val) != -1 ) {
-				console.log('folder already present');
+			if ( stat.allFolders.indexOf(val) !== -1 || gJ.folders.indexOf(val) !== -1 || gJ.ignore.indexOf(val) !== -1 ) {
 				bootbox.alert({
             size: 'small',
             message: 'A folder "'+val+'" already exists.',
@@ -1296,23 +1303,24 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 				return false;
 			}
 
+			var checkNameSizes = checkIrregularFilename(val);
+			if (checkNameSizes.error) {
+				bootbox.alert({
+            size: 'small',
+            message: 'Please choose another name.<br> The phrase "'+checkNameSizes.expression+'" is prohibited.',
+            callback: function(result) {
+                if (result) {
+
+                }
+            }
+        });
+				return false;
+			}
+
 			createFolder(val).done(function(data){
-				console.log(data.dir);
-				stat.newFolders = [data.dir];
+				stat.newFolders = [withoutGalleryBase(data.dir)];
 				$('#new-folder-name').val('');
 			});
-
-			/*
-
-			createFolder(val).done(function(){
-				console.log('cfdone');
-				var resp = request.responseText;
-				gJ.folders.push(val);
-				folderSelect();
-				$('#new-folder-name').val('');
-				console.log(resp);
-			});
-			*/
 		}
 	});
 
@@ -1420,86 +1428,143 @@ function setFolderSelect(fo) {
 		});
 	}
 };
-function getAllImages(folders, d, cb) {
-    // deep = if true, include thumbnail folders;
 
-    var i = 0
-    var si = 0
-    var deep = d ? d : false
-    var tmpFolderImages = []
+
+function checkImageSizes(images, deep, cb) {
+    console.log('checkImageSizes');
+
+    var images = images || gJ.images;
+    var imagesLength = images.length;
+    // if 'images' is not an array, but an object:
+    if (!imagesLength) {
+        var imageKeys = Object.keys(images);
+        imagesLength = imageKeys.length;
+    };
+    var sizesLength = gJ.sizes.length;
+    // deep true = request image from server
+    var deep = deep ? true : false;
+    //deep = true;
+    var id = 0;
+    var sz = 0;
+
+    function checkImage() {
+        //console.log('checkImage');
+        if (id < imagesLength) {
+            var image = images[imageKeys[id]];
+            var folder = image.path;
+            //console.log('checkImageSizeFolder: ' + folder);
+
+            if (sz < sizesLength) {
+                var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
+                var path = 'gallery/' + folder + '_' + gJ.sizes[sz] + '/' + image.file;
+
+                // deep: request each image from server
+                if (deep) {
+                    fileExists(path)
+                        .done(function() {
+                            //console.log(path + ' does deep exist');
+                        })
+                        .fail(function() {
+                            //console.log(path + ' does not deep exist');
+                            if (stat.imagesNotProcessed.indexOf(imageKeys[id]) === -1) {
+                                stat.imagesNotProcessed.push(imageKeys[id]);                              
+                            }
+                            //stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
+                        })
+                        .always(function() {
+                            sz++;
+                            checkImage();
+                        });
+
+                    return false;
+                }
+
+                // quick check against all images in stat.allImages:
+                if (!stat.allImages[sizeId]) {
+                    //console.log(sizeId + ' does not exist');
+                    stat.imagesNotProcessed.push(id);
+                    stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
+                }
+                sz++;
+                checkImage();
+
+            } else {
+                sz = 0;
+                id++;
+                checkImage();
+            }
+
+        } else {
+            //console.log("check image done");
+            if (cb) {
+                cb();
+            }
+        }
+    };
+
+    // initial call:
+    checkImage();
+};
+
+function getAllImages(data) {
+    // deep = if true, include thumbnail folders;
+    var i = 0;
+    var si = 0;
+    var deep = data && data.deep ? data.deep : false
+    var tmpFolderImages = [];
+//    var allImagesFromServer = {};
+    var sourceFolder = stat.allFolders[0];
 
     function getImages() {
-        // var folder = folders[i];
-        var folder = stat.allFolders[i]
-        console.log('getImages init folder: ' + folder)
-        stat.workingFolder = folder
-        var sourceFolder = folder
-        console.log('getImages sourceFolder: ' + folder)
-        var allImagesFromServer = []
 
-        function getImagesFromServer() {
-            imagesFromFolder(sourceFolder).done(function(data) {
-                var ol = 0
-                if (data) {
-                    ol = Object.keys(data).length
-                    console.log('images found: ' + ol)
-                    _.extend(allImagesFromServer, data)
+        var folder = stat.allFolders[i];
+        stat.workingFolder = folder;
+
+        imagesFromFolder(sourceFolder).done(function(data) {
+            var ol = 0;
+            if (data) {
+                ol = Object.keys(data).length;
+                for (var key in data) {
+                    stat.existingImages[key] = data[key];
                 }
-                tmpFolderImages[folder] = [ol, 0, 0]
-                getImagesFromServerSync()
-            }).fail(function() {
-                console.log('getImagesFromServer fail')
-                getImagesFromServerSync()
-            })
-        };
-
-        function getImagesFromServerSync() {
+            }
+            tmpFolderImages[folder] = [ol, 0, 0];
+        }).fail(function() {
+            //console.log('imagesFromFolder fail');
+        }).always(function() {
             // si = 0 == base folder, without thumbnails
             if (si === 0) {
                 // getNewImages();
                 // getRemovedImages();
             }
 
-            // deep = true => check thumbnail-folders
-            if (deep && si < gJ.sizes.length) {
-                sourceFolder = folder + '_' + gJ.sizes[si]
-                si++
-                // console.log('new sourceFolder: '+sourceFolder);
-                getImagesFromServer()
+            // deep === true => check thumbnail-folders
+            if (deep && si < options.sizes.length) {
+                sourceFolder = folder + '_' + options.sizes[si];
+                si++;
+                getImages();
             } else {
                 // we now have all images from this folder
                 //checkImageSizes();
 
                 // Done! Next folder...
-                i++
-
-                // if (i < gJ.folders.length) {
+                i++;
                 if (i < stat.allFolders.length) {
-                    si = 0
-                        // folder = gJ.folders[i];
-
-                    // console.log('i: ' + i + ', gJ.folders.length: ' + gJ.folders.length);
-                    // getImagesFromServerSync();
+                    si = 0;
+                    sourceFolder = stat.allFolders[i];
                     getImages();
                 } else {
                     stat.folderImages = tmpFolderImages;
-                        // console.log(stat.folderImages);
-
-                    console.log(stat);
-                    console.log(allImagesFromServer);
-
-                    if (cb) {
-                        cb();
+                    if (data && data.cb) {
+                        data.cb();
                     }
                 }
             }
-        };
-
-        getImagesFromServer();
-    }; // <-- end function getImages()
+        });
+    };
 
     getImages();
-}; // <-- end function getAllImages()
+};
 
 var loggedin = function() {
     var loginCookie = document.cookie.split('=')[1];
@@ -1520,17 +1585,17 @@ function requestLogin(postdata) {
     request.onload = function(data) {
         if (request.status >= 200 && request.status < 400) {
             loggedin = data;
-            console.log(data);
+           //console.log(data);
             if (loggedin) {
                 // tba
             }
         } else {
-            console.log("nope");
+           //console.log("nope");
         }
     };
 
     request.onerror = function() {
-        console.log("connection error");
+       //console.log("connection error");
     };
 
     request.send(postdata);
@@ -1551,7 +1616,7 @@ function initLogin() {
     // Attach a submit handler to the form
     document.getElementById('loginSubmit').onclick = function(e) {
 
-        console.log("submit");
+       //console.log("submit");
         // Stop form from submitting normally
         e.preventDefault();
 
@@ -1564,7 +1629,7 @@ function initLogin() {
 
         var postdata = "username=" + username + "&password=" + password + "&rememberme=" + rememberme;
         //username=&password=&rememberme=on&depth=5
-        console.log("postdata: " + postdata);
+       //console.log("postdata: " + postdata);
 
         // Send the data using post
         requestLogin(postdata)
@@ -1581,11 +1646,52 @@ function initLogin() {
         */
     };
 }
+
+function processImages() {
+
+    loader();
+
+    $('#allImagesButton').off('click').text('resize ' + imagesAdded.length + ' image/s').on('click', function() {
+
+        window.ri = 0;
+        var data = imagesFromFolderData;
+        var keys = imagesAdded;
+        var length = 0;
+        if (keys) {
+            var length = keys.length;
+        }
+        resizeStoreSync(data, keys, length, folder);
+
+    });
+
+    processImages();
+    //loader('off');
+
+};
+
+function resizeStoreSync(data, keys, length, folder) {
+
+    if (window.ri < length) {
+        var key = keys[window.ri];
+        var val = data[key];
+        var folder = val.path;
+        var file = val.file;
+
+        resizeStore(folder, file).done(function(resizeData) {
+            window.ri++;
+
+            // add images to gJ
+            gJ.images[key] = data[key];
+
+            resizeStoreSync();
+        });
+    }
+};
 function processNewFolders(cb) {
 
     loader();
 
-    if (stat.newFolders.length <= 0) {
+    if (stat.newFolders.length === 0) {
         return false;
     }
 
@@ -1607,8 +1713,8 @@ function processNewFolders(cb) {
 };
 
 function processNewFolder(d) {
+   //console.log("processNewFolder()");
 
-    console.log("processNewFolder()");
     var folder = d ? d.folder : stat.workingFolder;
 
     // read images from folder:
@@ -1617,7 +1723,6 @@ function processNewFolder(d) {
         var er = false;
 
         if (imagesFromFolderData) {
-					//var keys = _.keys(imagesFromFolderData);
             var keys = Object.keys(imagesFromFolderData);
             var kLength = keys.length;
         } else {
@@ -1626,7 +1731,7 @@ function processNewFolder(d) {
         }
 
         if (er || kLength < 1) {
-            console.log("no images");
+           //console.log("no images");
             stat.newImages = [];
 						// callback:
             if (d.cb) {
@@ -1661,7 +1766,7 @@ function processNewFolder(d) {
                 });
 
                 // add folder to known folders
-                if (_.indexOf(gJ.folders, folder) < 0) {
+                if (gJ.folders.indexOf(folder) === -1) {
                     gJ.folders.push(folder);
                 }
 
@@ -1680,62 +1785,108 @@ function processNewFolder(d) {
 
     }).fail(function(){
         stat.newFolders = _.without(stat.newFolders, folder);
-        console.log("images from folder error");
+       //console.log("images from folder error");
     });
     // <-- end images from folder function
 
     fnf++;
 
-    /*
-    	} else {
-
-    		$('#allFoldersButton').off("click").text("go on").on("click", function() {
-    			for (var i = 0,
-    			    len = stat.newFolders.length; i < len; i++) {
-    				request.imagesFromFolder(stat.newFolders[i]).done(function(data) {
-    					console.log(data);
-    				})
-    			}
-    		});
-    	}
-    */
 };
+
+function removeImages() {
+    var l = imagesRemoved.length;
+    var paths = [];
+    var i = 0;
+
+    if (l > 0) {
+        var id = imagesRemoved[i];
+
+        for (var sz in gJ.sizes) {
+            var size = gJ.sizes[sz];
+            var file = gJ.images[sz].file;
+            var folder = gJ.images[sz].path;
+            var gid = folder + '_' + size + file;
+
+            // check if this file's thumbnail is on the server
+            if (allImagesFromServer[gid]) {
+                paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
+            }
+        }
+    }
+
+    function removeImageSync() {
+        if (i < paths.length) {
+            removeImage(paths[i])
+                .done(function() {
+                    i++;
+                    delete gJ.images[key];
+                    delete imagesRemoved[key];
+                    //console.log('done ' + i);
+                    removeImageSync();
+                })
+                .fail(function() {
+                    i++;
+                    //console.log('fail ' + i);
+                    removeImageSync();
+                });
+        } else {
+            //console.log('finished deleting');
+            // save JSON:
+            $('#deleteImagesButton').off('click').text('save').on('click', function() {
+                /*
+                 backup().done(function(data){
+                 var content = JSON.stringify(gJ);
+                 var target = 'gallery.json';
+                 saveFileAs(content, target);
+                 });
+                 */
+
+                saveJSON();
+            });
+        }
+    };
+
+    var p = 0;
+    var pl = paths.length;
+    removeImageSync();
+};
+// request
 var request = true;
 
 var allFolders = function() {
-    return $.post("gallery/allFolders.php", "allFolders", null, 'json');
+    return $.post('allFolders.php', 'allFolders', null, 'json');
 };
 
 var createFolder = function(path) {
-    return $.post("gallery/createFolder.php", 'folder=' + path, null, 'json');
+    return $.post('createFolder.php', 'folder=gallery/' + path, null, 'json');
 };
 
 var removeFolder = function(folder) {
-    return $.post("gallery/removeFolder.php", "folder=" + folder, null);
+    return $.post('removeFolder.php', 'folder=gallery/' + folder, null);
 };
 
 var imagesFromFolder = function(f) {
-    var data = "folder=" + f + "&ts=" + Date.now();
-    return $.post("gallery/imagesFromFolder.php", data, null, 'json').done(function(data) {
+    var postdata = 'folder=gallery/' + f + '&ts=' + Date.now();
+    return $.post('imagesFromFolder.php', postdata, null, 'json').done(function(data) {
         stat.allImages = data;
     });
 };
 
 var resizeStore = function(folder, file, size, force) {
-    var postdata = 'folder=' + folder + '&file=' + file + '&sizes=' + size + '&force=' + force;
-    return $.post("gallery/resizeStore.php", postdata, 'json');
+    var postdata = 'folder=gallery/' + folder + '&file=' + file + '&sizes=' + size + '&force=' + force;
+    return $.post('resizeStore.php', postdata, 'json');
 };
 
 var removeImage = function(p) {
-    return $.post("gallery/removeImage.php", "path=" + p, null, 'json');
+    return $.post('removeImage.php', 'path=gallery/' + p, null, 'json');
 };
 
 var getAllBackups = function() {
-    return $.post("gallery/allBackups.php", "allBackups=true&t=" + Date.now(), null, 'json');
+    return $.post('allBackups.php', 'allBackups=true&t=' + Date.now(), null, 'json');
 };
 
 var backup = function() {
-    return $.post("gallery/backup.php", "backup=true", null, 'json');
+    return $.post(options.scriptBase + 'backup.php', 'backup=true', null, 'json');
 };
 
 var loadBackup = function(url) {
@@ -1746,74 +1897,48 @@ var fileExists = function(file) {
     return $.ajax({
         url: file,
         type: 'HEAD',
-				async : true
+        async: true
     });
 };
 
 var saveFileAs = function(c, t) {
-    var data = "content=" + c + "&target=" + t;
-    return $.post("gallery/saveFileAs.php", data, null, 'json');
+    var data = 'content=' + c + '&target=' + t;
+    return $.post(options.scriptBase + 'saveFileAs.php', data);
 };
 var _resizeStoreSizes = function(folder, file, sizes, force) {
 
-	if (!folder) {
-		console.log("no folder!")
-		return false;
-	}
-	if (!file) {
-		console.log("no file!")
-		return false;
-	}
-	if (!sizes) {
-		//var sizes = gJ.sizes.join();
-		var sizes = gJ.sizes;
-	}
-	if (!force) {
-		var force = false;
-	}
+    if (!folder || !file) {
+       //console.log("no folder or file!")
+        return false;
+    }
 
-	var done;
-	this.done = function(cb) {
-		done = cb;
-	};
+    var sizes = sizes || options.sizes;
+    var force = force || false;
 
-	var i = 0;
-	send();
+    var done;
+    this.done = function(cb) {
+        done = cb;
+    };
 
-	function send() {
-		if (i < sizes.length) {
+    var i = 0;
+    send();
 
-			stat.workingSize = sizes[i];
+    function send() {
+        if (i < sizes.length) {
 
-			resizeStore(folder, file, sizes[i], false).done(function(){
-					i++;
-					send();
-				}
-			).fail(function(){
-					console.log("resizeStore fail");
-			});
+            stat.workingSize = sizes[i];
 
-/*
-			var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes[i] + '&force=' + force;
-			$.ajax({
-				//dataType : "json",
-				url : "gallery/resizeStore.php",
-				type : "GET",
-				data : postData
-			}).done(function(data) {
-				i++;
-				send();
-			}).always(function(data) {
-				//console.log(data);
-			}).fail(function(data) {
-				//console.log(data);
-			});
-	*/
+            resizeStore(folder, file, sizes[i], false).done(function() {
+                i++;
+                send();
+            }).fail(function() {
+               //console.log("resizeStore fail");
+            });
 
-		} else {
-			done();
-		}
-	};
+        } else {
+            done();
+        }
+    };
 };
 /**
  * speakingurl
@@ -1934,7 +2059,7 @@ var _upldr = function() {
     };
 
     this.reset = function() {
-        console.log("reset");
+       //console.log("reset");
         files = [];
         form.reset();
         progressBar.style.width = 0;
@@ -1964,7 +2089,7 @@ var _upldr = function() {
         resetBtn.disabled = true;
 
         if (!files || files.length === 0) {
-            console.log('no files to upload');
+           //console.log('no files to upload');
             return false;
         }
 

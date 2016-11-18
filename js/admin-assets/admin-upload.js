@@ -7,17 +7,17 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	setFolderSelect();
 
 	function filesToGJ(f) {
-		for ( i = 0; f.length > i; i++) {
+			for ( i = 0; f.length > i; i++) {
 
-		}
+			}
 	};
 
 	$('#new-folder-name').on('keyup', function(event) {
-			var valLength = $(this).val().trim().length
+			var valLength = $(this).val().trim().length;
 
 			if (valLength === 0) {
-				$('#new-folder-btn').prop('disabled', true);
-				return false;
+					$('#new-folder-btn').prop('disabled', true);
+					return false;
 			}
 
 			if (valLength > 1 && event.keyCode != 8) {
@@ -41,8 +41,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 		if (val) {
 			val = val.trim();
 
-			if ( gJ.folders.indexOf(val) != -1 || gJ.ignore.indexOf(val) != -1 ) {
-				console.log('folder already present');
+			if ( stat.allFolders.indexOf(val) !== -1 || gJ.folders.indexOf(val) !== -1 || gJ.ignore.indexOf(val) !== -1 ) {
 				bootbox.alert({
             size: 'small',
             message: 'A folder "'+val+'" already exists.',
@@ -55,23 +54,24 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 				return false;
 			}
 
+			var checkNameSizes = checkIrregularFilename(val);
+			if (checkNameSizes.error) {
+				bootbox.alert({
+            size: 'small',
+            message: 'Please choose another name.<br> The phrase "'+checkNameSizes.expression+'" is prohibited.',
+            callback: function(result) {
+                if (result) {
+
+                }
+            }
+        });
+				return false;
+			}
+
 			createFolder(val).done(function(data){
-				console.log(data.dir);
-				stat.newFolders = [data.dir];
+				stat.newFolders = [withoutGalleryBase(data.dir)];
 				$('#new-folder-name').val('');
 			});
-
-			/*
-
-			createFolder(val).done(function(){
-				console.log('cfdone');
-				var resp = request.responseText;
-				gJ.folders.push(val);
-				folderSelect();
-				$('#new-folder-name').val('');
-				console.log(resp);
-			});
-			*/
 		}
 	});
 

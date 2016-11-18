@@ -39,9 +39,9 @@ $('#slider-auto-btn').on('click', function() {
     for (var i = 0; i < sliderNumber; i++) {
         $('#gallery-section').find('div.gallery-item').eq(i).trigger('click');
     }
-    console.log(stat.selectedIds);
+   //console.log(stat.selectedIds);
     stat.selectedIds = 'auto';
-    console.log(stat.selectedIds);
+   //console.log(stat.selectedIds);
     buttonDisable(false);
 });
 
@@ -88,7 +88,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 
     $('#slider-preview-btn').on('click', function() {
         $('#slider-1').attr('id', stat.workingSlider);
-        console.log(_.pick(stat.sliders, [stat.workingSlider]));
+       //console.log(_.pick(stat.sliders, [stat.workingSlider]));
         buildSliders(_.pick(stat.sliders, [stat.workingSlider]));
         $('#slider-wrapper').removeClass('hidden');
         $('#' + stat.workingSlider).find('.item').respi();
@@ -124,7 +124,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
 
         if ($(this).hasClass('selected-image')) {
 
-            var cl = 'thumbSize gallery-item col-xs-2 selected-image sortable-item';
+            var cl = 'gallery-item col-xs-2 selected-image sortable-item';
 
             prototype({
                 'template': '#sortable-item-prototype',
@@ -168,7 +168,7 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
         $('#slider-sortable').find('div.placeholder-item').remove();
 
         selectedIds();
-        console.log(stat.sliders);
+       //console.log(stat.sliders);
         var selLength = stat.selectedIds.length;
 
         if (selLength === 0) {

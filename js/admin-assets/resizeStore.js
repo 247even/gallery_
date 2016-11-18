@@ -1,61 +1,35 @@
 var _resizeStoreSizes = function(folder, file, sizes, force) {
 
-	if (!folder) {
-		console.log("no folder!")
-		return false;
-	}
-	if (!file) {
-		console.log("no file!")
-		return false;
-	}
-	if (!sizes) {
-		//var sizes = gJ.sizes.join();
-		var sizes = gJ.sizes;
-	}
-	if (!force) {
-		var force = false;
-	}
+    if (!folder || !file) {
+       //console.log("no folder or file!")
+        return false;
+    }
 
-	var done;
-	this.done = function(cb) {
-		done = cb;
-	};
+    var sizes = sizes || options.sizes;
+    var force = force || false;
 
-	var i = 0;
-	send();
+    var done;
+    this.done = function(cb) {
+        done = cb;
+    };
 
-	function send() {
-		if (i < sizes.length) {
+    var i = 0;
+    send();
 
-			stat.workingSize = sizes[i];
+    function send() {
+        if (i < sizes.length) {
 
-			resizeStore(folder, file, sizes[i], false).done(function(){
-					i++;
-					send();
-				}
-			).fail(function(){
-					console.log("resizeStore fail");
-			});
+            stat.workingSize = sizes[i];
 
-/*
-			var postData = 'folder=' + folder + '&file=' + file + '&sizes=' + sizes[i] + '&force=' + force;
-			$.ajax({
-				//dataType : "json",
-				url : "gallery/resizeStore.php",
-				type : "GET",
-				data : postData
-			}).done(function(data) {
-				i++;
-				send();
-			}).always(function(data) {
-				//console.log(data);
-			}).fail(function(data) {
-				//console.log(data);
-			});
-	*/
+            resizeStore(folder, file, sizes[i], false).done(function() {
+                i++;
+                send();
+            }).fail(function() {
+               //console.log("resizeStore fail");
+            });
 
-		} else {
-			done();
-		}
-	};
+        } else {
+            done();
+        }
+    };
 };

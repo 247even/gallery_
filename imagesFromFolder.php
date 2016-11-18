@@ -1,6 +1,6 @@
 <?php
 function imagesFromFolder($folder) {
-	
+
 	if(!$folder){
 		echo "folder missing";
 		return false;
@@ -16,10 +16,11 @@ function imagesFromFolder($folder) {
 	// search all images in folder
 	foreach (glob("".$path."*.{jpg,jpeg,png,gif}", GLOB_BRACE) as $filename) {
 		array_push($images, basename($filename));
-		
+
 		 $imageObject = array("file" => basename($filename), "path" => $folder, "time" => filemtime($filename), "tags" => [$folder]);
-		 $existingImages[$folder.basename($filename)] = $imageObject;
-		 
+		 $newId = str_replace('gallery/', '', $folder.basename($filename));
+		 $existingImages[$newId] = $imageObject;
+
 	}
 	return $existingImages;
 	//echo json_encode($images) . "<br>";

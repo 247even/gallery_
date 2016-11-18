@@ -180,6 +180,62 @@ createStyle({
 })();
 // func.js
 
+if (!Array.prototype.includes) {
+  Array.prototype.includes = function(searchElement /*, fromIndex*/) {
+    'use strict';
+    if (this == null) {
+      throw new TypeError('Array.prototype.includes called on null or undefined');
+    }
+
+    var O = Object(this);
+    var len = parseInt(O.length, 10) || 0;
+    if (len === 0) {
+      return false;
+    }
+    var n = parseInt(arguments[1], 10) || 0;
+    var k;
+    if (n >= 0) {
+      k = n;
+    } else {
+      k = len + n;
+      if (k < 0) {k = 0;}
+    }
+    var currentElement;
+    while (k < len) {
+      currentElement = O[k];
+      if (searchElement === currentElement ||
+         (searchElement !== searchElement && currentElement !== currentElement)) { // NaN !== NaN
+        return true;
+      }
+      k++;
+    }
+    return false;
+  };
+}
+
+function getMin(data) {
+    // get smallest number from array
+    return data.sort(function(a, b) {
+        return a - b;
+    })[0];
+};
+
+function sortedIdsBy(prop, ord) {
+    var property = prop || 'time';
+    var order = ord || 'asc';
+
+    var keysSorted = Object.keys(gJ.images).sort(function(a, b) {
+        return gJ.images[a][property] - gJ.images[b][property];
+    });
+
+    if (order === 'desc') {
+        keysSorted.reverse();
+    }
+
+    return keysSorted;
+};
+
+/*
 function sortedIdsBy(prop, ord) {
     var property = prop || 'time';
     var order = ord || 'asc';
@@ -196,6 +252,7 @@ function sortedIdsBy(prop, ord) {
     });
     return idsByProp;
 };
+*/
 
 Array.prototype.unique = function() {
     var u = [];
@@ -206,6 +263,16 @@ Array.prototype.unique = function() {
         }
     }
     return u;
+};
+
+function unique(arr) {
+    var u = [];
+    return arr.filter(function(v) {
+        if (u.indexOf(v) == -1) {
+            u.push(v);
+            return v;
+        }
+    });
 };
 
 function blur(el, val) {
@@ -279,9 +346,9 @@ function clearHtml(el) {
             var qs = document.querySelectorAll(el[i]);
             var qsl = qs.length;
             if (qsl > 0) {
-              for (var j=0; j < qsl; j++) {
-                qs.innerHTML = "";
-              }
+                for (var j = 0; j < qsl; j++) {
+                    qs.innerHTML = "";
+                }
             }
         }
     }
@@ -376,7 +443,7 @@ function proportion(d) {
     var el = document.querySelectorAll(d.selector);
     var ell = el.length;
     if (ell === 0) {
-        console.log('ERROR: no elements');
+       //console.log('ERROR: no elements');
         return false;
     }
 
@@ -408,11 +475,11 @@ function proportion(d) {
 
     function setHeight(wprop) {
         if (wprop) { prop = wprop };
-        console.log(prop);
+       //console.log(prop);
         var eli = el ? el[i] : document.querySelector(prop.selector);
         var width = eli.style.width || eli.offsetWidth;
         //console.log(width);
-        console.log(prop.proportion);
+       //console.log(prop.proportion);
         var height = width * (prop.proportion[1] / prop.proportion[0]) + 'px';
 
         if (createStyle && !prop.inline) {
@@ -421,7 +488,7 @@ function proportion(d) {
             if (classNameElement) {
                 var cel = classNameElement.innerHTML;
                 if (cel == classStyle) {
-                    console.log('style exists');
+                   //console.log('style exists');
                     return false;
                 }
                 document.head.removeChild(classNameElement);
@@ -438,7 +505,7 @@ function proportion(d) {
 
     if (prop.resize) {
         proportion_[prop.styleId] = prop;
-        console.log(proportion_);
+       //console.log(proportion_);
         window.addEventListener('resize', debounce(
             function(e) {
               setHeight(proportion_[prop.styleId]);
@@ -493,8 +560,8 @@ function prototype(data) {
     }
 
     if (data.cut) {
-      console.log('template:');
-        console.log(template);
+     //console.log('template:');
+       //console.log(template);
         //template.innerHTML = '';
         template.parentNode.removeChild(template);
     }

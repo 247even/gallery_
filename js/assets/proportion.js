@@ -24,7 +24,7 @@ function proportion(d) {
     var el = document.querySelectorAll(d.selector);
     var ell = el.length;
     if (ell === 0) {
-        console.log('ERROR: no elements');
+       //console.log('ERROR: no elements');
         return false;
     }
 
@@ -56,11 +56,11 @@ function proportion(d) {
 
     function setHeight(wprop) {
         if (wprop) { prop = wprop };
-        console.log(prop);
+       //console.log(prop);
         var eli = el ? el[i] : document.querySelector(prop.selector);
         var width = eli.style.width || eli.offsetWidth;
         //console.log(width);
-        console.log(prop.proportion);
+       //console.log(prop.proportion);
         var height = width * (prop.proportion[1] / prop.proportion[0]) + 'px';
 
         if (createStyle && !prop.inline) {
@@ -69,7 +69,7 @@ function proportion(d) {
             if (classNameElement) {
                 var cel = classNameElement.innerHTML;
                 if (cel == classStyle) {
-                    console.log('style exists');
+                   //console.log('style exists');
                     return false;
                 }
                 document.head.removeChild(classNameElement);
@@ -86,7 +86,7 @@ function proportion(d) {
 
     if (prop.resize) {
         proportion_[prop.styleId] = prop;
-        console.log(proportion_);
+       //console.log(proportion_);
         window.addEventListener('resize', debounce(
             function(e) {
               setHeight(proportion_[prop.styleId]);

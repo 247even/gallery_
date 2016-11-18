@@ -30,7 +30,6 @@
 
 	<script src="js/options.js"></script>
 	<script src="js/jquery-2.2.4.min.js"></script>
-	<script src="js/lodash.min.js"></script>
 	<script src="js/jsLoader.js"></script>
 	<script src="js/gallery-init.js"></script>
 	<script src="js/selectize.min.js"></script>
@@ -77,7 +76,7 @@
 			</span>
 		</section>
 	</div>
-
+<!--
 	<div id="image-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="imageLabel">
 		<div class="modal-dialog modal-sm" role="document">
 			<div class="modal-content">
@@ -93,6 +92,7 @@
 			</div>
 		</div>
 	</div>
+-->
 
 	<figure id="effect-fullscreen" style="display: none">
 	</figure>
@@ -174,20 +174,10 @@
 								</tbody>
 							</table>
 
-							<!--
-									<div id="processStatus"></div>
-									<div id="folderButtons">
-
-									</div>
-								-->
 							<button id="scan-button" class="scan-button btn btn-lg btn-primary btn-block">
 											scan
 									</button>
-							<!--
-									<button id="allImagesButton" style="display:none" class="btn btn-lg btn-primary btn-block" type="submit">
-											look for images
-									</button>
-								-->
+
 						</div>
 						<!-- end start-panel -->
 
@@ -254,10 +244,12 @@
 											</tr>
 										</tbody>
 									</table>
-									<button id="configReset" type="reset" class="btn btn-default">
+									<button id="optionsReset" type="reset" class="btn btn-default">
 													Reset
-											</button>
-
+									</button>
+									<button id="optionsSave" class="btn btn-default">
+													Save
+									</button>
 								</form>
 						</div>
 						<!-- end options panel -->
@@ -482,10 +474,10 @@
 	<div id="prototypes" style="display: none">
 
 		<div id="thumb-prototype" style="display:none">
-			<div class="thumbSize gallery-item img-hidden" data-id="{{key}}" data-time="{{time}}" data-tags="{{tags}}">
-				<div class="thumb-div cover-image" data-src="xxx" respi-path="{{respi}}">
+			<div class="gallery-item img-hidden" data-id="{{key}}">
+				<div class="thumb-div cover-image" respi-path="{{respi}}">
 					<a href="#gallery-lightbox" data-slide-to="{{i}}">
-						<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+						<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
 						<span class="glyphicon glyphicon-zoom-in"> </span>
 					</a>
 				</div>
@@ -524,17 +516,17 @@
 					{{imgtd}}
 				</td>
 				<td class="td-scn">
-					<button type="button" class="btn btn-default btn-xs btn-scn">
+					<button type="button" class="btn btn-primary btn-xs btn-scn">
 						<span class="glyphicon glyphicon-refresh"></span>
 					</button>
 				</td>
 				<td class="td-ign">
-					<button type="button" class="btn btn-default btn-xs btn-ign">
+					<button type="button" class="btn btn-warning btn-xs btn-ign">
 						<span class="glyphicon glyphicon-ban-circle"></span>
 					</button>
 				</td>
 				<td class="td-del">
-					<button type="button" class="btn btn-default btn-xs btn-del">
+					<button type="button" class="btn btn-danger btn-xs btn-del">
 						<span class="glyphicon glyphicon-trash"></span>
 					</button>
 				</td>
@@ -615,19 +607,20 @@
 	<script src="js/bootstrap-select.min.js"></script>
 	<script src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
 	<script src="js/gallery-admin.js"></script>
-	<script src="js/jquery.stickytableheaders.min.js"></script>
 	<script src="js/relative-fade.min.js"></script>
-	<script src="js/imgloaded.js"></script>
 	<script src="js/bootbox.min.js"></script>
+	<!--
+	<script src="js/imgloaded.js"></script>
 	<script src="js/PxLoader.js"></script>
 	<script src="js/pxloader-images.min.js"></script>
+	<script src="js/px.js"></script>
+-->
 	<script src="js/onscreen.js"></script>
 	<script src="js/animatecss.min.js"></script>
 	<script src="js/bootstrap-carousel-swipe.js"></script>
 	<script src="js/rangeslider.min.js"></script>
 	<script src="js/validator.min.js"></script>
 	<script src="js/html.sortable.min.js"></script>
-	<script src="js/px.js"></script>
 	<script src="js/gallery.js"></script>
 	<script src="js/init.js"></script>
 	<!--<script src="js/main.js"></script>-->

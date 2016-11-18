@@ -111,7 +111,7 @@ var _upldr = function() {
     };
 
     this.reset = function() {
-        console.log("reset");
+       //console.log("reset");
         files = [];
         form.reset();
         progressBar.style.width = 0;
@@ -141,7 +141,7 @@ var _upldr = function() {
         resetBtn.disabled = true;
 
         if (!files || files.length === 0) {
-            console.log('no files to upload');
+           //console.log('no files to upload');
             return false;
         }
 

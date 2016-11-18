@@ -1,5 +1,61 @@
 // func.js
 
+if (!Array.prototype.includes) {
+  Array.prototype.includes = function(searchElement /*, fromIndex*/) {
+    'use strict';
+    if (this == null) {
+      throw new TypeError('Array.prototype.includes called on null or undefined');
+    }
+
+    var O = Object(this);
+    var len = parseInt(O.length, 10) || 0;
+    if (len === 0) {
+      return false;
+    }
+    var n = parseInt(arguments[1], 10) || 0;
+    var k;
+    if (n >= 0) {
+      k = n;
+    } else {
+      k = len + n;
+      if (k < 0) {k = 0;}
+    }
+    var currentElement;
+    while (k < len) {
+      currentElement = O[k];
+      if (searchElement === currentElement ||
+         (searchElement !== searchElement && currentElement !== currentElement)) { // NaN !== NaN
+        return true;
+      }
+      k++;
+    }
+    return false;
+  };
+}
+
+function getMin(data) {
+    // get smallest number from array
+    return data.sort(function(a, b) {
+        return a - b;
+    })[0];
+};
+
+function sortedIdsBy(prop, ord) {
+    var property = prop || 'time';
+    var order = ord || 'asc';
+
+    var keysSorted = Object.keys(gJ.images).sort(function(a, b) {
+        return gJ.images[a][property] - gJ.images[b][property];
+    });
+
+    if (order === 'desc') {
+        keysSorted.reverse();
+    }
+
+    return keysSorted;
+};
+
+/*
 function sortedIdsBy(prop, ord) {
     var property = prop || 'time';
     var order = ord || 'asc';
@@ -16,6 +72,7 @@ function sortedIdsBy(prop, ord) {
     });
     return idsByProp;
 };
+*/
 
 Array.prototype.unique = function() {
     var u = [];
@@ -26,6 +83,16 @@ Array.prototype.unique = function() {
         }
     }
     return u;
+};
+
+function unique(arr) {
+    var u = [];
+    return arr.filter(function(v) {
+        if (u.indexOf(v) == -1) {
+            u.push(v);
+            return v;
+        }
+    });
 };
 
 function blur(el, val) {
@@ -99,9 +166,9 @@ function clearHtml(el) {
             var qs = document.querySelectorAll(el[i]);
             var qsl = qs.length;
             if (qsl > 0) {
-              for (var j=0; j < qsl; j++) {
-                qs.innerHTML = "";
-              }
+                for (var j = 0; j < qsl; j++) {
+                    qs.innerHTML = "";
+                }
             }
         }
     }

@@ -1,38 +1,107 @@
 // admin-func.js
 
-function ignoreFolder(f) {
-    var tr = $("#foldersTable tr[data='" + f + "']");
-    console.log(gJ.ignore.indexOf(f));
-    if (gJ.ignore.indexOf(f) == -1) {
-        gJ.ignore.push(f);
-        tr.removeClass().addClass('warning');
-    } else {
-        gJ.ignore.splice(gJ.ignore.indexOf(f), 1);
-        tr.removeClass().addClass('default');
-    }
+function checkIrregularFilename(file) {
+      var response = {};
+      response.error = false;
+      response.expression = [];
+      var osl = options.sizes.length;
+      for (var i=0; i < osl; i++) {
+          if (file.indexOf('_'+options.sizes[i]) !== -1) {
+              response.error = true;
+              response.expression.push('_'+options.sizes[i]);
+          }
+      }
+      return response;
 };
 
-function processImages() {
-
-    loader();
-
-    $('#allImagesButton').off('click').text('resize ' + imagesAdded.length + ' image/s').on('click', function() {
-
-        window.ri = 0;
-        var data = imagesFromFolderData;
-        var keys = imagesAdded;
-        var length = 0;
-        if (keys) {
-            var length = keys.length;
+function arrayIntersection(arr1, arr2) {
+    // all values from arr1 which are in arr2
+    var inter1 = arr1.filter(function(value) {
+        if (arr2.indexOf(value) > -1) {
+            return value;
         }
-        resizeStoreSync(data, keys, length, folder);
-
     });
 
-    processImages();
-    //loader('off');
+    // all values from arr2 which are in arr1
+    var inter2 = arr2.filter(function(value) {
+        if (inter1.indexOf(value) > -1) {
+            return value;
+        }
+    });
 
-}; // end function processImages
+    return inter1.concat(inter2).unique();
+};
+
+function arrayWithout(arr1, arr2) {
+  /*
+    if (typeof arr2 === 'string') {
+      var arr2 = [arr2];
+    }
+  */
+    // all values from arr1 which are not in arr2
+    return arr1.filter(function(value) {
+        if (arr2.indexOf(value) === -1) {
+            return value;
+        }
+    });
+};
+
+function arrayDiff(arr1, arr2, concat) {
+    var concat = concat || false;
+    var diff = {};
+
+    // all values from arr1 which are not in arr2
+    diff.arr1 = arr1.filter(function(value) {
+        if (arr2.indexOf(value) === -1) {
+            return value;
+        }
+    });
+
+    if (!concat) {
+        return diff.arr1;
+    }
+
+    // all values from arr2 which are not in arr1
+    diff.arr2 = arr2.filter(function(value) {
+        if (arr1.indexOf(value) === -1) {
+            return value;
+        }
+    });
+
+    diff.concat = diff.arr1.concat(diff.arr2);
+
+    return diff;
+};
+
+/*
+var arr1 = [1,2,3,4];
+var arr2 = [4,6,1,4];
+console.log(arrayDiff(arr1,arr2));
+console.log(arrayDiff(arr1,arr2,true).arr2);
+console.log(arrayDiff(arr1,arr2,true).concat);
+*/
+
+function withoutGalleryBase(data) {
+    if (typeof data === 'string') {
+      return data.replace('gallery/','');
+    }
+
+    return data.map(function(value) {
+        return value.replace('gallery/','');
+    });
+};
+
+function ignoreFolder(f) {
+    var tr = $("#foldersTable tr[data='" + f + "']");
+    if (stat.ignoreFolders.indexOf(f) == -1) {
+        stat.ignoreFolders.push(f);
+        tr.removeClass().addClass('warning');
+    } else {
+        stat.ignoreFolders.splice(stat.ignoreFolders.indexOf(f), 1);
+        tr.removeClass().addClass('default');
+    }
+    //console.log(stat.ignoreFolders);
+};
 
 function addNewImages() {
     var ani = 0;
@@ -49,115 +118,19 @@ function addNewImages() {
             var key = imagesAddedKeys[ani];
             var file = imagesAdded[key].file;
             var folder = imagesAdded[key].path;
-            console.log(file);
 
             resizeStore(folder, file).done(function() {
                 gJ.images[key] = imagesAdded[key];
                 ani++;
-                addImages()
+                addImages();
             });
         } else {
-            console.log('all images added');
+            //console.log('all images added');
             buildGallery(gJ);
             saveStatus(true);
         }
-
     };
 };
-
-function resizeStoreSync(data, keys, length, folder) {
-
-    if (window.ri < length) {
-        var key = keys[window.ri];
-        var val = data[key];
-        var folder = val.path;
-        var file = val.file;
-
-        resizeStore(folder, file).done(function(resizeData) {
-            window.ri++;
-
-            // add images to gJ
-            gJ.images[key] = data[key];
-
-            resizeStoreSync();
-        });
-    }
-};
-
-function checkImageSizes(images, deep, cb) {
-    console.log('checkImageSizes');
-
-    var images = images || gJ.images;
-    var imagesLength = images.length;
-    // if 'images' is not an array, but an object:
-    if (!imagesLength) {
-        var imageKeys = Object.keys(images);
-        imagesLength = imageKeys.length;
-    };
-    var sizesLength = gJ.sizes.length;
-    var deep = deep ? true : false;
-    deep = true;
-    var id = 0;
-    var sz = 0;
-
-    function checkImage() {
-        console.log('checkImage');
-        if (id < imagesLength) {
-            var image = images[imageKeys[id]];
-            var folder = image.path;
-            console.log('checkImageSizeFolder: ' + folder);
-
-            if (sz < sizesLength) {
-                var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
-                var path = 'gallery/' + folder + '_' + gJ.sizes[sz] + '/' + image.file;
-
-                // deep: request each image from server
-                if (deep) {
-                    fileExists(path)
-                        .done(function() {
-                            console.log(path + ' does deep exist');
-                        })
-                        .fail(function() {
-                            console.log(path + ' does not deep exist');
-                            stat.imagesNotProcessed.push(id);
-                            //stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
-                            stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
-                        })
-                        .always(function() {
-                            sz++;
-                            checkImage();
-                        });
-
-                    return false;
-                }
-
-                // quick check against all images in stat.allImages:
-                if (!stat.allImages[sizeId]) {
-                    console.log(sizeId + ' does not exist');
-                    stat.imagesNotProcessed.push(id);
-                    //stat.imagesNotProcessed = _.uniq(stat.imagesNotProcessed);
-                    stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
-                }
-                sz++;
-                checkImage();
-
-            } else {
-                sz = 0;
-                id++;
-                checkImage();
-            }
-        } else {
-            console.log("check image done");
-            if (cb) {
-                cb();
-            }
-        }
-    };
-
-    // initial call:
-    checkImage();
-};
-
 
 function getNewImages(images) {
 
@@ -178,7 +151,9 @@ function getNewImages(images) {
 
     if (match.length > 0) {
         // we have new images
-        console.log('we have ' + match.length + ' new images');
+        //console.log('we have ' + match.length + ' new images');
+    } else {
+        //console.log('no new images');
     }
     stat.newImages = match;
     return match;
@@ -214,7 +189,7 @@ function gjFilteredByFolder(fo) {
 
 function deleteFolderRelations(folder, cb) {
     var folders = [folder];
-    var sizesLength = gJ.sizes.length;
+    var sizesLength = options.sizes.length;
     var i = 0;
 
     //check if folder is in 'ignore' and remove it
@@ -225,9 +200,9 @@ function deleteFolderRelations(folder, cb) {
         // remove images from galleryJSON:
         var imageKeys = Object.keys(gJ.images);
         var imagesLength = imageKeys.length;
-        for (var i = 0; i < imagesLength; i++) {
-            if (gJ.images[imageKeys[i]].path == folder) {
-                delete gJ.images[imageKeys[i]];
+        for (var j = 0; j < imagesLength; j++) {
+            if (gJ.images[imageKeys[j]].path == folder) {
+                delete gJ.images[imageKeys[j]];
             }
         }
         /*
@@ -238,21 +213,21 @@ function deleteFolderRelations(folder, cb) {
     }
 
     for (var l = 0; l < sizesLength; l++) {
-        folders.push(folder + '_' + gJ.sizes[l]);
+        folders.push(folder + '_' + options.sizes[l]);
     }
 
     function deleteFolder() {
         if (i < folders.length) {
             removeFolder(folders[i])
-                .done(function() {
+                .done(function(e) {
 
                 })
-                .always(function() {
+                .always(function(e) {
                     i++
                     deleteFolder();
                 });
         } else {
-            console.log('deleteFolder done');
+            //console.log('deleteFolder done');
             if (cb) {
                 cb();
             }

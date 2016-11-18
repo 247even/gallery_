@@ -17,7 +17,7 @@ $('.admin-header a[aria-controls="raw-panel"]').on('shown.bs.tab', function(e) {
 
         $('#loadBackupSelect').on('change', function() {
             loader();
-            var dataUrl = $('#loadBackupSelect').find('option:selected').attr('data-url');
+            var dataUrl = $(this).find('option:selected').attr('data-url');
             var url = 'gallery/' + dataUrl;
 
             if (!dataUrl) {

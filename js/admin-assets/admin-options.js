@@ -52,7 +52,7 @@ function setOptions() {
         stat.options = {
             'thumbFit': $(this).val()
         };
-        $('div#gallery-row').find('div.gallery-item .thumb-div').removeClass('cover-image contain-image').addClass(stat.options.thumbFit + '-image');
+        $('div#gallery-row').find('div.gallery-item div.thumb-div').removeClass('cover-image contain-image').addClass(stat.options.thumbFit + '-image');
         saveStatus(true);
     });
 
@@ -106,9 +106,19 @@ function setOptions() {
             e.preventDefault();
         }
     }).on('change input', function() {
-        var value = $(this).val().split(',');
+        var value = $(this).val().split(',').unique()
+            .filter(function(v) {
+                if (parseInt(v)) {
+                    return v
+                }
+            }).map(function(v, k) {
+                return parseInt(v);
+            }).sort(function(a, b) {
+                return a - b;
+            });
+
         stat.options = {
-            'sizes': _.sortBy(_.uniq(_.compact(_.map(value, _.parseInt))))
+            'sizes': value
         };
         saveStatus(true);
     });
@@ -119,9 +129,19 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
 
     setOptions();
 
-    $('#configReset').click(function() {
+    $('#optionsReset').on('click', function() {
         setOptions();
         buildGallery(gJ);
+    });
+
+    $('#optionsSave').on('click', function(e) {
+        e.preventDefault();
+        //          saveFileAs('var options ='+JSON.stringify(stat.options), 'options2.js').done(function(e){
+        saveFileAs(JSON.stringify('var options =' + JSON.stringify(stat.options)), 'options2.js').done(function(e) {
+            //console.log(e);
+        }).always(function(e) {
+            //console.log(e);
+        });
     });
 
 });

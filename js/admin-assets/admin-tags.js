@@ -11,7 +11,9 @@ var selectizeInput = $('#input-tags').selectize({
         for (var i = 0, l = stat.tagsSelectedIds.length; i < l; i++) {
             var id = stat.tagsSelectedIds[i];
             var dataTags = stat.imageTags[id];
-            var unionTags = _.union(dataTags, input.split(','));
+            //var unionTags = _.union(dataTags, input.split(','));
+            var unionTags = dataTags.concat(input.split(',')).unique();
+            //console.log(unionTags);
             if (unionTags != dataTags) {
                 stat.imageTags[id] = unionTags;
                 stat.tagsEdited = id;
@@ -26,15 +28,13 @@ var selectizeInput = $('#input-tags').selectize({
 var selectizeTags = selectizeInput[0].selectize;
 selectizeTags.clear();
 
-function setStatImageTags() {
-    for (var key in gJ.images) {
-        stat.imageTags[key] = stat.imageTags[key] || gJ.images[key].tags;
-    }
-};
 
 $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
 
-    setStatImageTags();
+    for (var key in gJ.images) {
+        stat.imageTags[key] = stat.imageTags[key] || gJ.images[key].tags;
+    }
+    
     document.getElementById('all-tags').innerHTML = '';
     stat.allTags = !stat.allTags.length ? gJ.tags : stat.allTags;
 
@@ -68,10 +68,12 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
 
         for (var key in gJ.images) {
             tags.push(gJ.images[key].tags);
-            console.log(tags);
+            //console.log(tags);
         }
 
-        gJ.tags = _.uniq(_.flattenDeep(tags));
+        //gJ.tags = _.uniq(_.flattenDeep(tags));
+        gJ.tags = tags.unique();
+        //console.log(gJ.tags);
         buildGalleryNavigation();
         saveStatus(true);
 
@@ -82,7 +84,7 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
     });
 
     $('#deleteImagesButton').on('click', function() {
-        console.log('delete clicked');
+        //console.log('delete clicked');
         deleteSelectedImages();
     });
 
@@ -97,7 +99,7 @@ function selectTags() {
     selectizeTags.clear();
 
     if (selectedLength === 0) {
-        console.log('nothing selected');
+        //console.log('nothing selected');
         return false;
     }
 
@@ -115,8 +117,10 @@ function selectTags() {
         for (var i = 0; i < selectedLength; i++) {
             var selectedId = stat.tagsSelectedIds[i];
             attrTags = stat.imageTags[selectedId] || gJ.images[selectedId].tags;
-            selectedTags = _.union(selectedTags, attrTags);
-            groupTags = _.intersection(groupTags, attrTags);
+//            selectedTags = _.union(selectedTags, attrTags);
+//            groupTags = _.intersection(groupTags, attrTags);
+              selectedTags = selectedTags.concat(attrTags).unique();
+              groupTags = arrayIntersection(groupTags, attrTags);
         }
 
     }
@@ -156,11 +160,11 @@ function deleteSelectedImages() {
                     data: 'path=' + path
                 }).done(function() {
                     p++;
-                    console.log('done ' + p);
+                    //console.log('done ' + p);
                     deleteFinished();
                 }).fail(function() {
                     p++;
-                    console.log('fail ' + p);
+                    //console.log('fail ' + p);
                     deleteFinished();
                 })
             }
@@ -173,7 +177,7 @@ function deleteSelectedImages() {
             if (p <= pl) {
                 deleteImage(paths[p]);
             } else {
-                console.log('finished deleting');
+                //console.log('finished deleting');
 
                 // save JSON:
                 $('#deleteImagesButton').off('click').text('save').on('click', function() {

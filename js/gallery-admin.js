@@ -1,22 +1,21 @@
 jsLoader({
-    'url': 'gallery/jsLoader.php',
-    'path': '../js/admin-assets/',
-    'outpath': '/js/',
-    'filter': '*.{js,json}',
-    'srcpath': 'js/',
-    'concat': true,
-    'minify': false,
-    'skipmin': false,
-    'gzip': false,
-    'cache': false
+    url: 'jsLoader.php',
+    path: 'js/admin-assets/',
+    outpath: '/js/',
+    filter: '*.{js,json}',
+    srcpath: 'js/',
+    concat: true,
+    minify: false,
+    skipmin: false,
+    gzip: false,
+    cache: false
 });
 
 var fnf = 0;
 var autoprocess = false;
 
 function adminInit() {
-    console.log('adminInit');
-    //stat.options = options;
+   //console.log('adminInit');
 
     // check login
     // this is for development only!
@@ -30,35 +29,55 @@ function adminInit() {
     loader();
     fnf = 0;
 
+    stat._ignoreFolders = gJ.ignore;
     //jsCheckLoad( 'adminAssets', adminInit() );
 
-    $('#modal-process-button').on('click', function() {
-        processNewFolder({
-            'folder': $('#folder-modal').attr('data')
-        });
-        $('#folder-modal').modal('hide');
-    });
-
     allFolders().done(function(data) {
-        //var data = data.sort();
 
-        // get thumbnail folders:
-        var subFolders = _.filter(data, function(v, k) {
-            for (var i = 0, len = gJ.sizes.length; i < len; i++) {
-                if (v.indexOf(gJ.sizes[i]) > -1) {
-                    return v;
+        var folders = withoutGalleryBase(data);
+
+        // remove thumbnail folders:
+        var fl = folders.length;
+        var osl = options.sizes.length;
+        for (var i = 0; i < osl; i++) {
+            var size = options.sizes[i];
+            for (var j = 0; j < fl; j++) {
+                if (folders[j].includes(size)) {
+                    folders.splice(j,1);
+                    fl = folders.length;
                 }
+            }
+        }
+
+        stat.allFolders = folders;
+        stat._ignoreFolders = stat._ignoreFolders.filter(function(val){
+            if (stat.allFolders.indexOf(val) > -1) {
+                return val;
             }
         });
 
-        stat.allFolders = _.difference(data, subFolders);
-        getAllImages(stat.allFolders, false, function() {
-            stat.newFolders = _.difference(_.difference(stat.allFolders, gJ.folders), gJ.ignore);
-            var oldFolders = _.intersection(data, gJ.folders);
+
+        getAllImages({
+            folders: stat.allFolders,
+            cb: function() {
+
+                for (var key in stat.existingImages) {
+                    if (checkIrregularFilename(key).error) {
+                      console.log(checkIrregularFilename(key));
+                    }
+                }
+
+                checkImageSizes(stat.allImages,true,function(){
+                    console.log(stat.imagesNotProcessed);
+                });
+                //stat.newFolders = _.difference(_.difference(stat.allFolders, gJ.folders), gJ.ignore);
+                stat.newFolders = arrayDiff(arrayDiff(stat.allFolders, gJ.folders), gJ.ignore);
+                //var oldFolders = _.intersection(data, gJ.folders);
+                var oldFolders = arrayIntersection(data, gJ.folders);
+            }
         });
         loader('off');
     });
-
 
     $('.admin-header a[aria-controls="start-panel"]').on('shown.bs.tab', function(e) {
 
@@ -78,79 +97,21 @@ function adminInit() {
     $('.admin-header a[aria-controls="start-panel"]').trigger('click');
 };
 
-function removeImages() {
-    var l = imagesRemoved.length;
-    var paths = [];
-    var i = 0;
-
-    if (l > 0) {
-        var id = imagesRemoved[i];
-
-        for (var sz in gJ.sizes) {
-            var size = gJ.sizes[sz];
-            var file = gJ.images[sz].file;
-            var folder = gJ.images[sz].path;
-            var gid = folder + '_' + size + file;
-
-            // check if this file's thumbnail is on the server
-            if (allImagesFromServer[gid]) {
-                paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
-            }
-        }
-    }
-
-    function removeImageSync() {
-        if (i < paths.length) {
-            removeImage(paths[i])
-                .done(function() {
-                    i++;
-                    delete gJ.images[key];
-                    delete imagesRemoved[key];
-                    console.log('done ' + i);
-                    removeImageSync();
-                })
-                .fail(function() {
-                    i++;
-                    console.log('fail ' + i);
-                    removeImageSync();
-                });
-        } else {
-            console.log('finished deleting');
-            // save JSON:
-            $('#deleteImagesButton').off('click').text('save').on('click', function() {
-                /*
-                 backup().done(function(data){
-                 var content = JSON.stringify(gJ);
-                 var target = 'gallery.json';
-                 saveFileAs(content, target);
-                 });
-                 */
-
-                saveJSON();
-            });
-        }
-    };
-
-    var p = 0;
-    var pl = paths.length;
-    removeImageSync();
-};
-
 function buildFolderTable(folders) {
     if (!folders) {
         var folders = stat.allFolders;
     }
 
-    $('#foldersTable tbody').html('');
+    $('#foldersTable').find('tbody').html('');
     for (var i = 0; i < folders.length; i++) {
         var number = i + 1;
         var folder = folders[i];
         // set table row style for new, known or ignored folders:
         var fclass = 'warning';
-        if (_.indexOf(gJ.ignore, folder) == -1) {
+        if (stat.ignoreFolders.indexOf(folder) === -1) {
             fclass = 'default';
         }
-        if (_.indexOf(stat.newFolders, folder) > -1) {
+        if (stat.newFolders.indexOf(folder) > -1) {
             fclass = 'danger';
         }
 
@@ -171,29 +132,58 @@ function buildFolderTable(folders) {
         });
     };
 
-    $('#foldersTable .btn-scn').on('click', function() {
+    $('#foldersTable').find('.btn-scn').on('click', function() {
+        loader();
         stat.workingFolder = $(this).closest('tr').attr('data');
-        imagesFromFolder(stat.workingFolder);
+        imagesFromFolder(stat.workingFolder).done(function() {
+            loader('off');
+            if (stat.newImages.length > 0) {
+                bootbox.confirm({
+                    title: stat.newImages.length + " new images found!",
+                    message: 'Process ' + stat.newImages.length + ' new images in "' + stat.workingFolder + '"?',
+                    buttons: {
+                        confirm: {
+                            label: '<i class="fa fa-check"></i> Yes'
+                        },
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> No'
+                        }
+                    },
+                    size: 'small',
+                    callback: function(result) {
+                        if (result) {
+                            addNewImages();
+                        }
+                    }
+                });
+            } else {
+                bootbox.alert({
+                    message: "No new images found.",
+                    size: 'small',
+                    backdrop: true
+                });
+            }
+        });
     });
 
-    $('#foldersTable .btn-ign').on('click', function() {
+    $('#foldersTable').find('.btn-ign').on('click', function() {
         var folder = $(this).closest('tr').attr('data');
         var msg = 'Ignore folder "' + folder + '"?';
-        if (gJ.ignore.indexOf(folder) > -1) {
-            var msg = 'Add folder "' + folder + '"?';
+        if (stat.ignoreFolders.indexOf(folder) > -1) {
+            msg = 'Add folder "' + folder + '"?';
         }
         bootbox.confirm({
             size: 'small',
             message: msg,
             callback: function(result) {
                 if (result) {
-                    ignoreFolder(folder);
+                    stat.ignoreFolders = folder;
                 }
             }
         });
     });
 
-    $('#foldersTable .btn-del').on('click', function() {
+    $('#foldersTable').find('.btn-del').on('click', function() {
         var folder = $(this).closest('tr').attr('data');
         var msg = 'Delete folder "' + folder + '"?'
         bootbox.confirm({
@@ -207,16 +197,6 @@ function buildFolderTable(folders) {
                 }
             }
         });
-        /*
-        removeFolder(dataFolder)
-            .done( function(d) {
-                console.log('folder removed');
-                $('#tr-' + dataFolder).remove();
-            })
-            .fail( function(d) {
-                console.log('folder remove fail');
-            });
-          */
     });
 
 };
