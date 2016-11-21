@@ -13,22 +13,24 @@ function imagesFromFolder($folder) {
 
 	$path = $folder . '/';
 	$images = array();
+	$baseFolder = str_replace('gallery/', '', $folder);
 	// search all images in folder
 	foreach (glob("".$path."*.{jpg,jpeg,png,gif}", GLOB_BRACE) as $filename) {
-		array_push($images, basename($filename));
+			//array_push($images, basename($filename));
+			$pi = pathinfo($filename);
+			$piName = $pi['filename'];
+			$piExt = $pi['extension'];
 
-		 $imageObject = array("file" => basename($filename), "path" => $folder, "time" => filemtime($filename), "tags" => [$folder]);
-		 $newId = str_replace('gallery/', '', $folder.basename($filename));
-		 $existingImages[$newId] = $imageObject;
-
+		 	$imageObject = array("file" => basename($filename), "type" => $piExt, "folder" => $baseFolder, "time" => filemtime($filename), "tags" => [$folder]);
+//		 	$newId = str_replace('gallery/', '', $folder.basename($filename));
+			$newId = $baseFolder.$piName;
+		 	$existingImages[$newId] = $imageObject;
 	}
+	//$existingImages['images'] = $images;
 	return $existingImages;
-	//echo json_encode($images) . "<br>";
-	//return $images;
 };
 
-if (isset($_GET['folder']) || isset($_POST['folder'])) {
-	//echo $_POST['folder'];
+if (isset($_POST['folder'])) {
 	echo json_encode(imagesFromFolder($_POST['folder']));
 };
 ?>

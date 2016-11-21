@@ -62,7 +62,7 @@ function processNewFolder(d) {
                 //var key = keys[i];
                 var key = stat.newImages[0];
                 var val = imagesFromFolderData[key];
-                var folder = val.path;
+                var folder = val.folder;
                 var file = val.file;
 
                 stat.workingImage = file;

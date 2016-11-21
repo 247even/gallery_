@@ -274,7 +274,7 @@ function loadBlur(imgId) {
     }
 
     $('#blurPath').val(imgId);
-    var imgSrc_720 = 'gallery/' + gJ.images[imgId].path + '_720/' + gJ.images[imgId].file;
+    var imgSrc_720 = 'gallery/' + gJ.images[imgId].folder + '_720/' + gJ.images[imgId].file;
 
     $('#blur-image-frame').find('img').attr('src', imgSrc_720).imagesLoaded().always(function() {
         //console.log('blur image');

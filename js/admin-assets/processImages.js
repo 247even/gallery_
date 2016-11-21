@@ -26,7 +26,7 @@ function resizeStoreSync(data, keys, length, folder) {
     if (window.ri < length) {
         var key = keys[window.ri];
         var val = data[key];
-        var folder = val.path;
+        var folder = val.folder;
         var file = val.file;
 
         resizeStore(folder, file).done(function(resizeData) {

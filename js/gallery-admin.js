@@ -66,7 +66,7 @@ function adminInit() {
                       console.log(checkIrregularFilename(key));
                     }
                 }
-
+                console.log(stat.allImages);
                 checkImageSizes(stat.allImages,true,function(){
                     console.log(stat.imagesNotProcessed);
                 });

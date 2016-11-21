@@ -70,11 +70,9 @@ function buildGalleryItems(filter) {
     // reset
     clearHtml(['.gallery-row']);
     addClasses(document.querySelector('#thumb-prototype .gallery-item'), options.thumbSizeSizes[options.thumbSize]);
-
     for (var key in gJ.images) {
-
         var val = gJ.images[key];
-        var folder = val.path;
+        var folder = val.folder;
         var file = val.file;
         var respiPath = 'gallery/' + folder + '_respi/' + file;
         var thumbFilePath = 'gallery/' + folder + '_' + initialThumbSize + '/' + file;
@@ -230,7 +228,7 @@ function buildSliders(slider) {
 
             var image = sliders[key][0][i];
             var gJimage = gJ.images[image];
-            var respiPath = 'gallery/' + gJimage.path + '_respi/' + gJimage.file;
+            var respiPath = 'gallery/' + gJimage.folder + '_respi/' + gJimage.file;
 
             // add thumb & image to preloader:
             if (imagesLoader) {

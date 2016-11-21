@@ -91,10 +91,10 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	});
 
 	$('#upload-folder-select').on('change', function() {
-		upldrData.path = $(this).val();
+		upldrData.folder = $(this).val();
 		upldr.options.data = JSON.stringify(upldrData);
 	});
-	upldrData.path = $('#upload-folder-select').val();
+	upldrData.folder = $('#upload-folder-select').val();
 	upldr.options.data = JSON.stringify(upldrData);
 	//$('#upload-folder-select').trigger( 'change' );
 
@@ -144,7 +144,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 function processResponse(res) {
 	var res = JSON.parse(res);
 	var images = res.name;
-	var path = res.data.path;
+	var path = res.data.folder;
 	var folder = path.split('/');
 	folder = folder[folder.length - 1];
 	var tags = res.data.tags;
@@ -158,7 +158,7 @@ function processResponse(res) {
 		var id = path + encname;
 		var entry = {
 			'file' : name,
-			'path' : path,
+			'folder' : path,
 			'time' : n,
 			'tags' : tags
 		};

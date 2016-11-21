@@ -117,7 +117,7 @@ function addNewImages() {
         if (ani < length) {
             var key = imagesAddedKeys[ani];
             var file = imagesAdded[key].file;
-            var folder = imagesAdded[key].path;
+            var folder = imagesAdded[key].folder;
 
             resizeStore(folder, file).done(function() {
                 gJ.images[key] = imagesAdded[key];
@@ -179,7 +179,7 @@ function gjFilteredByFolder(fo) {
 
     for (var i = 0; klength > i; i++) {
         var image = gJ.images[keys[i]];
-        if (image.path === folder) {
+        if (image.folder === folder) {
             result[keys[i]] = image;
         }
     }
@@ -201,13 +201,13 @@ function deleteFolderRelations(folder, cb) {
         var imageKeys = Object.keys(gJ.images);
         var imagesLength = imageKeys.length;
         for (var j = 0; j < imagesLength; j++) {
-            if (gJ.images[imageKeys[j]].path == folder) {
+            if (gJ.images[imageKeys[j]].folder == folder) {
                 delete gJ.images[imageKeys[j]];
             }
         }
         /*
         _.omitBy(gJ.images, {
-            'path': folder
+            'folder': folder
         });
         */
     }

@@ -360,7 +360,7 @@ function addNewImages() {
         if (ani < length) {
             var key = imagesAddedKeys[ani];
             var file = imagesAdded[key].file;
-            var folder = imagesAdded[key].path;
+            var folder = imagesAdded[key].folder;
 
             resizeStore(folder, file).done(function() {
                 gJ.images[key] = imagesAdded[key];
@@ -422,7 +422,7 @@ function gjFilteredByFolder(fo) {
 
     for (var i = 0; klength > i; i++) {
         var image = gJ.images[keys[i]];
-        if (image.path === folder) {
+        if (image.folder === folder) {
             result[keys[i]] = image;
         }
     }
@@ -444,13 +444,13 @@ function deleteFolderRelations(folder, cb) {
         var imageKeys = Object.keys(gJ.images);
         var imagesLength = imageKeys.length;
         for (var j = 0; j < imagesLength; j++) {
-            if (gJ.images[imageKeys[j]].path == folder) {
+            if (gJ.images[imageKeys[j]].folder == folder) {
                 delete gJ.images[imageKeys[j]];
             }
         }
         /*
         _.omitBy(gJ.images, {
-            'path': folder
+            'folder': folder
         });
         */
     }
@@ -978,7 +978,7 @@ function loadBlur(imgId) {
     }
 
     $('#blurPath').val(imgId);
-    var imgSrc_720 = 'gallery/' + gJ.images[imgId].path + '_720/' + gJ.images[imgId].file;
+    var imgSrc_720 = 'gallery/' + gJ.images[imgId].folder + '_720/' + gJ.images[imgId].file;
 
     $('#blur-image-frame').find('img').attr('src', imgSrc_720).imagesLoaded().always(function() {
         //console.log('blur image');
@@ -1084,7 +1084,7 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
     for (var key in gJ.images) {
         stat.imageTags[key] = stat.imageTags[key] || gJ.images[key].tags;
     }
-    
+
     document.getElementById('all-tags').innerHTML = '';
     stat.allTags = !stat.allTags.length ? gJ.tags : stat.allTags;
 
@@ -1197,7 +1197,7 @@ function deleteSelectedImages() {
             //paths.push(gJ.images[id].path+'/'+gJ.images[id].file);
             for (var sz in gJ.sizes) {
                 var size = gJ.sizes[sz];
-                paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
+                paths.push(gJ.images[id].folder + '_' + size + '/' + gJ.images[id].file);
             }
             delete gJ.images[id];
         })
@@ -1340,10 +1340,10 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 	});
 
 	$('#upload-folder-select').on('change', function() {
-		upldrData.path = $(this).val();
+		upldrData.folder = $(this).val();
 		upldr.options.data = JSON.stringify(upldrData);
 	});
-	upldrData.path = $('#upload-folder-select').val();
+	upldrData.folder = $('#upload-folder-select').val();
 	upldr.options.data = JSON.stringify(upldrData);
 	//$('#upload-folder-select').trigger( 'change' );
 
@@ -1393,7 +1393,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
 function processResponse(res) {
 	var res = JSON.parse(res);
 	var images = res.name;
-	var path = res.data.path;
+	var path = res.data.folder;
 	var folder = path.split('/');
 	folder = folder[folder.length - 1];
 	var tags = res.data.tags;
@@ -1407,7 +1407,7 @@ function processResponse(res) {
 		var id = path + encname;
 		var entry = {
 			'file' : name,
-			'path' : path,
+			'folder' : path,
 			'time' : n,
 			'tags' : tags
 		};
@@ -1451,7 +1451,7 @@ function checkImageSizes(images, deep, cb) {
         //console.log('checkImage');
         if (id < imagesLength) {
             var image = images[imageKeys[id]];
-            var folder = image.path;
+            var folder = image.folder;
             //console.log('checkImageSizeFolder: ' + folder);
 
             if (sz < sizesLength) {
@@ -1467,7 +1467,7 @@ function checkImageSizes(images, deep, cb) {
                         .fail(function() {
                             //console.log(path + ' does not deep exist');
                             if (stat.imagesNotProcessed.indexOf(imageKeys[id]) === -1) {
-                                stat.imagesNotProcessed.push(imageKeys[id]);                              
+                                stat.imagesNotProcessed.push(imageKeys[id]);
                             }
                             //stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
                         })
@@ -1522,6 +1522,7 @@ function getAllImages(data) {
 
         imagesFromFolder(sourceFolder).done(function(data) {
             var ol = 0;
+            console.log(data);
             if (data) {
                 ol = Object.keys(data).length;
                 for (var key in data) {
@@ -1674,7 +1675,7 @@ function resizeStoreSync(data, keys, length, folder) {
     if (window.ri < length) {
         var key = keys[window.ri];
         var val = data[key];
-        var folder = val.path;
+        var folder = val.folder;
         var file = val.file;
 
         resizeStore(folder, file).done(function(resizeData) {
@@ -1751,7 +1752,7 @@ function processNewFolder(d) {
                 //var key = keys[i];
                 var key = stat.newImages[0];
                 var val = imagesFromFolderData[key];
-                var folder = val.path;
+                var folder = val.folder;
                 var file = val.file;
 
                 stat.workingImage = file;
@@ -1795,7 +1796,7 @@ function processNewFolder(d) {
 
 function removeImages() {
     var l = imagesRemoved.length;
-    var paths = [];
+    var folders = [];
     var i = 0;
 
     if (l > 0) {
@@ -1804,19 +1805,19 @@ function removeImages() {
         for (var sz in gJ.sizes) {
             var size = gJ.sizes[sz];
             var file = gJ.images[sz].file;
-            var folder = gJ.images[sz].path;
+            var folder = gJ.images[sz].folder;
             var gid = folder + '_' + size + file;
 
             // check if this file's thumbnail is on the server
             if (allImagesFromServer[gid]) {
-                paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
+                folders.push(gJ.images[id].folder + '_' + size + '/' + gJ.images[id].file);
             }
         }
     }
 
     function removeImageSync() {
-        if (i < paths.length) {
-            removeImage(paths[i])
+        if (i < folders.length) {
+            removeImage(folders[i])
                 .done(function() {
                     i++;
                     delete gJ.images[key];
@@ -1847,7 +1848,7 @@ function removeImages() {
     };
 
     var p = 0;
-    var pl = paths.length;
+    var pl = folders.length;
     removeImageSync();
 };
 // request
@@ -1857,8 +1858,8 @@ var allFolders = function() {
     return $.post('allFolders.php', 'allFolders', null, 'json');
 };
 
-var createFolder = function(path) {
-    return $.post('createFolder.php', 'folder=gallery/' + path, null, 'json');
+var createFolder = function(folder) {
+    return $.post('createFolder.php', 'folder=gallery/' + folder, null, 'json');
 };
 
 var removeFolder = function(folder) {
@@ -1877,8 +1878,8 @@ var resizeStore = function(folder, file, size, force) {
     return $.post('resizeStore.php', postdata, 'json');
 };
 
-var removeImage = function(p) {
-    return $.post('removeImage.php', 'path=gallery/' + p, null, 'json');
+var removeImage = function(folder) {
+    return $.post('removeImage.php', 'path=gallery/' + folder, null, 'json');
 };
 
 var getAllBackups = function() {
@@ -1894,16 +1895,11 @@ var loadBackup = function(url) {
 };
 
 var fileExists = function(file) {
-    return $.ajax({
-        url: file,
-        type: 'HEAD',
-        async: true
-    });
+    return $.ajax({url: file, type: 'HEAD', async: true});
 };
 
 var saveFileAs = function(c, t) {
-    var data = 'content=' + c + '&target=' + t;
-    return $.post(options.scriptBase + 'saveFileAs.php', data);
+    return $.post(options.scriptBase + 'saveFileAs.php', 'content=' + c + '&target=' + t);
 };
 var _resizeStoreSizes = function(folder, file, sizes, force) {
 

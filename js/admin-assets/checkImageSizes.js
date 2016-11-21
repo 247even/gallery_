@@ -21,7 +21,7 @@ function checkImageSizes(images, deep, cb) {
         //console.log('checkImage');
         if (id < imagesLength) {
             var image = images[imageKeys[id]];
-            var folder = image.path;
+            var folder = image.folder;
             //console.log('checkImageSizeFolder: ' + folder);
 
             if (sz < sizesLength) {
@@ -37,7 +37,7 @@ function checkImageSizes(images, deep, cb) {
                         .fail(function() {
                             //console.log(path + ' does not deep exist');
                             if (stat.imagesNotProcessed.indexOf(imageKeys[id]) === -1) {
-                                stat.imagesNotProcessed.push(imageKeys[id]);                              
+                                stat.imagesNotProcessed.push(imageKeys[id]);
                             }
                             //stat.imagesNotProcessed = stat.imagesNotProcessed.unique();
                         })

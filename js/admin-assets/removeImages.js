@@ -1,7 +1,7 @@
 
 function removeImages() {
     var l = imagesRemoved.length;
-    var paths = [];
+    var folders = [];
     var i = 0;
 
     if (l > 0) {
@@ -10,19 +10,19 @@ function removeImages() {
         for (var sz in gJ.sizes) {
             var size = gJ.sizes[sz];
             var file = gJ.images[sz].file;
-            var folder = gJ.images[sz].path;
+            var folder = gJ.images[sz].folder;
             var gid = folder + '_' + size + file;
 
             // check if this file's thumbnail is on the server
             if (allImagesFromServer[gid]) {
-                paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
+                folders.push(gJ.images[id].folder + '_' + size + '/' + gJ.images[id].file);
             }
         }
     }
 
     function removeImageSync() {
-        if (i < paths.length) {
-            removeImage(paths[i])
+        if (i < folders.length) {
+            removeImage(folders[i])
                 .done(function() {
                     i++;
                     delete gJ.images[key];
@@ -53,6 +53,6 @@ function removeImages() {
     };
 
     var p = 0;
-    var pl = paths.length;
+    var pl = folders.length;
     removeImageSync();
 };

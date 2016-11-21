@@ -5,8 +5,8 @@ var allFolders = function() {
     return $.post('allFolders.php', 'allFolders', null, 'json');
 };
 
-var createFolder = function(path) {
-    return $.post('createFolder.php', 'folder=gallery/' + path, null, 'json');
+var createFolder = function(folder) {
+    return $.post('createFolder.php', 'folder=gallery/' + folder, null, 'json');
 };
 
 var removeFolder = function(folder) {
@@ -25,8 +25,8 @@ var resizeStore = function(folder, file, size, force) {
     return $.post('resizeStore.php', postdata, 'json');
 };
 
-var removeImage = function(p) {
-    return $.post('removeImage.php', 'path=gallery/' + p, null, 'json');
+var removeImage = function(folder) {
+    return $.post('removeImage.php', 'path=gallery/' + folder, null, 'json');
 };
 
 var getAllBackups = function() {
@@ -42,14 +42,9 @@ var loadBackup = function(url) {
 };
 
 var fileExists = function(file) {
-    return $.ajax({
-        url: file,
-        type: 'HEAD',
-        async: true
-    });
+    return $.ajax({url: file, type: 'HEAD', async: true});
 };
 
 var saveFileAs = function(c, t) {
-    var data = 'content=' + c + '&target=' + t;
-    return $.post(options.scriptBase + 'saveFileAs.php', data);
+    return $.post(options.scriptBase + 'saveFileAs.php', 'content=' + c + '&target=' + t);
 };

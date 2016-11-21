@@ -34,7 +34,7 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
     for (var key in gJ.images) {
         stat.imageTags[key] = stat.imageTags[key] || gJ.images[key].tags;
     }
-    
+
     document.getElementById('all-tags').innerHTML = '';
     stat.allTags = !stat.allTags.length ? gJ.tags : stat.allTags;
 
@@ -147,7 +147,7 @@ function deleteSelectedImages() {
             //paths.push(gJ.images[id].path+'/'+gJ.images[id].file);
             for (var sz in gJ.sizes) {
                 var size = gJ.sizes[sz];
-                paths.push(gJ.images[id].path + '_' + size + '/' + gJ.images[id].file);
+                paths.push(gJ.images[id].folder + '_' + size + '/' + gJ.images[id].file);
             }
             delete gJ.images[id];
         })
