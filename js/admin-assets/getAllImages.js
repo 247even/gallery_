@@ -15,7 +15,6 @@ function getAllImages(data) {
 
         imagesFromFolder(sourceFolder).done(function(data) {
             var ol = 0;
-            console.log(data);
             if (data) {
                 ol = Object.keys(data).length;
                 for (var key in data) {

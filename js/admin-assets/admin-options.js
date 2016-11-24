@@ -8,7 +8,7 @@ function setOptions() {
 
     stat.options = options;
 
-    $('#thumbSizeSelect').val(
+    $('#thumb-size-select').val(
         stat.options.thumbSize
     ).on('change', function() {
 
@@ -28,7 +28,7 @@ function setOptions() {
         saveStatus(true);
     });
 
-    $('#thumbProportionSelect').val(
+    $('#thumb-proportion-select').val(
         stat.options.proportion.toString()
     ).on('change', function() {
         stat.options = {
@@ -46,7 +46,7 @@ function setOptions() {
     });
 
 
-    $('#thumbFitSelect').val(
+    $('#thumb-fit-select').val(
         stat.options.thumbFit.toString()
     ).on('change', function() {
         stat.options = {
@@ -56,9 +56,9 @@ function setOptions() {
         saveStatus(true);
     });
 
-    $('#thumbPaddingInput').val(
+    $('#thumb-padding-input').val(
         stat.options.thumbPadding
-    ).on('keydown', function() {
+    ).on('keydown', function(e) {
         // Allow: backspace, delete, tab, escape, enter
         if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
             // Allow: Ctrl+A
@@ -75,6 +75,7 @@ function setOptions() {
         // Ensure that it is a number and stop the keypress
         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
             e.preventDefault();
+            return false;
         }
     }).on('change input', function() {
         var value = $(this).val() || 0;
@@ -88,7 +89,18 @@ function setOptions() {
         saveStatus(true);
     });
 
-    $('#inputSizes').attr('placeholder', stat.options.sizes.toString()).on('keydown', function(e) {
+    $('#input-sizes').val(stat.options.sizes.toString()).attr('placeholder', stat.options.sizes.toString()).on('keydown', function(e) {
+
+        var value = $(this).val();
+        // prevent comma at start
+        if (e.keyCode == 188 && value == '') {
+            return false;
+        }
+        // prevent double commatas
+        if (e.keyCode == 188 && value.charAt(value.length - 1) == ',' && value.charAt(value.length - 1) == ',') {
+            return false;
+        }
+
         if ([46, 8, 9, 27, 13, 188].indexOf(e.keyCode) !== -1 ||
             // Allow: Ctrl+A
             (e.keyCode == 65 && e.ctrlKey === true) ||
@@ -101,10 +113,12 @@ function setOptions() {
             // don't do anything
             return;
         }
+
         // Ensure that it is a number and stop the keypress
         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
             e.preventDefault();
         }
+
     }).on('change input', function() {
         var value = $(this).val().split(',').unique()
             .filter(function(v) {
@@ -129,12 +143,12 @@ $('.admin-header a[aria-controls="options-panel"]').on('shown.bs.tab', function(
 
     setOptions();
 
-    $('#optionsReset').on('click', function() {
+    $('#options-reset').on('click', function() {
         setOptions();
         buildGallery(gJ);
     });
 
-    $('#optionsSave').on('click', function(e) {
+    $('#options-save').on('click', function(e) {
         e.preventDefault();
         //          saveFileAs('var options ='+JSON.stringify(stat.options), 'options2.js').done(function(e){
         saveFileAs(JSON.stringify('var options =' + JSON.stringify(stat.options)), 'options2.js').done(function(e) {

@@ -182,7 +182,6 @@
 						<!-- end start-panel -->
 
 						<div id="options-panel" role="tabpanel" class="tab-pane scroll-wrapper">
-								<form id="optionsForm">
 									<table class="table">
 										<thead>
 											<tr>
@@ -196,7 +195,7 @@
 												<th scope="row">1</th>
 												<td>Thumb display</td>
 												<td>
-													<select id="thumbSizeSelect" class="form-control">
+													<select id="thumb-size-select" class="form-control">
 																<option value="xs">extra small</option>
 																<option value="sm">small</option>
 																<option value="md">medium</option>
@@ -209,7 +208,7 @@
 												<th scope="row">2</th>
 												<td>Thumb proportion</td>
 												<td>
-													<select id="thumbProportionSelect" class="form-control">
+													<select id="thumb-proportion-select" class="form-control">
 																<option value="1,1">1:1</option>
 																<option value="2,1">2:1</option>
 																<option value="4,3">4:3</option>
@@ -223,7 +222,7 @@
 												<th scope="row">3</th>
 												<td>Thumb fit</td>
 												<td>
-													<select id="thumbFitSelect" class="form-control">
+													<select id="thumb-fit-select" class="form-control">
 																<option value="cover">cover</option>
 																<option value="contain">contain</option>
 															</select></td>
@@ -232,25 +231,24 @@
 												<th scope="row">4</th>
 												<td>Thumb Padding</td>
 												<td>
-													<input id="thumbPaddingInput" type="text" class="form-control" placeholder="0">
+													<input id="thumb-padding-input" type="text" class="form-control" placeholder="0">
 												</td>
 											</tr>
 											<tr>
 												<th scope="row">5</th>
 												<td>Sizes</td>
 												<td>
-													<input id="inputSizes" type="text" class="form-control" placeholder="">
+													<input id="input-sizes" type="text" class="form-control" placeholder="">
 												</td>
 											</tr>
 										</tbody>
 									</table>
-									<button id="optionsReset" type="reset" class="btn btn-default">
+									<button id="options-reset" class="btn btn-default">
 													Reset
 									</button>
-									<button id="optionsSave" class="btn btn-default">
+									<button id="options-save" class="btn btn-default">
 													Save
 									</button>
-								</form>
 						</div>
 						<!-- end options panel -->
 
@@ -354,7 +352,7 @@
 
 						<div id="upload-panel" role="tabpanel" class="tab-pane scroll-wrapper">
 
-							<form id="upldr-form" enctype="multipart/form-data" action="gallery/fileUpload.php" method="POST">
+							<form id="upldr-form">
 
 								<div class="drop-zone">
 									Drop files here

@@ -65,7 +65,7 @@ if (isset($_FILES['files'])) {
 			return false;
 		}
 	}
-	
+
 	$i = 0;
 	foreach ($files['name'] as $key => $value) {
 		if($files['error'][$key] > 0){
