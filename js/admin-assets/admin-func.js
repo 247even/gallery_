@@ -1,17 +1,39 @@
 // admin-func.js
 
+Array.prototype.unique = function() {
+    var u = [];
+    var l = this.length;
+    for (var i = 0; i < l; i++) {
+        if (u.indexOf(this[i]) == -1) {
+            u.push(this[i]);
+        }
+    }
+    return u;
+};
+
+function unique(arr) {
+    var u = [];
+    console.log(arr);
+    return arr.filter(function(v) {
+        if (u.indexOf(v) == -1) {
+            u.push(v);
+            return v;
+        }
+    });
+};
+
 function checkIrregularFilename(file) {
-      var response = {};
-      response.error = false;
-      response.expression = [];
-      var osl = options.sizes.length;
-      for (var i=0; i < osl; i++) {
-          if (file.indexOf('_'+options.sizes[i]) !== -1) {
-              response.error = true;
-              response.expression.push('_'+options.sizes[i]);
-          }
-      }
-      return response;
+    var response = {};
+    response.error = false;
+    response.expression = [];
+    var osl = options.sizes.length;
+    for (var i = 0; i < osl; i++) {
+        if (file.indexOf('_' + options.sizes[i]) !== -1) {
+            response.error = true;
+            response.expression.push('_' + options.sizes[i]);
+        }
+    }
+    return response;
 };
 
 function arrayIntersection(arr1, arr2) {
@@ -33,11 +55,11 @@ function arrayIntersection(arr1, arr2) {
 };
 
 function arrayWithout(arr1, arr2) {
-  /*
-    if (typeof arr2 === 'string') {
-      var arr2 = [arr2];
-    }
-  */
+    /*
+      if (typeof arr2 === 'string') {
+        var arr2 = [arr2];
+      }
+    */
     // all values from arr1 which are not in arr2
     return arr1.filter(function(value) {
         if (arr2.indexOf(value) === -1) {
@@ -83,11 +105,11 @@ console.log(arrayDiff(arr1,arr2,true).concat);
 
 function withoutGalleryBase(data) {
     if (typeof data === 'string') {
-      return data.replace('gallery/','');
+        return data.replace('gallery/', '');
     }
 
     return data.map(function(value) {
-        return value.replace('gallery/','');
+        return value.replace('gallery/', '');
     });
 };
 

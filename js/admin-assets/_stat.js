@@ -208,7 +208,8 @@ var stat = {
 
     '_tagsEdited': [],
     set tagsEdited(val) {
-        this._tagsEdited = this._tagsEdited.push(val).unique();
+        this._tagsEdited.push(val);
+        this._tagsEdited = this._tagsEdited.unique();
     },
     get tagsEdited() {
         return this._tagsEdited;
