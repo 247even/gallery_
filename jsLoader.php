@@ -10,7 +10,7 @@ $o["concat"] = false;
 $o["minify"] = false;
 $o["gzip"] = false;
 $o["cache"] = false;
-$o["skipmin"] = true;
+$o["skipmin"] = false;
 
 $outpath = $o["root"] . $o["outpath"];
 

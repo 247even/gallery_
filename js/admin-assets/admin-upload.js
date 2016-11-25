@@ -83,8 +83,10 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
             for (var i = 0; value.length > i; i++) {
                 value[i] = value[i].trim();
             }
-            value = _.without(value, '', ' ');
-            value = _.uniq(value);
+            //value = _.without(value, '', ' ');
+            value = arrayWithout(value, ['',' ']);
+            //value = _.uniq(value);
+            value = unique(value);
             upldrData.tags = value.toString();
             upldr.options.data = JSON.stringify(upldrData);
         }
@@ -120,7 +122,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
      */
 
     upldr.set({
-        'target': 'fileUpload.php',
+        'target': 'upldr.php',
         //'data' : JSON.stringify(upldrData),
         'cbReaderOnload': function(src, fName, fType, fSize, fLastMod) {
             //console.log( getSlug(fName, {'custom' : ['.'] }) );

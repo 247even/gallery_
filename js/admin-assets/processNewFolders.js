@@ -70,7 +70,8 @@ function processNewFolder(d) {
                 var resizeStoreSizes = new _resizeStoreSizes(folder, file);
                 resizeStoreSizes.done(function() {
                     // add images to gJ
-                    stat.newImages = _.without(stat.newImages, key);
+                    //stat.newImages = _.without(stat.newImages, key);
+                    stat.newImages = arrayWithout(stat.newImages, [key])
                     gJ.images[key] = imagesFromFolderData[key];
                     i++;
                     resizeStoreSync();
@@ -92,10 +93,12 @@ function processNewFolder(d) {
         resizeStoreSync();
 
         // ...and remove from stat.newFolders
-        stat.newFolders = _.without(stat.newFolders, folder);
+        //stat.newFolders = _.without(stat.newFolders, folder);
+        stat.newFolders = arrayWithout(stat.newFolders, [folder]);
 
     }).fail(function(){
-        stat.newFolders = _.without(stat.newFolders, folder);
+        //stat.newFolders = _.without(stat.newFolders, folder);
+        stat.newFolders = arrayWithout(stat.newFolders, [folder]);
        //console.log("images from folder error");
     });
     // <-- end images from folder function

@@ -89,7 +89,8 @@ $('.admin-header a[aria-controls="slider-panel"]').on('shown.bs.tab', function(e
     $('#slider-preview-btn').on('click', function() {
         $('#slider-1').attr('id', stat.workingSlider);
        //console.log(_.pick(stat.sliders, [stat.workingSlider]));
-        buildSliders(_.pick(stat.sliders, [stat.workingSlider]));
+        //buildSliders(_.pick(stat.sliders, [stat.workingSlider]));
+        buildSliders(pickFromObject(stat.sliders, [stat.workingSlider]))
         $('#slider-wrapper').removeClass('hidden');
         $('#' + stat.workingSlider).find('.item').respi();
         setTimeout(function() {

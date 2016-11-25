@@ -1,7 +1,7 @@
 
 
 function checkImageSizes(images, deep, cb) {
-    console.log('checkImageSizes');
+    //console.log('checkImageSizes');
 
     var images = images || gJ.images;
     var imagesLength = images.length;
@@ -26,7 +26,7 @@ function checkImageSizes(images, deep, cb) {
 
             if (sz < sizesLength) {
                 var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
-                var path = 'gallery/' + folder + '_' + gJ.sizes[sz] + '/' + image.file;
+                var path = options.galleryPath + folder + '_' + gJ.sizes[sz] + '/' + image.file;
 
                 // deep: request each image from server
                 if (deep) {

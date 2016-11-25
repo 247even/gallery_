@@ -60,7 +60,6 @@ function adminInit() {
         getAllImages({
             folders: stat.allFolders,
             cb: function() {
-
                 for (var key in stat.existingImages) {
                     if (checkIrregularFilename(key).error) {
                       console.log(checkIrregularFilename(key));

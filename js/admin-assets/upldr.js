@@ -3,7 +3,7 @@
 var _upldr = function() {
 
     this.options = {
-        'target': "fileUpload.php",
+        'target': "upldr.php",
         'typeMatch': 'image.*',
         'slug': true,
         'cbReaderOnload': function() {

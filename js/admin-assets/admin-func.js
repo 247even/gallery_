@@ -13,7 +13,6 @@ Array.prototype.unique = function() {
 
 function unique(arr) {
     var u = [];
-    console.log(arr);
     return arr.filter(function(v) {
         if (u.indexOf(v) == -1) {
             u.push(v);
@@ -34,6 +33,20 @@ function checkIrregularFilename(file) {
         }
     }
     return response;
+};
+
+function pickFromObject(obj, pick) {
+    var ret = {};
+    var objKeys = Object.keys(obj);
+    var pL = pick.length;
+
+    for (var i = 0; i < pL; i++) {
+        if (obj[pick[i]]) {
+            ret[pick[i]] = obj[pick[i]];
+        }
+    }
+    console.log(ret);
+    return ret;
 };
 
 function arrayIntersection(arr1, arr2) {
@@ -105,11 +118,22 @@ console.log(arrayDiff(arr1,arr2,true).concat);
 
 function withoutGalleryBase(data) {
     if (typeof data === 'string') {
-        return data.replace('gallery/', '');
+        if (data.indexOf('/') !== -1) {
+            value = data.split('/');
+            var vl = value.length;
+            return value[vl-1];
+        }
+        return false;
+        //return data.replace('../gallery/', '');
     }
 
     return data.map(function(value) {
-        return value.replace('gallery/', '');
+        if (value.indexOf('/') !== -1) {
+            value = value.split('/');
+            var vl = value.length;
+            return value[vl-1];
+        }
+        //return value.replace('../'+options.galleryPath, '');
     });
 };
 
