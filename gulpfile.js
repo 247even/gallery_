@@ -5,7 +5,6 @@ var cssnano = require('gulp-cssnano');
 var uglify = require('gulp-uglify');
 var chown = require('gulp-chown');
 var chmod = require('gulp-chmod');
-var git = require('gulp-git');
 
 gulp.task('default', [
       'css-base',
@@ -119,28 +118,4 @@ gulp.task('chown', function() {
                         }
                     }))
             .pipe(gulp.dest(''));
-});
-
-
-gulp.task('git', function(){
-  return gulp.src('*')
-    .pipe(git.add({args: '--all'}))
-    .pipe(git.commit(undefined, {
-      args: '-m "done--"',
-      disableMessageRequirement: true
-    }));
-});
-
-gulp.task('commit', function(){
-  return gulp.src('*')
-    .pipe(git.commit(undefined, {
-      args: '-m "done--"',
-      disableMessageRequirement: true
-    }));
-});
-
-gulp.task('gitpush', function(){
-  git.push('origin', 'master', function (err) {
-    if (err) throw err;
-  });
 });

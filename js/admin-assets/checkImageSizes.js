@@ -26,7 +26,7 @@ function checkImageSizes(images, deep, cb) {
 
             if (sz < sizesLength) {
                 var sizeId = folder + '_' + gJ.sizes[sz] + image.file;
-                var path = options.galleryPath + folder + '_' + gJ.sizes[sz] + '/' + image.file;
+                var path = '.'+options.galleryPath + folder + '_' + gJ.sizes[sz] + '/' + image.file;
 
                 // deep: request each image from server
                 if (deep) {

@@ -1,7 +1,7 @@
 // options
 
 var options = {
-    galleryPath : './gallery/',
+    galleryPath : '/gallery/',
     JSONurl: 'gallery.json',
     sizes: ['280', '430', '720', '1200'],
     thumbPadding: 0,

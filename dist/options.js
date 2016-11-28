@@ -2,13 +2,13 @@
 
 var options = {
     galleryPath : './gallery/',
-    JSONurl : 'gallery.json',
-    sizes : ['280','430','720','1200'],
-    thumbPadding : 0,
-    proportion: [1,1],
-    thumbSize : 'md',
-    thumbFit : 'cover',
-    thumbSizeSizes : {
+    JSONurl: 'gallery.json',
+    sizes: ['280', '430', '720', '1200'],
+    thumbPadding: 0,
+    proportion: [1, 1],
+    thumbSize: 'md',
+    thumbFit: 'cover',
+    thumbSizeSizes: {
         'xs': ['col-xs-1'],
         'sm': ['col-xs-2', 'col-sm-1'],
         'md': ['col-xs-3', 'col-sm-2', 'col-md-1'],

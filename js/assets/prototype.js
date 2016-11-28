@@ -1,4 +1,5 @@
 function prototype(data) {
+    "use strict";
 
     // template element to search in for placeholders:
     var template;
@@ -27,8 +28,8 @@ function prototype(data) {
     var ct = template.innerHTML;
 
     if (selectors) {
-        var sLength = selectors.length;
-        for (i = 0; i < sLength; i++) {
+        var sL = selectors.length;
+        for (i = 0; i < sL; i++) {
             var selector = '{{' + selectors[i] + '}}';
             ct = ct.replace(selector, values[i]);
             ct = ct.split(selector).join(values[i]);
@@ -37,8 +38,9 @@ function prototype(data) {
     //}
 
     if (targets) {
-        var tLength = targets.length;
-        for (i = 0; i < tLength; i++) {
+        var tL = targets.length;
+        for (i = 0; i < tL; i++) {
+            //targets[i].innerHTML += ct;
             targets[i].insertAdjacentHTML('beforeend', ct);
         }
     } else {
