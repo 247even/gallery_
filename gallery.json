@@ -1,6 +1,6 @@
 {
 	"images": {
-		"birdssparrow-827374_1920.jpg": {
+		"birdssparrow-827374_1920": {
 			"file": "sparrow-827374_1920.jpg",
 			"folder": "birds",
 			"time": 1459435107,
@@ -8,7 +8,7 @@
 				"birds"
 			]
 		},
-		"birdssparrow-9950_1280.jpg": {
+		"birdssparrow-9950_1280": {
 			"file": "sparrow-9950_1280.jpg",
 			"folder": "birds",
 			"time": 1459435107,
@@ -16,7 +16,7 @@
 				"birds"
 			]
 		},
-		"treesforest-584354_1920.jpg": {
+		"treesforest-584354_1920": {
 			"file": "forest-584354_1920.jpg",
 			"folder": "trees",
 			"time": 1459435115,
@@ -24,7 +24,7 @@
 				"trees"
 			]
 		},
-		"treeslog-258817_1920.jpg": {
+		"treeslog-258817_1920": {
 			"file": "log-258817_1920.jpg",
 			"folder": "trees",
 			"time": 1459435115,
@@ -32,7 +32,7 @@
 				"trees"
 			]
 		},
-		"treestree-439171_1920.jpg": {
+		"treestree-439171_1920": {
 			"file": "tree-439171_1920.jpg",
 			"folder": "trees",
 			"time": 1459435116,
@@ -40,7 +40,7 @@
 				"trees"
 			]
 		},
-		"treestree-975378_1920.jpg": {
+		"treestree-975378_1920": {
 			"file": "tree-975378_1920.jpg",
 			"folder": "trees",
 			"time": 1459435116,
@@ -48,7 +48,7 @@
 				"trees"
 			]
 		},
-		"treestrees-251923_1920.jpg": {
+		"treestrees-251923_1920": {
 			"file": "trees-251923_1920.jpg",
 			"folder": "trees",
 			"time": 1459435116,
@@ -56,7 +56,7 @@
 				"trees"
 			]
 		},
-		"cloudsMixed_clouds_over_Santa_Clarita_CA.jpg": {
+		"cloudsMixed_clouds_over_Santa_Clarita_CA": {
 			"file": "Mixed_clouds_over_Santa_Clarita_CA.jpg",
 			"folder": "clouds",
 			"time": 1469485876,
@@ -64,7 +64,7 @@
 				"clouds"
 			]
 		},
-		"cloudsclouds-01.jpg": {
+		"cloudsclouds-01": {
 			"file": "clouds-01.jpg",
 			"folder": "clouds",
 			"time": 1469485854,
@@ -72,7 +72,7 @@
 				"clouds"
 			]
 		},
-		"cloudsclouds-20.jpg": {
+		"cloudsclouds-20": {
 			"file": "clouds-20.jpg",
 			"folder": "clouds",
 			"time": 1469485867,
@@ -80,7 +80,7 @@
 				"clouds"
 			]
 		},
-		"cloudsclouds.jpg": {
+		"cloudsclouds": {
 			"file": "clouds.jpg",
 			"folder": "clouds",
 			"time": 1469485836,
@@ -88,7 +88,7 @@
 				"clouds"
 			]
 		},
-		"shipscruise-114152_1920.jpg": {
+		"shipscruise-114152_1920": {
 			"file": "cruise-114152_1920.jpg",
 			"folder": "ships",
 			"time": 1459435113,
@@ -96,7 +96,7 @@
 				"ships"
 			]
 		},
-		"shipssailboat-459794_1920.jpg": {
+		"shipssailboat-459794_1920": {
 			"file": "sailboat-459794_1920.jpg",
 			"folder": "ships",
 			"time": 1459435113,
@@ -104,7 +104,7 @@
 				"ships"
 			]
 		},
-		"shipsship-56569.jpg": {
+		"shipsship-56569": {
 			"file": "ship-56569.jpg",
 			"folder": "ships",
 			"time": 1459435113,
@@ -112,7 +112,7 @@
 				"ships"
 			]
 		},
-		"shipsship-952292_1920.jpg": {
+		"shipsship-952292_1920": {
 			"file": "ship-952292_1920.jpg",
 			"folder": "ships",
 			"time": 1459435113,

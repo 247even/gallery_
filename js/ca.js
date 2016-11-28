@@ -21,7 +21,7 @@ function pageFunction(t) {
 			target: "page2"
 		}, null, "/leistungen");
 
-		$('.mbr-navbar').removeClass('mbr-navbar--transparent');
+		$('.navbar').removeClass('navbar--transparent');
 
 		// https://github.com/verlok/lazyload
 		var leistungenLoad = new LazyLoad({
@@ -44,11 +44,11 @@ function pageFunction(t) {
 			target: "page3"
 		}, null, "/portfolio");
 
-		$('.mbr-navbar').removeClass('mbr-navbar--transparent');
+		$('.navbar').removeClass('navbar--transparent');
 		$('#gallery-lightbox').carousel();
 
 		// background zoom function
-		$('.mbr-gallery .zoom').on('click', function(e){
+		$('.gallery .zoom').on('click', function(e){
 			//e.preventDefault();
 			$('.gallery-carousel .item').toggleClass('bg-cover');
 		});
@@ -83,7 +83,7 @@ function pageFunction(t) {
 			target: "page4"
 		}, null, "/kontakt");
 
-		$('.mbr-navbar').removeClass('mbr-navbar--transparent');
+		$('.navbar').removeClass('navbar--transparent');
 		$('#slider-1').carousel('pause');
 		return false;
 	}
@@ -112,7 +112,7 @@ function navigation() {
 
 		target = "page1";
 		pageTransition(target);
-		$('.mbr-navbar').addClass('mbr-navbar--transparent');
+		$('.navbar').addClass('navbar--transparent');
 	});
 
 	// leistungen
@@ -136,7 +136,7 @@ function navigation() {
 	// kontakt
 	$('.p4').on('click', function(e) {
 		//e.preventDefault();
-		//$('.mbr-navbar').removeClass('mbr-navbar--transparent');
+		//$('.navbar').removeClass('navbar--transparent');
 		$('#slider-1').carousel('pause');
 		target = "page4";
 		pageTransition(target);
@@ -185,7 +185,7 @@ $(function() {
 	intro();
 	loadJSON();
 	navigation();
-	init();
+	//init();
 
 	window.onpopstate = function(event) {
 		$('.modal').modal('hide');
@@ -211,10 +211,10 @@ $(function() {
 
 	}
 
-	$('#ext_menu-19 .mbr-navbar__column').on('click', function(e){
+	$('#ext_menu-19 .navbar__column').on('click', function(e){
 		e.preventDefault();
 		console.log('click');
-		$('#ext_menu-19 .mbr-navbar__hamburger').trigger('click');
+		$('#ext_menu-19 .navbar__hamburger').trigger('click');
 	});
 
 	$('#logobox2').clonePosition('#logobox');
@@ -238,21 +238,4 @@ $(function() {
 		}, 500, false)
 	);
 
-	//$(window).on('resize load', function(e){console.log(e)});
-	//$(window).on('resize load', function(){$('#logobox2').clonePosition('#logobox');});
-	//$('#logobox2').clonePosition('#logobox');
-
-
-/*
-	var timeout;
-	function fitLBtimeout() {
-		clearTimeout(timeout);
-		timeout = setTimeout(fitLightbox, 50);
-	}
-
-	//$(document).on('add.cards change.cards', fitLightbox);
-	$(window).on('resize load', fitLBtimeout);
-	$(window).on('show.bs.modal', fitLBtimeout);
-	$(window).on('slid.bs.carousel', fitLBtimeout);
-*/
 });

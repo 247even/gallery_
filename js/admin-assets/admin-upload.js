@@ -96,7 +96,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
         upldrData.path = options.galleryPath + $(this).val();
         upldr.options.data = JSON.stringify(upldrData);
     });
-    upldrData.path = $('#upload-folder-select').val();
+    upldrData.path = options.galleryPath + $('#upload-folder-select').val();
     upldr.options.data = JSON.stringify(upldrData);
     //$('#upload-folder-select').trigger( 'change' );
 
@@ -122,9 +122,8 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
      */
 
     upldr.set({
-        'target': 'upldr.php',
         //'data' : JSON.stringify(upldrData),
-        'cbReaderOnload': function(src, fName, fType, fSize, fLastMod) {
+        cbReaderOnload: function(src, fName, fType, fSize, fLastMod) {
             //console.log( getSlug(fName, {'custom' : ['.'] }) );
             prototype({
                 'template': '.file-row-prototype',
@@ -133,7 +132,7 @@ $('.admin-header a[aria-controls="upload-panel"]').on('shown.bs.tab', function(e
                 'targets': '#file-table-body'
             });
         },
-        'cbOnloadend': function(res) {
+        cbOnloadend: function(res) {
             console.log(res.target.response);
             processResponse(res.target.response);
             setTimeout(function() {

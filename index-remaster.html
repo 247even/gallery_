@@ -12,14 +12,18 @@
 		<title>cad-artist.de - 3D Visualisierung, Planung, Schulung, Support</title>
 		<script src="js/jquery.min.js"></script>
 		<script src="js/typed.min.js"></script>
-		<script src="js/ldsh.js"></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:700,400&amp;subset=latin">
 		<link href='https://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
 		<!-- <link rel="stylesheet" href="css/imafox.min.css"> -->
 		<link rel="stylesheet" href="css/imafox.css">
 		<link rel="stylesheet" href="css/animate.min.css">
-		
-		
+
+		<script src="options.json"></script>
+		<script src="js/jsLoader.js"></script>
+		<!--<script src="js/gallery-init.js"></script>-->
+		<script src="js/assets.min.js"></script>
+
+
 <style id="intro-style">
 
 	#intro {
@@ -35,7 +39,7 @@
 		vertical-align: middle;
 		overflow: hidden;
 	}
-	
+
 	#intro .modal-backdrop {
 		background-color: #fff;
 	    background-position: center;
@@ -44,14 +48,14 @@
 	    background-size: cover;
 	    opacity: 0;
 	}
-	
+
 	.introcell {
 		position: relative;
 		z-index: 2000;
 	    display: table-cell;
 	    vertical-align: middle;
 	}
-	
+
 	.introwrapper {
 		padding: 5px;
 		display: inline-block;
@@ -61,7 +65,7 @@
 		line-height: normal;
 		box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
 	}
-	
+
 	#intrologo {
 		text-align: center;
 	    width: auto;
@@ -70,7 +74,7 @@
 		vertical-align: middle;
 		line-height: normal;
 	}
-	
+
 	.typed, .typed2 {
 		font-family: 'Muli', sans-serif;
 	    font-size: 26px;
@@ -100,7 +104,7 @@
 				<img class="mbr-navbar__brand-img mbr-brand__img ca-navlogo" src="images/ca-logo.svg" alt="home">
 			</div>
 		</div>
-		
+
 		<section class="mbr-navbar mbr-navbar--freeze mbr-navbar--absolute mbr-navbar--transparent mbr-navbar--sticky mbr-navbar--auto-collapse" id="ext_menu-19">
 			<div class="mbr-navbar__section mbr-section">
 				<div class="mbr-section__container container">
@@ -284,7 +288,7 @@
 				</section>
 				</div>
 			</div>
-			
+
 			<!-- 3 Portfolio -->
 			<div id="page3" class="page-inactive page no-scroll">
 				<div class="navbar-spacer"> </div>
@@ -315,8 +319,8 @@
 
 									<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
 									<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
-									
-									<span class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>								
+
+									<span class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>
 								</div>
 							</div>
 						</div>
@@ -328,18 +332,18 @@
 			<div class="mbr-section navbar navbar-fixed-bottom">
 				<div class="mbr-navbar__container">
 		    	<div class="mbr-navbar__column mbr-navbar__menu">
-		    		
+
 			<select id="filter-select" class="selectpicker dropup">
 			  <option value="all" data-filter="all">alle</option>
 
 			</select>
 		       </div>
 		       </div>
-		    </div>    
+		    </div>
 		</footer>
 
 			</div>
-			
+
 			<!-- 4 Kontakt -->
 			<div id="page4" class="page-inactive page no-scroll">
 				<div class="navbar-spacer"> </div>
@@ -390,10 +394,10 @@
 								</div>
 							</div>
 							<div class="col-sm-6 col-sm-pull-6 contact-map">
-								
+
 								<div style="width: 100%"><iframe id="gmap" width="100%" height="300" src="about:blank" maps-data-src="http://maps.google.de/maps?hl=de&q=Froweinstr.%2011%2C%2042105%20Wuppertal%2C%20Germany+(cad-artist)&amp;ie=UTF8&amp;t=&amp;z=17&amp;iwloc=A&amp;output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div><br>
-							
-							</div>	
+
+							</div>
 						</div>
 					</div>
 				</section>
@@ -448,6 +452,76 @@
 			</div>
 			</div>
 		</div>
+
+
+				<div id="prototypes" style="display: none">
+
+					<div id="thumb-prototype" style="display:none">
+						<div class="gallery-item img-hidden" data-id="{{key}}">
+							<div class="thumb-div cover-image" respi-path="{{respi}}">
+								<a href="#gallery-lightbox" data-slide-to="{{i}}">
+									<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+									<span class="glyphicon glyphicon-zoom-in"> </span>
+								</a>
+							</div>
+						</div>
+					</div>
+
+					<div id="bs-dd-prototype">
+						<li data-value={{folder}}>
+							<a href="#">{{folder}}</a>
+						</li>
+					</div>
+
+					<div id="folder-select-prototype">
+						<option value="{{folder}}">{{folder}}</option>
+					</div>
+
+					<div id="lightbox-prototype">
+						<!-- Lightbox -->
+						<div class="lightbox gallery-lightbox slider modal fade carousel slide" tabindex="-1" data-keyboard="true" data-interval="false">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-body">
+										<ol class="gallery-carousel carousel-indicators hidden">
+
+										</ol>
+										<div class="gallery-carousel carousel-inner">
+
+										</div>
+										<a class="left carousel-control box-shadow--2dp" role="button" data-slide="prev" href="#gallery-lightbox"> <span class="glyphicon glyphicon-menu-left" aria-hidden="true"> </span> <span class="sr-only">Previous</span> </a>
+										<a class="right carousel-control box-shadow--2dp" role="button" data-slide="next" href="#gallery-lightbox"> <span class="glyphicon glyphicon-menu-right" aria-hidden="true"> </span> <span class="sr-only">Next</span> </a>
+
+										<a class="close box-shadow--2dp" href="#" role="button" data-dismiss="modal"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <span class="sr-only">Close</span> </a>
+										<a class="zoom box-shadow--2dp" href="#" role="button"> <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> <span class="sr-only">Zoom</span> </a>
+
+										<span id="indicator-text" class="indicator-text carousel-indicators noselect box-shadow--2dp"> </span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div id="lightbox-item-prototype">
+						<div class="item" respi-path="{{respi-path}}" style="background-image:;">
+							<img alt="" src="images/FFF-0.png">
+						</div>
+					</div>
+
+					<div id="slider-item-prototype">
+						<div class="item" respi-path="{{respi-path}}" style="background-image:;">
+							<img alt="" src="images/FFF-0.png">
+							<div class="carousel-caption hidden">
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<!-- end prototypes -->
+
+		<script src="js/req/bootstrap.min.js"></script>
+		<script src="js/req/velocity.min.js"></script>
+		<script src="js/gallery.js"></script>
 
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/bootstrap-select.min.js"></script>

@@ -2,34 +2,34 @@
 
 var selectedImages_tags;
 
-var selectizeInput = $('#input-tags').selectize({
-    plugins: ['remove_button'],
-    delimiter: ',',
-    persist: false,
-    createFilter: '^[a-zA-Z0-9_äüö -]+$',
-    create: function(input) {
-        for (var i = 0, l = stat.tagsSelectedIds.length; i < l; i++) {
-            var id = stat.tagsSelectedIds[i];
-            var dataTags = stat.imageTags[id];
-            //var unionTags = _.union(dataTags, input.split(','));
-            var unionTags = dataTags.concat(input.split(',')).unique();
-            //console.log(unionTags);
-            if (unionTags != dataTags) {
-                stat.imageTags[id] = unionTags;
-                stat.tagsEdited = id;
-            }
-        }
-        return {
-            'text': input,
-            'value': input
-        };
-    }
-});
-var selectizeTags = selectizeInput[0].selectize;
-selectizeTags.clear();
-
 
 $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) {
+
+    var selectizeInput = $('#input-tags').selectize({
+        plugins: ['remove_button'],
+        delimiter: ',',
+        persist: false,
+        createFilter: '^[a-zA-Z0-9_äüö -]+$',
+        create: function(input) {
+            for (var i = 0, l = stat.tagsSelectedIds.length; i < l; i++) {
+                var id = stat.tagsSelectedIds[i];
+                var dataTags = stat.imageTags[id];
+                //var unionTags = _.union(dataTags, input.split(','));
+                var unionTags = dataTags.concat(input.split(',')).unique();
+                //console.log(unionTags);
+                if (unionTags != dataTags) {
+                    stat.imageTags[id] = unionTags;
+                    stat.tagsEdited = id;
+                }
+            }
+            return {
+                'text': input,
+                'value': input
+            };
+        }
+    });
+    var selectizeTags = selectizeInput[0].selectize;
+    selectizeTags.clear();
 
     for (var key in gJ.images) {
         stat.imageTags[key] = stat.imageTags[key] || gJ.images[key].tags;
@@ -88,7 +88,6 @@ $('.admin-header a[aria-controls="tags-panel"]').on('shown.bs.tab', function(e) 
         deleteSelectedImages();
     });
 
-});
 
 function selectTags() {
 
@@ -117,10 +116,10 @@ function selectTags() {
         for (var i = 0; i < selectedLength; i++) {
             var selectedId = stat.tagsSelectedIds[i];
             attrTags = stat.imageTags[selectedId] || gJ.images[selectedId].tags;
-//            selectedTags = _.union(selectedTags, attrTags);
-//            groupTags = _.intersection(groupTags, attrTags);
-              selectedTags = selectedTags.concat(attrTags).unique();
-              groupTags = arrayIntersection(groupTags, attrTags);
+            //            selectedTags = _.union(selectedTags, attrTags);
+            //            groupTags = _.intersection(groupTags, attrTags);
+            selectedTags = selectedTags.concat(attrTags).unique();
+            groupTags = arrayIntersection(groupTags, attrTags);
         }
 
     }
@@ -134,6 +133,8 @@ function selectTags() {
 
     //    return groupTags;
 };
+
+});
 
 function deleteSelectedImages() {
     var i = 0;

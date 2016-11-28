@@ -3,14 +3,15 @@
 var _upldr = function() {
 
     this.options = {
-        'target': "upldr.php",
-        'typeMatch': 'image.*',
-        'slug': true,
-        'cbReaderOnload': function() {
-            //console.log("cbReaderOnload");
+        target: 'upldr.php',
+        //uploadBase: '',
+        typeMatch: 'image.*',
+        slug: true,
+        cbReaderOnload: function() {
+            //console.log('cbReaderOnload');
         },
-        'cbReset': function() {
-            document.getElementById('file-table-body').innerHTML = "";
+        cbReset: function() {
+            document.getElementById('file-table-body').innerHTML = '';
         }
     };
     var options = this.options;
@@ -70,7 +71,7 @@ var _upldr = function() {
         resetBtn.disabled = false;
 
         var ftb = document.getElementById('file-table-body');
-        ftb.innerHTML = "";
+        ftb.innerHTML = '';
 
         for (var i = 0; i < files.length; i++) {
             var reader = new FileReader();
@@ -111,23 +112,23 @@ var _upldr = function() {
     };
 
     this.reset = function() {
-       //console.log("reset");
+       //console.log('reset');
         files = [];
         form.reset();
         progressBar.style.width = 0;
-        progressBar.innerHTML = "";
+        progressBar.innerHTML = '';
         submitBtn.innerHTML = submitBtnInitText;
         submitBtn.disabled = true;
         resetBtn.disabled = true;
         if (options.cbReset) {
             options.cbReset();
         }
-        //document.getElementById('file-table-body').innerHTML = "";
+        //document.getElementById('file-table-body').innerHTML = '';
     };
 
     function progress(e) {
         if (e.lengthComputable) {
-            percLoaded = Math.round(e.loaded / e.total * 100) + "%";
+            percLoaded = Math.round(e.loaded / e.total * 100) + '%';
             progressBar.style.width = percLoaded;
             progressBar.innerHTML = percLoaded;
             submitBtn.textContent = percLoaded;
@@ -181,8 +182,8 @@ var _upldr = function() {
             }
         };
 
-        request.upload.addEventListener("progress", progress, false);
-        request.open("POST", options.target, true);
+        request.upload.addEventListener('progress', progress, false);
+        request.open('POST', options.target, true);
         request.send(formdata);
     };
 
